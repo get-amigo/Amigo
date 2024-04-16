@@ -7,7 +7,7 @@ import FabIcon from './FabIcon';
 function EmptyScreen({ onPress, image, title }) {
     return (
         <SafeAreaView style={styles.container}>
-            {/* <Image source={image} style={styles.image} resizeMode="contain" /> */}
+            <Image source={image} style={styles.image} resizeMode="contain" />
 
             <Text style={styles.text}>{title}</Text>
             <Pressable onPress={onPress}>

@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useEffect, useRef, useState} from 'react';
-import { StyleSheet, SafeAreaView, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share,Alert } from 'react-native';
+import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
 import { useAuth } from '../stores/auth';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -11,11 +11,11 @@ import PAGES from '../constants/pages';
 import { useBalance } from '../stores/balance';
 
 function ProfileScreen({ navigation }) {
-    const { user, logout, editUser,deleteAccount } = useAuth();
+    const { user, logout, editUser, deleteAccount } = useAuth();
     const [editMode, setEditMode] = useState(false);
     const [name, setName] = useState(user.name);
     const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
-    const {totalBalances}=useBalance();
+    const { totalBalances } = useBalance();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,14 +23,11 @@ function ProfileScreen({ navigation }) {
         setIsSubmitting(true);
     }
 
-
     function deleteHandler() {
-        if(totalBalances){
-            if(totalBalances<0)
-            alert(`You have a balance of ₹${totalBalances} to settle before deleting your account`);
-            else
-            alert(`You have a balance of ₹${totalBalances} to collect before deleting your account`)
-           return;
+        if (totalBalances) {
+            if (totalBalances < 0) alert(`You have a balance of ₹${totalBalances} to settle before deleting your account`);
+            else alert(`You have a balance of ₹${totalBalances} to collect before deleting your account`);
+            return;
         }
         if (Platform.OS === 'ios') {
             Alert.prompt(
@@ -38,7 +35,9 @@ function ProfileScreen({ navigation }) {
                 'Do you really want to delete your account? Please enter "DELETE" to confirm.',
                 [
                     { text: 'Cancel', style: 'cancel' },
-                    { text: 'Delete', onPress: (text) => {
+                    {
+                        text: 'Delete',
+                        onPress: (text) => {
                             if (text.toUpperCase() === 'DELETE') {
                                 deleteAccount();
                             } else {
@@ -49,9 +48,8 @@ function ProfileScreen({ navigation }) {
                     },
                 ],
                 'plain-text',
-                '' 
+                '',
             );
-            
         } else {
             Alert.alert('Delete Confirmation', 'Do you really want to delete your account?', [
                 {
@@ -60,13 +58,12 @@ function ProfileScreen({ navigation }) {
                 },
                 {
                     text: 'Delete',
-                    onPress: deleteAccount, 
+                    onPress: deleteAccount,
                     style: 'destructive',
-                }
+                },
             ]);
         }
     }
-    
 
     function logoutHandler() {
         Alert.alert('Logout Confirmation', 'Do you really want to logout?', [
@@ -77,12 +74,10 @@ function ProfileScreen({ navigation }) {
             {
                 text: 'Logout',
                 onPress: logout,
-                style:"destructive"
-            }]
-        );
+                style: 'destructive',
+            },
+        ]);
     }
-
-    
 
     useEffect(() => {
         if (isSubmitting) {
@@ -189,7 +184,7 @@ function ProfileScreen({ navigation }) {
                 label="Delete"
                 iconName="delete-forever"
                 IconComponent={MaterialIcons}
-                additionalStyle={{color: COLOR.DELETION_COLOR}}
+                additionalStyle={{ color: COLOR.DELETION_COLOR }}
                 onPress={deleteHandler}
                 color={COLOR.DELETION_COLOR}
             />

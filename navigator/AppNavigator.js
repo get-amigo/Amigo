@@ -167,7 +167,6 @@ const AppNavigator = () => {
                                 },
                                 headerTitleAlign: 'left', // Aligns the title to the left
                                 headerTintColor: '#fff', // Sets the title color to white
-                               
                             }}
                         />
 

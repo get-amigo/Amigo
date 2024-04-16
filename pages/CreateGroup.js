@@ -34,7 +34,7 @@ const CreateGroup = ({ navigation }) => {
         setIsLoading(true);
         const phoneNumbers = selectedContacts.map(({ phoneNumber }) => ({
             phoneNumber,
-            countryCode: '91',
+            countryCode: '+91',
         }));
         const { data } = await apiHelper.post('/group', {
             name: groupName,
@@ -43,16 +43,8 @@ const CreateGroup = ({ navigation }) => {
         Toast.show(`${groupName} created`, {
             duration: Toast.durations.LONG,
         });
-        if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) {
-            const { data: groups } = await apiHelper('/group');
-            const group = groups.find(({ _id }) => _id == data._id);
-            group.members = await editNamesAsync(group.members, user._id);
-            setTransactionData((prev) => ({
-                ...prev,
-                group,
-            }));
-            navigation.navigate(PAGES.ADD_TRANSACTION);
-        } else navigation.goBack();
+        if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) navigation.navigate(PAGES.ADD_TRANSACTION);
+        else navigation.goBack();
     };
 
     return (

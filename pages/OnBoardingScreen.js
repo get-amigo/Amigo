@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image } from 'react-native';
-
+import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 // Assuming this is the path to your image
 import OnboardingImage from '../assets/Onboarding.png'; // Update the image path if necessary
 import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
@@ -15,6 +15,30 @@ const OnboardingScreen = ({ navigation }) => {
                 <Text style={styles.title}>Group payments made easy</Text>
                 <Text style={styles.subtitle}>Keep track of your shared expenses and balances</Text>
                 <Button title="Continue with Phone number" onPress={() => navigation.navigate(PAGES.LOGIN)} />
+                <Text
+                    style={{
+                        marginVertical: calcHeight(2),
+                        color: '#8c89a1',
+                        fontSize: getFontSizeByWindowWidth(8),
+                    }}
+                >
+                    By Pressing on "Continue with Phone Number" you agree to our{' '}
+                    <Text
+                        style={{ color: 'white' }}
+                        onPress={() => WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/')}
+                    >
+                        Privacy Policy
+                    </Text>{' '}
+                    and{' '}
+                    <Text
+                        style={{ color: 'white' }}
+                        onPress={() =>
+                            WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/terms-and-conditions')
+                        }
+                    >
+                        Terms and Conditions
+                    </Text>
+                </Text>
             </View>
         </SafeAreaView>
     );
@@ -25,11 +49,11 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLOR.APP_BACKGROUND, // Changed to the dark background color
         alignItems: 'center', // Centers content horizontally
+        justifyContent: 'flex-end',
     },
     innerContainer: {
         width: calcWidth(80), // 80% of the screen width
         alignItems: 'center',
-        marginTop: calcHeight(25),
     },
     image: {
         width: calcWidth(60), // 60% of the screen width
@@ -41,7 +65,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
         textAlign: 'center',
-        marginTop: calcHeight(2),
         marginHorizontal: calcWidth(10),
     },
     subtitle: {
@@ -52,14 +75,13 @@ const styles = StyleSheet.create({
     },
     button: {
         display: 'flex',
-        justifyContent: 'center', // Centers child horizontally in the container
+        justifyContent: 'center',
         alignItems: 'center',
         width: calcWidth(80),
         paddingVertical: calcHeight(2),
         borderRadius: 10,
         backgroundColor: COLOR.BUTTON,
         elevation: 3,
-        marginTop: calcHeight(4),
     },
     buttonText: {
         fontSize: getFontSizeByWindowWidth(12),

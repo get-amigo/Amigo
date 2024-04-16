@@ -33,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
             setError(true);
             return;
         }
-        
+
         sendOtp(countryCode + phoneNumber).then((payload) => {
             setPayload(payload);
         });

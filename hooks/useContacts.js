@@ -147,7 +147,7 @@ export const ContactsProvider = ({ children }) => {
         </ContactsContext.Provider>
     );
 };
-
+ContactsProvider.displayName = 'ContactsProvider';
 export const useContacts = () => {
     return useContext(ContactsContext);
 };

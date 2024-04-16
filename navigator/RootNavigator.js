@@ -18,9 +18,7 @@ function RootNavigator() {
         <QueryClientProvider client={queryClient}>
             <GroupProvider>
                 <TransactionProvider>
-                    <NavigationContainer linking={linking}>
-                        {user ? <AppNavigator /> : AuthNavigator}
-                    </NavigationContainer>
+                    <NavigationContainer linking={linking}>{user ? <AppNavigator /> : AuthNavigator}</NavigationContainer>
                 </TransactionProvider>
             </GroupProvider>
         </QueryClientProvider>

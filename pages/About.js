@@ -8,7 +8,7 @@ import { calcHeight, calcWidth } from '../helper/res';
 import icon from '../assets/icon.png';
 
 const About = () => {
-    const renderLink = (iconName, text,onPress=()=>{}) => (
+    const renderLink = (iconName, text, onPress = () => {}) => (
         <Pressable style={styles.link} onPress={onPress}>
             <Foundation name={iconName} size={calcHeight(3)} color="white" />
             <Text style={styles.linkText}>{text}</Text>
@@ -24,8 +24,12 @@ const About = () => {
                 </View>
                 <Text style={styles.text}>{about}</Text>
                 <View style={styles.linksContainer}>
-                    {renderLink('info', 'Terms and conditions')}
-                    {renderLink('lock', 'Privacy Policy',()=>WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/'))}
+                    {renderLink('info', 'Terms and conditions', () =>
+                        WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/terms-and-conditions'),
+                    )}
+                    {renderLink('lock', 'Privacy Policy', () =>
+                        WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/'),
+                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>

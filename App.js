@@ -8,7 +8,8 @@ function App() {
     return (
         <SafeAreaProvider>
             <StatusBar style="auto" />
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled>
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled
+            keyboardVerticalOffset={-900}>
                 <RootNavigator />
             </KeyboardAvoidingView>
             <FlashMessage position="top" duration={2000} />

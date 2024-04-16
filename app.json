@@ -3,7 +3,7 @@
         "name": "Amigo",
         "slug": "amigo",
         "scheme": "amigo",
-        "version": "1.2.0",
+        "version": "1.2.1",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "automatic",
@@ -16,7 +16,7 @@
         "ios": {
             "googleServicesFile": "./GoogleService-Info.plist",
             "bundleIdentifier": "app.amigo.app",
-            "buildNumber": "63",
+            "buildNumber": "64",
             "infoPlist": {
                 "LSApplicationQueriesSchemes": ["tez", "phonepe", "paytmmp", "amazonpay", "bhim", "upi"],
                 "UIBackgroundModes": ["remote-notification"]

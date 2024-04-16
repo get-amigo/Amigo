@@ -1,49 +1,56 @@
+# Amigo
 
-```markdown
-# Card-saver
+Amigo is your comprehensive solution for managing group expenses effortlessly.
 
-## Introduction
-Card-saver is a secure card storage application designed with privacy and security at its core. Built using React Native, it ensures that all your cards are safely encrypted and stored locally on your device.
+## Environment Setup
 
-## Features
-- **Secure Encryption**: Every card is encrypted using a unique encryption key before being stored.
-- **React Native**: Utilizes the latest React Native features for a smooth user experience.
-- **User Authentication**: Seamlessly authenticate users to provide access to their encrypted cards.
-- **Local Storage**: Cards are stored locally with encryption, ensuring data remains on the device.
+### Configuration
 
-## Getting Started
-To get started with Card-saver, clone the repository and follow the setup instructions below.
+To set up your environment variables:
 
-### Prerequisites
-- Node.js
-- npm or Yarn
-- React Native environment setup
+1. Navigate to the `eas.json` file.
+2. Create a `.env` file in your project directory.
+3. Copy the environment variables specified under the development environment section from `eas.json` into your `.env` file.
 
-### Installation
+### Development Environment
+
+- You can log in using any phone number by entering a random OTP for testing purposes.
+- For testing the OTP flow, utilize the backend URL provided in the staging section of `eas.json`.
+
+## Running Locally
+
+### Clone the Repository
+
+To get started, clone the repository to your local machine:
+
 ```bash
-git clone https://github.com/Bhaumik-Tandan/Card-saver.git
-cd Card-saver
-npm install
+git clone https://github.com/Bhaumik-Tandan/Amigo
 ```
 
-### Running the App
+### Set Up the Project
+
+Navigate to the project directory:
+
 ```bash
-npm start
+cd Amigo
 ```
 
-## Usage
-To use Card-saver, simply login with your credentials, and you'll be able to access and manage your encrypted cards.
+Install the required dependencies:
 
-## Contributing
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-[Card-saver on Google Play Store](https://play.google.com/store/apps/details?id=com.bhaumik.tandan.cardvault)
-
-[Card-saver on Apple App Store](https://apps.apple.com/us/app/cardvault-offline-cardholder/id6469853135)
+```bash
+yarn
 ```
+
+Start the server:
+
+```bash
+yarn start
+```
+
+### Additional Setup for Expo Managed Projects
+
+If this is your first time running an Expo managed project, create a new account on [expo.dev](https://expo.dev) and follow the instructions provided in the [Expo documentation](https://docs.expo.dev/get-started/create-a-project/#open-the-app-on-your-device).
+
+## Backend Repository
+
+For backend services, visit the [Amigo Backend repository](https://github.com/Bhaumik-Tandan/Amigo-Backend).

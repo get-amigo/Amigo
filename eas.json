@@ -10,8 +10,8 @@
             "channel": "development",
             "env": {
                 "ENV": "development",
-                "API_URL": "https://dev-splitcash-backend.vercel.app/",
-                "DEEP_LINK_URL": "https://bhaumik-tandan.github.io/Split-IT-Home/#/"
+                "API_URL": "https://dev-api.getamigo.today",
+                "DEEP_LINK_URL": "https://get-amigo.github.io/Split-IT-Home/#/"
             }
         },
         "preview": {
@@ -30,15 +30,15 @@
             },
             "env": {
                 "ENV": "staging",
-                "API_URL": "https://splitcash.up.railway.app/",
-                "DEEP_LINK_URL": "https://bhaumik-tandan.github.io/Split-IT-Home/#/"
+                "API_URL": "https://staging-api.getamigo.today",
+                "DEEP_LINK_URL": "https://get-amigo.github.io/Split-IT-Home/#/"
             }
         },
         "production": {
             "env": {
                 "ENV": "production",
-                "API_URL": "https://amigo-backend.vercel.app/",
-                "DEEP_LINK_URL": "https://bhaumik-tandan.github.io/Split-IT-Home/#/"
+                "API_URL": "https://api.getamigo.today",
+                "DEEP_LINK_URL": "https://get-amigo.github.io/Split-IT-Home/#/"
             },
             "channel": "production"
         }

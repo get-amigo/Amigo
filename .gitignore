@@ -36,6 +36,7 @@ yarn-error.*
 
 .env
 ios/
+android/
 
 google-services.json
 GoogleService-Info.plist

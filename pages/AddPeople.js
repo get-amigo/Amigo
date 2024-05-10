@@ -18,7 +18,7 @@ const AddPeople = ({ navigation }) => {
             `/group/${group._id}`,
             selectedContacts.map((contact) => ({
                 phoneNumber: contact.phoneNumber,
-                countryCode: '91',
+                countryCode: '+91',
             })),
         );
         setLoading(false);

@@ -57,7 +57,10 @@ function GroupScreen({ navigation }) {
     const { user } = useAuth();
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
-
+    const [offlineMessages, setOfflineMessages] = useState( [] );
+    const addToOfflineQueue = ( msg ) => {
+        setOfflineMessages( ( prev ) => [...prev, msg] );
+    };
     const { fetchNextPage, hasNextPage } = useInfiniteQuery({
         queryKey: ['group', group._id],
         queryFn: async ({ pageParam = null }) => {
@@ -95,7 +98,38 @@ function GroupScreen({ navigation }) {
             return groups;
         },
     });
+     useEffect( () => {
+        const sendPendingMessages = async () => {
+            if ( offlineMessages.length > 0 ) {
+                for ( const msg of offlineMessages ) {
+                    try {
+                        await apiHelper.post( `/group/${group._id}/chat`, { message: msg } );
+                        // Remove the sent message from the offline queue
+                        setOfflineMessages( ( prev ) => prev.filter( ( m ) => m !== msg ) );
+                    } catch ( error ) {
+                        console.error( 'Error sending pending message:', error );
+                    }
+                }
+            }
+        };
 
+        sendPendingMessages();
+    }, [offlineMessages] ); //includes the offline messages in a queue
+
+    const sendChatMessage = async ( msg ) => {
+        if ( offlineMessages.includes( msg ) ) {
+            // Message is already pending, do not add it again
+            return;
+        }
+        const isOnline = await checkConnectivity();
+        if ( isOnline ) {
+            await sendChatMessage( msg );
+        }
+        else {
+            addToOfflineQueue( msg );
+
+        }
+    }
     const { mutate: addChat } = useMutation({
         mutationFn: async (msg) => {
             const isOnline = await checkConnectivity();
@@ -106,7 +140,7 @@ function GroupScreen({ navigation }) {
 
                 return true;
             }
-
+             addToOfflineQueue( msg );
             return false;
         },
         onMutate: () => {
@@ -212,7 +246,7 @@ function GroupScreen({ navigation }) {
                 style={{
                     height: calcHeight(totalBalance != 0 ? 65 : 70),
                 }}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0.8}
                 onEndReached={() => {
                     if (hasNextPage) {
                         fetchNextPage();

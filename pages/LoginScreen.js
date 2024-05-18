@@ -5,9 +5,7 @@ import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { useAuth } from '../stores/auth';
 import { useOtp } from '../context/OtpContext';
-import { sendOtp } from '../helper/otp';
 
 const CountryCodeInput = ({ countryCode }) => (
     <View style={styles.countryCodeContainer}>
@@ -21,7 +19,7 @@ const LoginScreen = ({ navigation }) => {
     const [isPhoneFocused, setIsPhoneFocused] = useState(false);
     const [error, setError] = useState(false);
 
-    const { setPayload } = useOtp();
+    const { loginWithPhoneNumber } = useOtp();
 
     const getTextInputStyle = (isFocused) => ({
         ...styles.phoneNumberInput,
@@ -34,9 +32,7 @@ const LoginScreen = ({ navigation }) => {
             return;
         }
 
-        sendOtp(countryCode + phoneNumber).then((payload) => {
-            setPayload(payload);
-        });
+        loginWithPhoneNumber(countryCode + phoneNumber);
 
         navigation.navigate(PAGES.OTP, { phoneNumber: countryCode + phoneNumber });
     };

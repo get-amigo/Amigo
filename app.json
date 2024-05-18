@@ -1,74 +1,86 @@
 {
-    "expo": {
-        "name": "Amigo",
-        "slug": "amigo",
-        "scheme": "amigo",
-        "version": "1.2.5",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "userInterfaceStyle": "automatic",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#000"
-        },
-        "assetBundlePatterns": ["**/*"],
-        "ios": {
-            "googleServicesFile": "./GoogleService-Info.plist",
-            "bundleIdentifier": "app.amigo.app",
-            "buildNumber": "65",
-            "infoPlist": {
-                "LSApplicationQueriesSchemes": ["tez", "phonepe", "paytmmp", "amazonpay", "bhim", "upi"],
-                "UIBackgroundModes": ["remote-notification"]
-            }
-        },
-        "android": {
-            "googleServicesFile": "./google-services.json",
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/icon.png",
-                "backgroundColor": "#000"
-            },
-            "versionCode": 8,
-            "package": "app.amigo.app"
-        },
-        "web": {
-            "favicon": "./assets/favicon.png"
-        },
-        "extra": {
-            "eas": {
-                "projectId": "66c67f7c-cbf3-49dd-b4a5-b57f9920f978"
-            }
-        },
-        "owner": "amigo-app",
-        "plugins": [
-            [
-                "expo-contacts",
-                {
-                    "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts to display names as they appear in your phonebook and easily create groups"
-                }
-            ],
-            [
-                "expo-barcode-scanner",
-                {
-                    "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to scan UPI QR codes for easy payments"
-                }
-            ],
-            [
-                "expo-image-picker",
-                {
-                    "photosPermission": "$(PRODUCT_NAME) need permission to access your photos to get the QR code."
-                }
-            ],
-            "@react-native-firebase/app",
-            "@react-native-firebase/auth",
-            [
-                "expo-build-properties",
-                {
-                    "ios": {
-                        "useFrameworks": "static"
-                    }
-                }
-            ]
+  "expo": {
+    "name": "Amigo",
+    "slug": "amigo",
+    "scheme": "amigo",
+    "version": "1.2.5",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "bundleIdentifier": "app.amigo.app",
+      "buildNumber": "65",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "tez",
+          "phonepe",
+          "paytmmp",
+          "amazonpay",
+          "bhim",
+          "upi"
+        ],
+        "UIBackgroundModes": [
+          "remote-notification"
         ]
-    }
+      }
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#000"
+      },
+      "versionCode": 8,
+      "package": "app.amigo.app"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "66c67f7c-cbf3-49dd-b4a5-b57f9920f978"
+      }
+    },
+    "owner": "amigo-app",
+    "plugins": [
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Allow $(PRODUCT_NAME) to access your contacts to display names as they appear in your phonebook and easily create groups"
+        }
+      ],
+      [
+        "expo-barcode-scanner",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to scan UPI QR codes for easy payments"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "$(PRODUCT_NAME) need permission to access your photos to get the QR code."
+        }
+      ],
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      "expo-secure-store"
+    ]
+  }
 }

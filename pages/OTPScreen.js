@@ -6,9 +6,6 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import OTPImage from '../assets/OTPImage.png';
 import Loader from '../components/Loader';
 import OTPFilled from '../assets/OTPFilled.png';
-import PAGES from '../constants/pages';
-import { verifyOtp, sendOtp } from '../helper/otp';
-import { useAuth } from '../stores/auth';
 import { useOtp } from '../context/OtpContext';
 
 const OTPScreen = ({
@@ -22,32 +19,19 @@ const OTPScreen = ({
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const { login } = useAuth();
-    const { payload } = useOtp();
+    const { verifyOtp, loginWithPhoneNumber } = useOtp();
 
     const handleOTPChange = (text) => {
         setError(false);
         setOtp(text);
     };
 
-    async function handleVerifyOTP() {
+    const handleVerifyOTP = () => {
         if (otp.length < 6) {
             setError(true);
             return;
         }
-        setLoading(true);
-        const { user, token } = await verifyOtp({ payload, otp }); // payload can be the verificationId or phoneNumber with country code
-        if (user) {
-            login({ user, token });
-            navigation.navigate(PAGES.BALANCE);
-            setLoading(false);
-            setOtp('');
-            return;
-        } else {
-            setLoading(false);
-            setOtp('');
-            setError(true);
-        }
+        verifyOtp(otp);
     }
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
@@ -99,10 +83,7 @@ const OTPScreen = ({
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.resendText}>Didn't receive the code? </Text>
                         <TouchableOpacity
-                            onPress={async () => {
-                                const code = await sendOtp(phoneNumber);
-                                setPayload(code);
-                            }}
+                            onPress={() => loginWithPhoneNumber(phoneNumber)}
                         >
                             <Text
                                 style={{

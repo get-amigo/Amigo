@@ -3,7 +3,7 @@
     "name": "Amigo",
     "slug": "amigo",
     "scheme": "amigo",
-    "version": "1.2.5",
+    "version": "1.2.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -18,7 +18,7 @@
     "ios": {
       "googleServicesFile": "./GoogleService-Info.plist",
       "bundleIdentifier": "app.amigo.app",
-      "buildNumber": "65",
+      "buildNumber": "66",
       "infoPlist": {
         "LSApplicationQueriesSchemes": [
           "tez",
@@ -39,7 +39,7 @@
         "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#000"
       },
-      "versionCode": 8,
+      "versionCode": 15,
       "package": "app.amigo.app"
     },
     "web": {

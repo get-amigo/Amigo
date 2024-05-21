@@ -31,15 +31,17 @@ const OTPScreen = ({
             setError(true);
             return;
         }
-        setLoading(true)
+        setLoading(true);
         verifyOtp(otp)
-            .then(() => {
-                setLoading(false);
+            .catch((error) => {
+                navigation.navigate(PAGES.OTP);
             })
-            .catch ((error) => {
+            .finally(() => {
                 setLoading(false);
             });
-    }
+    };
+
+
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;

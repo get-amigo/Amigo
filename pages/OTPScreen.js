@@ -34,6 +34,7 @@ const OTPScreen = ({
         setLoading(true);
         verifyOtp(otp)
             .catch((error) => {
+                
                 navigation.navigate(PAGES.OTP);
             })
             .finally(() => {

@@ -15,6 +15,8 @@ const SignUpScreen = ({ navigation }) => {
         borderBottomColor: isFocused ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)',
     });
 
+    console.log('name', name.length > 0, name)
+
     return (
             <View style={styles.container}>
                 <View style={styles.header}>
@@ -41,7 +43,8 @@ const SignUpScreen = ({ navigation }) => {
                     }}
                 >
                     <Button
-                        title="Verify"
+                        disabled={name.length < 1}
+                        title="Save"
                         onPress={() => {
                             addName(name);
                             navigation.navigate(PAGES.GROUP_LIST);

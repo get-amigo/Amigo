@@ -31,7 +31,15 @@ const OTPScreen = ({
             setError(true);
             return;
         }
-        verifyOtp(otp);
+        setLoading(true);
+        verifyOtp(otp)
+            .then(() => {
+                setLoading(false);
+            })
+            .catch(() => {
+                setLoading(false);
+                setError(true);
+            });
     }
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';

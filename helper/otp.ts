@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import apiHelper from './apiHelper';
 
@@ -17,12 +18,18 @@ export const verifyOtp = async ({ otp, confirm }: { otp: string, confirm: Fireba
   try {
     const result = await confirm?.confirm(otp);
 
+    Sentry.captureException(new Error(`Firebase User: ${JSON.stringify(result?.user)}`));
+
     // @ts-ignore
     const { default: auth } = await import('@react-native-firebase/auth');
     const firebaseUser = result?.user || auth().currentUser;
 
+    Sentry.captureException(new Error(`Firebase User: ${JSON.stringify(firebaseUser)}`));
+
     if (firebaseUser) {
       const firebaseIdToken = await firebaseUser.getIdToken();
+
+      Sentry.captureException(new Error(`Firebase ID Token: ${firebaseIdToken}`));
 
       const { data: { user, token } } = await apiHelper.post(`/auth/verifyOTP`, { payload: firebaseIdToken });
 
@@ -31,7 +38,8 @@ export const verifyOtp = async ({ otp, confirm }: { otp: string, confirm: Fireba
 
     return null;
   } catch (error) {
-    console.log('Invalid code.');
+    Sentry.captureException(error);
+    console.log('Invalid code.', error);
 
     return null;
   }

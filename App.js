@@ -4,6 +4,16 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './navigator/RootNavigator';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+    dsn: 'https://5e35d45895f220b8681a2ce7bb0728df@o4507295198085120.ingest.us.sentry.io/4507295216762880',
+    // Set tracesSampleRate to 1.0 to capture 100%
+    // of transactions for performance monitoring.
+    // We recommend adjusting this value in production
+    tracesSampleRate: 1.0,
+});
+
 function App() {
     return (
         <SafeAreaProvider>
@@ -17,4 +27,4 @@ function App() {
     );
 }
 
-export default App;
+export default Sentry.wrap(App);

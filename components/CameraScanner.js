@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { Camera, FlashMode } from 'expo-camera';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, StyleSheet, Text, TouchableOpacity, Button } from 'react-native';
 import QRIndicator from './QRIndicator';
 import QRFooterButton from './QRFooterButton';
 import { calcHeight, calcWidth } from '../helper/res';
@@ -21,42 +20,50 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
         }
         alert('No QR code found in image');
     }
+    const [scanned, setScanned] = useState(false);
 
     useEffect(() => {
         const fun = async () => {
-
             const checkcamera = await BarCodeScanner.getPermissionsAsync();
-            console.log(checkcamera)
-        }
-        fun()
-    }, [])
-    function toggleCameraFacing() {
-        setFacing(current => (current === 'back' ? 'front' : 'back'));
-    }
+            console.log(checkcamera);
+        };
+        fun();
+    }, []);
+
+    const handleBarCode = ({ data }) => {
+        setScanned(true);
+
+        data && handleBarCodeScanned(data);
+
+        setTimeout(() => {
+            setScanned(false);
+        }, 1000);
+    };
 
     return (
-      
         <View style={styles.container}>
-        <CameraView style={styles.camera} facing={'back'}>
-          <View style={styles.buttonContainer}>
-          <QRIndicator />
-          <View style={[styles.footer, { bottom: 30 + bottom }]}>
-                
-                <QRFooterButton onPress={() => setIsLit((isLit) => !isLit)}
-                    isActive={isLit} iconName="flashlight-sharp" />
-                <QRFooterButton onPress={getImage} iconName="image" />
-            </View>
-
-
-          </View>
-        </CameraView>
-      </View>
+            <CameraView
+                style={styles.camera}
+                facing={'back'}
+                barcodeScannerSettings={{
+                    barcodeTypes: ['qr'],
+                }}
+                onBarcodeScanned={scanned ? console.log('not scanned') : handleBarCode}
+            >
+                <View style={styles.buttonContainer}>
+                    <QRIndicator />
+                    <View style={[styles.footer, { bottom: 30 + bottom }]}>
+                        <QRFooterButton onPress={() => setIsLit((isLit) => !isLit)} isActive={isLit} iconName="flashlight-sharp" />
+                        <QRFooterButton onPress={getImage} iconName="image" />
+                    </View>
+                </View>
+            </CameraView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-
         flex: 1,
         justifyContent: 'center',
     },
@@ -67,10 +74,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         backgroundColor: 'transparent',
-        justifyContent:'center',
-        alignItems:'center',
-
-
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     button: {
         flex: 1,

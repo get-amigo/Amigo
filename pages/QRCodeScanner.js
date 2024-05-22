@@ -7,6 +7,7 @@ import URL from 'url-parse';
 import PAGES from '../constants/pages';
 import COLOR from '../constants/Colors';
 import openSettings from '../helper/openSettings';
+
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
     const [isLit, setIsLit] = useState(false);

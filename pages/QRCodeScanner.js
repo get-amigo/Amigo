@@ -107,9 +107,11 @@ const QRCodeScanner = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: COLOR.APP_BACKGROUND,
+
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        // backgroundColor: COLOR.APP_BACKGROUND,
+        // backgroundColor: 'red',
     },
 });
 

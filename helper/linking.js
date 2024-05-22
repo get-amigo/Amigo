@@ -12,10 +12,13 @@ const linking = {
     },
     subscribe(listener) {
         const onReceiveURL = ({ url }) => listener(url);
-        Linking.addEventListener('url', onReceiveURL);
-        return () => {
-            Linking.removeEventListener('url', onReceiveURL);
-        };
+
+    const subscription = Linking.addEventListener('url', onReceiveURL);
+
+    return () => {
+
+        subscription.remove();
+    };
     },
     config: {
         screens: {

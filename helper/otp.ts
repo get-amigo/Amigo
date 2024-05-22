@@ -38,8 +38,8 @@ export const verifyOtp = async ({ otp, confirm }: { otp: string, confirm: Fireba
 
     return null;
   } catch (error) {
-    Sentry.captureException(error);
-    console.log('Invalid code.', error);
+    Sentry.captureException(JSON.stringify(error));
+    console.log(JSON.stringify(error));
 
     return null;
   }

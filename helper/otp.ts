@@ -31,9 +31,8 @@ export const verifyOtp = async ({ otp, confirm }: { otp: string, confirm: Fireba
 
     return null;
   } catch (error) {
-    console.log('Invalid code.');
-
-    return null;
+    throw new Error('Invalid OTP');
+    // return null;
   }
 }
 

@@ -52,6 +52,7 @@
         "expo-updates": "~0.25.13",
         "expo-web-browser": "~13.0.3",
         "i": "^0.3.7",
+        "libphonenumber-js": "^1.11.1",
         "npm": "^10.2.5",
         "prettier": "^3.0.3",
         "react": "18.2.0",

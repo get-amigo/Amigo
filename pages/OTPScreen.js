@@ -7,6 +7,7 @@ import OTPImage from '../assets/OTPImage.png';
 import Loader from '../components/Loader';
 import OTPFilled from '../assets/OTPFilled.png';
 import { useOtp } from '../context/OtpContext';
+import * as Haptics from 'expo-haptics';
 
 const OTPScreen = ({
     navigation,
@@ -31,8 +32,21 @@ const OTPScreen = ({
             setError(true);
             return;
         }
-        verifyOtp(otp);
-    }
+        setLoading(true);
+        verifyOtp(otp)
+        .then(() => {
+        })
+            .catch((error) => {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            navigation.navigate(PAGES.OTP);
+            })
+            .finally(() => {
+                setError(true)
+                setLoading(false);
+            });
+    };
+
+
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;

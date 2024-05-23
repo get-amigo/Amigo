@@ -126,7 +126,6 @@ const LoginScreen = ({ navigation }) => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalView}>
                     <TouchableOpacity style={{position:"absolute",left:calcWidth(2),top:calcHeight(1),}} onPress={toggleModal}><Image source={ArrowDown} style={styles.backImage} resizeMode="contain"/></TouchableOpacity>
-                    {/* <TouchableOpacity style={{position:"absolute",left:calcWidth(2),top:calcHeight(1),}} onPress={toggleModal}><Image source={BackImage} style={styles.backImage} resizeMode="contain"/></TouchableOpacity> */}
                     <TextInput
     style={styles.countrySearchInput}
     placeholder="Search country..."

@@ -2,6 +2,7 @@ import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import generateRandomColor from '../helper/generateRandomColor';
 import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import getDefaultCountryCode from '../helper/getDefaultCountryCode';
 const ContactsContext = createContext();
 
 const filterUniqueContacts = (contactsData) => {
@@ -13,8 +14,10 @@ const filterUniqueContacts = (contactsData) => {
 };
 
 const mapToSimplifiedContacts = (uniqueContacts) => {
+    const defaultCountryCode = getDefaultCountryCode(); 
+
     return uniqueContacts.map((contact) => {
-        const phoneNumber = parsePhoneNumberFromString(contact.phoneNumbers[0].number, 'IN');
+        const phoneNumber = parsePhoneNumberFromString(contact.phoneNumbers[0].number, defaultCountryCode);
         
         return {
             id: contact.id,

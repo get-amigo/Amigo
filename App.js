@@ -4,11 +4,17 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './navigator/RootNavigator';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
+import { calcHeight } from './helper/res';
+import COLOR from './constants/Colors';
+
 function App() {
     return (
         <SafeAreaProvider>
-            <StatusBar style="auto" />
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled
+            <StatusBar Style="auto" backgroundColor={COLOR.APP_BACKGROUND}/>
+            <KeyboardAvoidingView 
+                style={{ flex: 1,paddingTop: Platform.OS === 'android' ? calcHeight(2.6) : 0}} 
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined} 
+                enabled
             keyboardVerticalOffset={-900}>
                 <RootNavigator />
             </KeyboardAvoidingView>

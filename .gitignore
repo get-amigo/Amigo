@@ -40,3 +40,4 @@ android/
 
 google-services.json
 GoogleService-Info.plist
+.vscode

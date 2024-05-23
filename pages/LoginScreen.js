@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, TouchableOpacity, FlatList } from 'react-native';
+import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, TouchableOpacity, FlatList, Modal, Button as RNButton, KeyboardAvoidingView } from 'react-native';
 import LoginImage from '../assets/Login.png';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
@@ -7,13 +7,23 @@ import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useOtp } from '../context/OtpContext';
 import COUNTRY from '../constants/Countries';
+import BackImage from '../assets/back.png'
+import ArrowDown from '../assets/icons/Arrow-down.png'
+import SearchIcon from '../assets/icons/Search.png'
 
 const LoginScreen = ({ navigation }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
     const [countryCode, setCountryCode] = useState('+91');
     const [isPhoneFocused, setIsPhoneFocused] = useState(false);
     const [error, setError] = useState(false);
-    const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    
+    const indiaIndex = COUNTRY.findIndex(country => country.name === 'India');
+    const [selectedCountry, setSelectedCountry] = useState(COUNTRY[indiaIndex]);
+
+    // const [selectedCountry, setSelectedCountry] = useState(COUNTRY[0]); 
+
 
     const { loginWithPhoneNumber } = useOtp();
 
@@ -22,21 +32,26 @@ const LoginScreen = ({ navigation }) => {
         borderBottomColor: isFocused ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)',
     });
 
-    const toggleDropdown = () => {
-        setIsDropdownVisible(!isDropdownVisible);
+    const toggleModal = () => {
+        setIsModalVisible(!isModalVisible);
     };
 
     const handleSelectCountry = (country) => {
         setCountryCode(country.code);
-        setIsDropdownVisible(false);
+        setSelectedCountry(country);
+        setIsModalVisible(false);
     };
+
+    const filteredCountryList = COUNTRY.filter(
+        (country) => country.name.toLowerCase().startsWith(searchQuery.toLowerCase())
+    );
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={styles.dropdownItem}
             onPress={() => handleSelectCountry(item)}
         >
-            <Text style={styles.countryCode}>{item.code}</Text>
+            <Image source={{ uri: item.flag }} style={styles.flagImage} />
             <Text style={styles.countryName}>{item.name}</Text>
         </TouchableOpacity>
     );
@@ -64,45 +79,73 @@ const LoginScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.inputContainer}>
                     <View style={styles.phoneNumberRow}>
-                        <TouchableOpacity onPress={toggleDropdown}  style={{
-        borderBottomWidth: 1,
-        borderBottomColor: isDropdownVisible ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)',
-        marginTop: calcHeight(0.3),
-    }}>
+                        <TouchableOpacity onPress={toggleModal} style={{
+                            borderBottomWidth: 1,
+                            borderBottomColor: isModalVisible ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)',
+                            marginTop: calcHeight(0.3),
+                            flexDirection:"row",
+                        }}>
+            <Image source={{ uri: selectedCountry.flag }} style={styles.flagImage} />
+
                             <Text style={styles.countryCodeText}>{countryCode}</Text>
                         </TouchableOpacity>
                         <TextInput
-                        style={{
-                            ...getTextInputStyle(isPhoneFocused),
-                            ...(error ? { borderBottomColor: COLOR.ERROR_BORDER } : {}),
-                        }}
-                        keyboardType="phone-pad"
-                        value={phoneNumber}
-                        onChangeText={(value) => {
-                            setPhoneNumber(value);
-                            setError(false);
-                        }}
-                        onFocus={() => setIsPhoneFocused(true)}
-                        onBlur={() => setIsPhoneFocused(false)}
-                        placeholderTextColor="#D3D3D3"
-                    />
+                            style={{
+                                ...getTextInputStyle(isPhoneFocused),
+                                ...(error ? { borderBottomColor: COLOR.ERROR_BORDER } : {}),
+                            }}
+                            keyboardType="phone-pad"
+                            value={phoneNumber}
+                            onChangeText={(value) => {
+                                setPhoneNumber(value);
+                                setError(false);
+                            }}
+                            onFocus={() => setIsPhoneFocused(true)}
+                            onBlur={() => setIsPhoneFocused(false)}
+                            placeholderTextColor="#D3D3D3"
+                        />
                     </View>
-                    
+                <Button title="Send OTP" onPress={handleSendOTP} />
                 </View>
-                {isDropdownVisible && (
-                    <View style={styles.dropdownContainer}>
+            </View>
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => {
+                    setIsModalVisible(false);
+                }}
+            >
+                <KeyboardAvoidingView style={{height:calcHeight(100)}}>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalView}>
+                    <TouchableOpacity style={{position:"absolute",left:calcWidth(2),top:calcHeight(1),}} onPress={toggleModal}><Image source={ArrowDown} style={styles.backImage} resizeMode="contain"/></TouchableOpacity>
+                    {/* <TouchableOpacity style={{position:"absolute",left:calcWidth(2),top:calcHeight(1),}} onPress={toggleModal}><Image source={BackImage} style={styles.backImage} resizeMode="contain"/></TouchableOpacity> */}
+                    <TextInput
+    style={styles.countrySearchInput}
+    placeholder="Search country..."
+    placeholderTextColor="#D3D3D3"
+    onChangeText={(text) => setSearchQuery(text)}
+    value={searchQuery}
+/>
+<Image
+    source={SearchIcon}
+    style={styles.searchIcon}
+    resizeMode="contain"
+/>
                         <FlatList
-                            data={COUNTRY}
+                            data={filteredCountryList}
                             keyExtractor={(item) => `${item.code}-${item.name}`}
                             renderItem={renderItem}
                         />
                     </View>
-                )}
-                <Button title="Send OTP" onPress={handleSendOTP} />
-            </View>
+                </View>
+                </KeyboardAvoidingView>
+            </Modal>
         </SafeAreaView>
     );
 };
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -153,39 +196,80 @@ const styles = StyleSheet.create({
     countryCodeText: {
         color: COLOR.TEXT,
         fontSize: 18,
-
+        fontWeight:"bold"
     },
     phoneNumberRow: {
         flexDirection: 'row',
     },
-    dropdownContainer: {
-        // position: 'absolute',
-        top: calcHeight(2), 
-        left: calcWidth(6),
-        width: calcWidth(80),
-        maxHeight:calcHeight(40),
-        backgroundColor: COLOR.BORDER_COLOR,
-        borderRadius: 5,
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalView: {
+        width:calcWidth(100),
+        height:calcHeight(100),
+        backgroundColor: COLOR.APP_BACKGROUND,
+        paddingHorizontal:calcWidth(4), 
+        paddingTop:calcHeight(6),
+        paddingBottom:calcHeight(4),
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 2,
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
     },
     dropdownItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: calcHeight(1),
-        paddingHorizontal: calcWidth(2),
+        paddingVertical: calcHeight(1.2),
+        // paddingHorizontal: calcWidth(2),
+        borderBottomColor:COLOR.BORDER_COLOR,
+        borderBottomWidth:0.5,
+    },
+    flagImage: {
+        width: calcHeight(3),
+        height: calcHeight(2.4),
+        marginRight: calcWidth(2.4),
+        borderRadius:2,
     },
     countryCode: {
         width: calcWidth(12),
         color: COLOR.TEXT,
         fontSize: 16,
+        fontWeight:"700",
     },
     countryName: {
         color: COLOR.TEXT,
-        fontSize: 16,
+        fontSize: 18,
+        fontWeight:"bold",
+    },
+    backImage:{
+            width: calcWidth(2),
+            height:calcHeight(2),
+            aspectRatio: 1,
+            marginLeft: calcWidth(2),
+            marginTop:calcHeight(1),
+            
+    },
+    countrySearchInput:{
+        paddingBottom:calcWidth(2),
+        paddingLeft:calcWidth(6),
+        marginBottom:calcWidth(4),
+        color: COLOR.TEXT,
+        fontSize: 18,
+        borderBottomWidth: 1,
+        borderBottomColor:COLOR.PRIMARY,
+        fontWeight: 'bold',
+    },
+    searchIcon:{
+        position:"absolute",
+        top:calcHeight(5.6),
+        left:calcWidth(4),
+        width:calcWidth(4),
+        height:calcHeight(4),
+
     },
 });
 

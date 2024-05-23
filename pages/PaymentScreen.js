@@ -109,6 +109,7 @@ function GroupScreen({
                     </View>
                 </View>
                  <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
+                            
                 <View style={styles.rowCentered}>
                     <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
                         <TextInput
@@ -119,6 +120,15 @@ function GroupScreen({
                             placeholderTextColor="#ccc"
                             ref={descriptionRef}
                             textAlign="center"
+                            multiline={true} 
+                            numberOfLines={2} 
+                            // Adjusting  the height of the text box based on the content
+                            onContentSizeChange={(event) => {
+                                const { height } = event.nativeEvent.contentSize;
+                                descriptionRef.current.setNativeProps({
+                                    style: { height },
+                                });
+                            }}
                         />
                     </Pressable>
                 </View> 

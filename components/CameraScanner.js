@@ -22,13 +22,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
     }
     const [scanned, setScanned] = useState(false);
 
-    useEffect(() => {
-        const fun = async () => {
-            const checkcamera = await BarCodeScanner.getPermissionsAsync();
-            console.log(checkcamera);
-        };
-        fun();
-    }, []);
+
 
     const handleBarCode = ({ data }) => {
         setScanned(true);

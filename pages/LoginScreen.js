@@ -10,6 +10,7 @@ import COUNTRY from '../constants/Countries';
 import BackImage from '../assets/back.png'
 import ArrowDown from '../assets/icons/Arrow-down.png'
 import SearchIcon from '../assets/icons/Search.png'
+import ArrowDown2 from '../assets/icons/Arrow-bottom.png'
 
 const LoginScreen = ({ navigation }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -84,11 +85,15 @@ const LoginScreen = ({ navigation }) => {
                             borderBottomColor: isModalVisible ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)',
                             marginTop: calcHeight(0.3),
                             flexDirection:"row",
+                            
+                            
                         }}>
             <Image source={{ uri: selectedCountry.flag }} style={styles.flagImage} />
+            <Image source={ArrowDown2} style={{width:calcWidth(3),height:calcHeight(2.4),marginLeft:calcWidth(2)}} resizeMode='contain' />
 
-                            <Text style={styles.countryCodeText}>{countryCode}</Text>
                         </TouchableOpacity>
+                        <View style={{borderBottomColor:isPhoneFocused ? 'rgba(255, 255, 255, 1)':'rgba(255, 255, 255, 0.5)' ,borderBottomWidth:1,marginLeft:calcWidth(4)}}>
+                        <Text style={styles.countryCodeText}>{countryCode}</Text></View>
                         <TextInput
                             style={{
                                 ...getTextInputStyle(isPhoneFocused),
@@ -104,6 +109,7 @@ const LoginScreen = ({ navigation }) => {
                             onBlur={() => setIsPhoneFocused(false)}
                             placeholderTextColor="#D3D3D3"
                         />
+                        
                     </View>
                 <Button title="Send OTP" onPress={handleSendOTP} />
                 </View>
@@ -190,12 +196,14 @@ const styles = StyleSheet.create({
         fontSize: 18,
         borderBottomWidth: 1,
         paddingBottom: calcHeight(2),
-        marginLeft: calcWidth(1),
+        paddingLeft:calcWidth(2),
+        // marginLeft: calcWidth(1),
         fontWeight: 'bold',
     },
     countryCodeText: {
         color: COLOR.TEXT,
         fontSize: 18,
+        top:calcHeight(0.3),
         fontWeight:"bold"
     },
     phoneNumberRow: {
@@ -231,8 +239,9 @@ const styles = StyleSheet.create({
     flagImage: {
         width: calcHeight(3),
         height: calcHeight(2.4),
-        marginRight: calcWidth(2.4),
+        marginRight: calcWidth(3),
         borderRadius:2,
+        
     },
     countryCode: {
         width: calcWidth(12),

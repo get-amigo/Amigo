@@ -7,6 +7,8 @@ import FlashMessage from 'react-native-flash-message';
 import { calcHeight } from './helper/res';
 import COLOR from './constants/Colors';
 
+
+
 function App() {
     return (
         <SafeAreaProvider>

@@ -24,12 +24,8 @@ export const verifyOtp = async ({ otp, confirm }: { otp: string, confirm: Fireba
     const { default: auth } = await import('@react-native-firebase/auth');
     const firebaseUser = result?.user || auth().currentUser;
 
-    Sentry.captureException(new Error(`Firebase User: ${JSON.stringify(firebaseUser)}`));
-
     if (firebaseUser) {
       const firebaseIdToken = await firebaseUser.getIdToken();
-
-      Sentry.captureException(new Error(`Firebase ID Token: ${firebaseIdToken}`));
 
       const { data: { user, token } } = await apiHelper.post(`/auth/verifyOTP`, { payload: firebaseIdToken });
 
@@ -38,7 +34,6 @@ export const verifyOtp = async ({ otp, confirm }: { otp: string, confirm: Fireba
 
     return null;
   } catch (error) {
-    Sentry.captureException(JSON.stringify(error));
     console.log(JSON.stringify(error));
 
     return null;
@@ -56,3 +51,28 @@ export const verifyOtpDev = async ({ phoneNumber }: { phoneNumber: string }) => 
     return null;
   }
 };
+
+export const onAuthStateChanged = async (callback: (data: { user: any, token: string }) => void) => {
+  try {
+    // @ts-ignore
+    const { default: auth } = await import('@react-native-firebase/auth');
+
+    const subscriber = auth().onAuthStateChanged(async (firebaseUser) => {
+      if (firebaseUser) {
+        const firebaseIdToken = await firebaseUser.getIdToken();
+
+        const { data: { user, token } } = await apiHelper.post(`/auth/verifyOTP`, { payload: firebaseIdToken });
+
+        callback({ user, token });
+      }
+
+      callback({ user: null, token: '' });
+    });
+
+    return subscriber;
+  } catch (error) {
+    console.log(JSON.stringify(error));
+
+    return () => {};
+  }
+}

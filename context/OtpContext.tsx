@@ -1,9 +1,9 @@
+import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import React, { createContext, useState, useContext, ReactNode } from 'react';
 import PAGES from '../constants/pages';
 import { useAuth } from '../stores/auth';
-import { sendOtp, verifyOtp, sendOtpDev, verifyOtpDev } from '../helper/otp';
+import { sendOtp, verifyOtp, sendOtpDev, verifyOtpDev, onAuthStateChanged } from '../helper/otp';
 import { ENV } from '@env';
 
 type OtpContextType = {
@@ -20,6 +20,21 @@ const OtpProviderProd = ({ children }: { children: ReactNode }) => {
   const navigation = useNavigation();
   const { login } = useAuth();
   const [confirm, setConfirm] = useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
+
+  useEffect(() => {
+    let unsubscribe: () => void;
+
+    (async () => {
+      unsubscribe = await onAuthStateChanged(({ user, token }) => {
+        if (user && token) {
+          login({ user, token });
+          navigation.navigate(PAGES.BALANCE);
+        }
+      });
+    })();
+
+    return () => unsubscribe();
+  }, []);
 
   const loginWithPhoneNumber = async (phoneNumber: string) => {
     const res = await sendOtp(phoneNumber);

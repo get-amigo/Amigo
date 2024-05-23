@@ -6,7 +6,7 @@ import { calcHeight, calcWidth } from '../helper/res';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import getLocalImage from '../helper/getLocalImage';
 import getQrDataFromImage from '../helper/getQrDataFromImage';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { CameraView} from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
@@ -42,7 +42,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
                 barcodeScannerSettings={{
                     barcodeTypes: ['qr'],
                 }}
-                onBarcodeScanned={scanned ? console.log('not scanned') : handleBarCode}
+                onBarcodeScanned={scanned ? null : handleBarCode}
             >
                 <View style={styles.buttonContainer}>
                     <QRIndicator />

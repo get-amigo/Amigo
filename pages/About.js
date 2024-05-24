@@ -25,10 +25,10 @@ const About = () => {
                 <Text style={styles.text}>{about}</Text>
                 <View style={styles.linksContainer}>
                     {renderLink('info', 'Terms and conditions', () =>
-                        WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/terms-and-conditions'),
+                        WebBrowser.openBrowserAsync('https://www.getamigo.today/terms'),
                     )}
                     {renderLink('lock', 'Privacy Policy', () =>
-                        WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/'),
+                        WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy'),
                     )}
                 </View>
             </ScrollView>

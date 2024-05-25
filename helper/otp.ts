@@ -52,27 +52,8 @@ export const verifyOtpDev = async ({ phoneNumber }: { phoneNumber: string }) => 
   }
 };
 
-export const onAuthStateChanged = async (callback: (data: { user: any, token: string }) => void) => {
-  try {
-    // @ts-ignore
-    const { default: auth } = await import('@react-native-firebase/auth');
-
-    const subscriber = auth().onAuthStateChanged(async (firebaseUser) => {
-      if (firebaseUser) {
-        const firebaseIdToken = await firebaseUser.getIdToken();
-
-        const { data: { user, token } } = await apiHelper.post(`/auth/verifyOTP`, { payload: firebaseIdToken });
-
-        callback({ user, token });
-      }
-
-      callback({ user: null, token: '' });
-    });
-
-    return subscriber;
-  } catch (error) {
-    console.log(JSON.stringify(error));
-
-    return () => {};
-  }
+export const onAuthStateChanged = async (callback: (user: FirebaseAuthTypes.User | null) => void) => {
+  // @ts-ignore
+  const { default: auth } = await import('@react-native-firebase/auth');
+  return auth().onAuthStateChanged(callback);
 }

@@ -108,6 +108,6 @@ const otpProviders: Record<string, React.FC<{ children: ReactNode }>> = {
   production: OtpProviderProd,
 };
 
-export const OtpProvider = otpProviders[ENV] || OtpProviderProd;
+export const OtpProvider = otpProviders[ENV] || OtpProviderDev;
 
 export const useOtp = () => useContext(OtpContext);

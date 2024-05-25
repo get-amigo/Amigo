@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import AppNavigator from './AppNavigator';
 import AuthNavigator from './AuthNavigator';
-import Loader from '../components/Loader';
 import { useAuth } from '../stores/auth';
 import linking from '../helper/linking';
 import { TransactionProvider } from '../context/TransactionContext';

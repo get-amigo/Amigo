@@ -7,6 +7,7 @@ import OTPImage from '../assets/OTPImage.png';
 import Loader from '../components/Loader';
 import OTPFilled from '../assets/OTPFilled.png';
 import { useOtp } from '../context/OtpContext';
+import * as Haptics from 'expo-haptics';
 
 const OTPScreen = ({
     navigation,
@@ -37,6 +38,7 @@ const OTPScreen = ({
                 setLoading(false);
             })
             .catch(() => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 setLoading(false);
                 setError(true);
             });

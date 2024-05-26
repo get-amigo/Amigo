@@ -21,6 +21,7 @@
         "@react-navigation/material-top-tabs": "^6.6.13",
         "@react-navigation/native": "^6.1.17",
         "@react-navigation/native-stack": "^6.9.26",
+        "@sentry/react-native": "^5.22.2",
         "@tanstack/react-query": "^5.37.1",
         "axios": "^1.7.2",
         "eslint": "^9.3.0",

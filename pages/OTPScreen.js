@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native';
 import COLOR from '../constants/Colors';
 import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -20,7 +20,7 @@ const OTPScreen = ({
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const { verifyOtp, loginWithPhoneNumber } = useOtp();
+    const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
 
     const handleOTPChange = (text) => {
         setError(false);
@@ -34,19 +34,15 @@ const OTPScreen = ({
         }
         setLoading(true);
         verifyOtp(otp)
-        .then(() => {
-        })
-            .catch((error) => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-            navigation.navigate(PAGES.OTP);
-            })
-            .finally(() => {
-                setError(true)
+            .then(() => {
                 setLoading(false);
+            })
+            .catch(() => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                setLoading(false);
+                setError(true);
             });
-    };
-
-
+    }
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;
@@ -110,7 +106,11 @@ const OTPScreen = ({
                         </TouchableOpacity>
                     </View>
 
-                    <Button title="Verify" onPress={handleVerifyOTP} />
+                    {isAuthStateLoading ? (
+                        <ActivityIndicator size="medium" color={COLOR.PRIMARY} style={styles.indicator} />
+                    ) : (
+                        <Button title="Verify" onPress={handleVerifyOTP} />
+                    )}
                 </View>
             </View>
         </SafeAreaView>
@@ -165,6 +165,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center', // Center content vertically
         alignItems: 'center', // Center content horizontally
         height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
+    },
+    indicator: {
+        marginTop: calcHeight(4),
     },
     highlightedBox: {
         width: calcWidth(11),

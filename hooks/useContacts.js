@@ -1,7 +1,7 @@
 import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import generateRandomColor from '../helper/generateRandomColor';
-import { parsePhoneNumberFromString } from 'libphonenumber-js'
+import { parsePhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js'
 import getDefaultCountryCode from '../helper/getDefaultCountryCode';
 const ContactsContext = createContext();
 
@@ -17,12 +17,12 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
     const defaultCountryCode = getDefaultCountryCode(); 
 
     return uniqueContacts.map((contact) => {
-        const phoneNumber = parsePhoneNumberFromString(contact.phoneNumbers[0].number, defaultCountryCode);
-        
+        const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
         return {
             id: contact.id,
             name: contact.name || '',
-            phoneNumber: phoneNumber ? phoneNumber.formatInternational() : '',
+            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : '',
+            countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : " ",
             imageURI: contact.imageAvailable ? contact.image.uri : '',
             color: generateRandomColor(),
         };
@@ -30,7 +30,7 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
 };
 
 const handleLoadContactsError = (error) => {
-    console.error('Error loading contacts:', error);
+    // console.error('Error loading contacts:', error);
 };
 
 const fetchContactsData = async () => {
@@ -42,7 +42,7 @@ const fetchContactsData = async () => {
         if (!data) {
             return [];
         }
-
+        // console.log(data)
         const contactsWithMultipleNumbers = [];
 
         // Iterate through each contact

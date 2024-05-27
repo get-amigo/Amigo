@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuth } from '../stores/auth';
 import PAGES from '../constants/pages';
-const Stack = createNativeStackNavigator();
 import SignUpScreen from '../pages/SignUpScreen';
 import COLOR from '../constants/Colors';
 import TabBarIcon from '../components/TabBarIcon';
@@ -30,8 +29,12 @@ import LoginScreen from '../pages/LoginScreen';
 import { ContactsProvider } from '../hooks/useContacts';
 import NetInfo from '@react-native-community/netinfo';
 import syncAllChat from '../utility/syncAllChat';
+
+const Stack = createNativeStackNavigator();
+
 const AppNavigator = () => {
     const { user } = useAuth();
+
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener((state) => {
             if (state.isConnected) {
@@ -45,7 +48,12 @@ const AppNavigator = () => {
     }, []);
     return (
         <ContactsProvider>
-            <Stack.Navigator screenOptions={{ headerBackTitleVisible: false }}>
+            <Stack.Navigator
+                screenOptions={{
+                    headerBackTitleVisible: false,
+                    animation: 'slide_from_bottom', 
+                }}
+            >
                 {user.name ? (
                     <Stack.Group>
                         <Stack.Screen

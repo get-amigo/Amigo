@@ -1,11 +1,15 @@
 import React from 'react';
 import { Text, TouchableOpacity, StyleSheet } from 'react-native';
-
 import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
-const Button = ({ onPress, title, styleOverwrite = {} }) => {
+
+const Button = ({ onPress, title, styleOverwrite = {}, disabled }) => {
     return (
-        <TouchableOpacity style={{ ...styles.button, ...styleOverwrite }} onPress={onPress}>
+        <TouchableOpacity
+            style={{ ...styles.button, ...styleOverwrite, opacity: disabled ? 0.5 : 1 }}
+            onPress={onPress}
+            disabled={disabled}
+        >
             <Text style={styles.buttonText}>{title}</Text>
         </TouchableOpacity>
     );

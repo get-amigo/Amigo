@@ -24,7 +24,10 @@ function GroupScreen({
     navigation,
 }) {
     const [amount, setAmount] = useState(payment.amount + '');
+
     const [description, setDescription] = useState('');
+    const [remainingChars, setRemainingChars] = useState(100);
+
     const descriptionRef = useRef();
     const [isLoading, seIsLoading] = useState(false);
 
@@ -109,18 +112,35 @@ function GroupScreen({
                     </View>
                 </View>
                  <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
+                            
                 <View style={styles.rowCentered}>
                     <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
                         <TextInput
                             style={styles.description}
-                            onChangeText={(text) => setDescription(text)}
+                            onChangeText={(text) => {
+                                setDescription(text);
+                                setRemainingChars(100 - text.length);
+                            }}
+
                             value={description}
                             placeholder="Description"
                             placeholderTextColor="#ccc"
                             ref={descriptionRef}
                             textAlign="center"
+                            multiline={true} 
+                            numberOfLines={4} 
+                            // Adjusting  the height of the text box based on the content
+                            onContentSizeChange={(event) => {
+                                const { height } = event.nativeEvent.contentSize;
+                                descriptionRef.current.setNativeProps({
+                                    style: { height },
+                                });
+                            }}
+                            
                         />
+                      
                     </Pressable>
+                    <Text style={{color:'white'}}>{remainingChars} left</Text>
                 </View> 
                 <View
                     style={{
@@ -152,12 +172,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rowCentered: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignContent: 'center',
+
+        flexDirection: 'column',
+        alignItems: 'center',
+
+
     },
     description: {
         flex: 1,
+
         color: 'white',
     },
     descriptionContainer: {

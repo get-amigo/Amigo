@@ -19,6 +19,22 @@ const OTPScreen = ({
     const inputRef = useRef();
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [timer, setTimer] = useState(null);
+    const [seconds, setSeconds] = useState(30);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setSeconds((seconds) => (seconds > 0 ? seconds - 1 : 0));
+        }, 1000);
+
+        const timeout = setTimeout(() => {
+            setTimer(true);
+        }, 30000);
+
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        };
+    }, []);
 
     const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
 
@@ -42,7 +58,7 @@ const OTPScreen = ({
                 setLoading(false);
                 setError(true);
             });
-    }
+    };
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;
@@ -92,18 +108,21 @@ const OTPScreen = ({
                     />
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.resendText}>Didn't receive the code? </Text>
-                        <TouchableOpacity
-                            onPress={() => loginWithPhoneNumber(phoneNumber)}
-                        >
-                            <Text
-                                style={{
-                                    fontWeight: 'bold',
-                                    ...styles.resendText,
-                                }}
-                            >
-                                Resend
-                            </Text>
-                        </TouchableOpacity>
+
+                        {timer ? (
+                            <TouchableOpacity onPress={() => loginWithPhoneNumber(phoneNumber)}>
+                                <Text
+                                    style={{
+                                        fontWeight: 'bold',
+                                        ...styles.resendText,
+                                    }}
+                                >
+                                    Resend
+                                </Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <Text style={styles.resendText}>Resend in {seconds} </Text>
+                        )}
                     </View>
 
                     {isAuthStateLoading ? (

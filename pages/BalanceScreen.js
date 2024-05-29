@@ -171,7 +171,7 @@ function BalanceScreen({ navigation }) {
             {balances && balances.length == 0 ? (
                 <EmptyScreen
                     onPress={() => {
-                        navigation.navigate(PAGES.ADD_TRANSACTION);
+                        // navigation.navigate(PAGES.ADD_TRANSACTION);
                     }}
                     image={NoBalance}
                     title="No Transactions Yet"

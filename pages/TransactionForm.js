@@ -106,6 +106,7 @@ function TransactionFormScreen({ navigation }) {
                     amount: user.amount,
                     user: user.user._id || user.user.id,
                 })),
+                description: transactionData.description || ' ',
             };
             const newActivity = {
                 relatedId: {

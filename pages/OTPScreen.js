@@ -18,25 +18,31 @@ const OTPScreen = ({
     const [otp, setOtp] = useState('');
     const inputRef = useRef();
     const [error, setError] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [timer, setTimer] = useState(null);
+
     const [seconds, setSeconds] = useState(30);
+
     useEffect(() => {
+        // Function to handle the countdown logic
         const interval = setInterval(() => {
-            setSeconds((seconds) => (seconds > 0 ? seconds - 1 : 0));
+            if (seconds > 0) {
+                setSeconds(seconds - 1);
+            }
+
+            if (seconds === 0) {
+                clearInterval(interval);
+            }
         }, 1000);
-
-        const timeout = setTimeout(() => {
-            setTimer(true);
-        }, 30000);
-
         return () => {
             clearInterval(interval);
-            clearTimeout(timeout);
         };
-    }, []);
+    }, [seconds]);
 
-    const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
+    // Function to resend OTP
+    const resendOTP = () => {
+        setSeconds(30);
+    };
+
+    const { verifyOtp, loginWithPhoneNumber } = useOtp();
 
     const handleOTPChange = (text) => {
         setError(false);
@@ -49,15 +55,6 @@ const OTPScreen = ({
             return;
         }
         setLoading(true);
-        verifyOtp(otp)
-            .then(() => {
-                setLoading(false);
-            })
-            .catch(() => {
-                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-                setLoading(false);
-                setError(true);
-            });
     };
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
@@ -78,7 +75,7 @@ const OTPScreen = ({
         );
     });
 
-    return loading ? (
+    return false ? (
         <Loader />
     ) : (
         <SafeAreaView style={styles.container}>
@@ -108,28 +105,17 @@ const OTPScreen = ({
                     />
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.resendText}>Didn't receive the code? </Text>
-
-                        {timer ? (
-                            <TouchableOpacity onPress={() => loginWithPhoneNumber(phoneNumber)}>
-                                <Text
-                                    style={{
-                                        fontWeight: 'bold',
-                                        ...styles.resendText,
-                                    }}
-                                >
-                                    Resend
-                                </Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <Text style={styles.resendText}>Resend in {seconds} </Text>
-                        )}
+                        {seconds > 0 ? <ActivityIndicator style={styles.indicator} size="large" color="green" /> : null}
+                        <Pressable
+                            disabled={seconds > 0}
+                            style={{
+                                color: seconds >= 0 ? '#808080' : 'transparent',
+                            }}
+                            onPress={resendOTP}
+                        >
+                            <Text style={styles.resendText}>Resend</Text>
+                        </Pressable>
                     </View>
-
-                    {isAuthStateLoading ? (
-                        <ActivityIndicator size="medium" color={COLOR.PRIMARY} style={styles.indicator} />
-                    ) : (
-                        <Button title="Verify" onPress={handleVerifyOTP} />
-                    )}
                 </View>
             </View>
         </SafeAreaView>
@@ -186,7 +172,8 @@ const styles = StyleSheet.create({
         height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
     },
     indicator: {
-        marginTop: calcHeight(4),
+        marginTop: calcHeight(-1),
+        paddingHorizontal: calcWidth(2),
     },
     highlightedBox: {
         width: calcWidth(11),
@@ -195,7 +182,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(15),
         color: COLOR.TEXT,
-        justifyContent: 'center', // Center content vertically
+        justifyContent: 'center',
         alignItems: 'center', // Center content horizontally
         height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
     },

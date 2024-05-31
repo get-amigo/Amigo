@@ -226,12 +226,14 @@ const styles = StyleSheet.create({
     userName: {
         fontWeight: 'bold',
         color: 'white',
-        fontSize: getFontSizeByWindowWidth(18),
+        fontSize: getFontSizeByWindowWidth(16),
+        paddingHorizontal: calcWidth(2),
     },
     userPhone: {
         color: 'white',
         fontSize: getFontSizeByWindowWidth(10),
         paddingTop: calcHeight(1),
+        paddingHorizontal: calcWidth(2),
     },
     inviteFriends: {
         alignItems: 'center',

@@ -116,11 +116,13 @@ const OTPScreen = ({
                         <Pressable
                             disabled={seconds > 0}
                             style={{
-                                color: seconds >= 0 ? '#808080' : 'transparent',
+                                color: seconds >= 0 ? '#808080' : 'red',
                             }}
                             onPress={resendOTP}
                         >
-                            <Text style={styles.resendText}>Resend</Text>
+                            <Text style={{ color: seconds > 0 ? '#A9A9A9' : '#FFFFFF', fontSize: getFontSizeByWindowWidth(12) }}>
+                                Resend
+                            </Text>
                         </Pressable>
                     </View>
                 </View>

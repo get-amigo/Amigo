@@ -112,7 +112,7 @@ const OTPScreen = ({
                     />
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.resendText}>Didn't receive the code? </Text>
-                        {seconds > 0 ? <ActivityIndicator style={styles.indicator} size="large" color="green" /> : null}
+
                         <Pressable
                             disabled={seconds > 0}
                             style={{
@@ -124,6 +124,13 @@ const OTPScreen = ({
                                 Resend
                             </Text>
                         </Pressable>
+                    </View>
+                    <View style={{}}>
+                        {seconds > 0 ? (
+                            <Text style={{ color: '#808080', fontSize: getFontSizeByWindowWidth(12), margin: 10 }}>
+                                Resend in {seconds}
+                            </Text>
+                        ) : null}
                     </View>
                 </View>
             </View>

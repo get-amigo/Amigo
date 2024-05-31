@@ -18,9 +18,9 @@ const OTPScreen = ({
     const [otp, setOtp] = useState('');
     const inputRef = useRef();
     const [error, setError] = useState(false);
-
+    const [loading, setLoading] = useState(false);
     const [seconds, setSeconds] = useState(30);
-
+    const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
     useEffect(() => {
         // Function to handle the countdown logic
         const interval = setInterval(() => {
@@ -37,12 +37,10 @@ const OTPScreen = ({
         };
     }, [seconds]);
 
-    // Function to resend OTP
     const resendOTP = () => {
         setSeconds(30);
+        loginWithPhoneNumber(phoneNumber);
     };
-
-    const { verifyOtp, loginWithPhoneNumber } = useOtp();
 
     const handleOTPChange = (text) => {
         setError(false);
@@ -55,6 +53,15 @@ const OTPScreen = ({
             return;
         }
         setLoading(true);
+        verifyOtp(otp)
+            .then(() => {
+                setLoading(false);
+            })
+            .catch(() => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                setLoading(false);
+                setError(true);
+            });
     };
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
@@ -75,7 +82,7 @@ const OTPScreen = ({
         );
     });
 
-    return false ? (
+    return loading ? (
         <Loader />
     ) : (
         <SafeAreaView style={styles.container}>

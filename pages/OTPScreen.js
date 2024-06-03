@@ -130,7 +130,9 @@ const OTPScreen = ({
                             <Text style={{ color: '#808080', fontSize: getFontSizeByWindowWidth(12), margin: 10 }}>
                                 Resend in {seconds}
                             </Text>
-                        ) : null}
+                        ) : (
+                            <Button title="Verify" onPress={handleVerifyOTP} />
+                        )}
                     </View>
                 </View>
             </View>

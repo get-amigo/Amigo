@@ -19,9 +19,15 @@ const ContactList = ({ eliminatedContacts }) => {
     }, []);
 
     function eliminateContacts() {
-        if (!eliminatedContacts) return contacts;
+        let filteredContacts = contacts;
 
-        return contacts.filter((contact) => !eliminatedContacts.map((member) => member.phoneNumber).includes(contact.phoneNumber));
+        if (eliminatedContacts) {
+            filteredContacts = contacts.filter(
+                (contact) => !eliminatedContacts.map((member) => member.phoneNumber).includes(contact.phoneNumber),
+            );
+        }
+
+        return filteredContacts.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     function askPermission() {

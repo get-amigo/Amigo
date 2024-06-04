@@ -10,48 +10,52 @@ const SignUpScreen = ({ navigation }) => {
     const [name, setName] = useState(''); // State for the name
     const [isNameFocused, setIsNameFocused] = useState(false); // State to handle the focus styling
     const { addName } = useAuth();
+
+    // Function to calculate remaining character count
+    const remainingCharacters = 25 - name.length;
+
     const getTextInputStyle = (isFocused) => ({
         ...styles.nameInput,
         borderBottomColor: isFocused ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.5)',
     });
 
-    console.log('name', name.length > 0, name)
-
     return (
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Image source={SignUpImage} style={styles.image} resizeMode="contain" />
-                    <View style={styles.textContainer}>
-                        <Text style={styles.headerText}>Your Name</Text>
-                        <Text style={styles.promptText}>What should we call you?</Text>
-                    </View>
-                </View>
-                <View style={styles.inputContainer}>
-                    <TextInput
-                        style={getTextInputStyle(isNameFocused)}
-                        placeholder="Your name"
-                        value={name}
-                        onChangeText={setName}
-                        onFocus={() => setIsNameFocused(true)}
-                        onBlur={() => setIsNameFocused(false)}
-                        placeholderTextColor="#D3D3D3"
-                    />
-                </View>
-                <View
-                    style={{
-                        alignItems: 'center',
-                    }}
-                >
-                    <Button
-                        disabled={name.length < 1}
-                        title="Save"
-                        onPress={() => {
-                            addName(name);
-                            navigation.navigate(PAGES.GROUP_LIST);
-                        }}
-                    />
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <Image source={SignUpImage} style={styles.image} resizeMode="contain" />
+                <View style={styles.textContainer}>
+                    <Text style={styles.headerText}>Your Name</Text>
+                    <Text style={styles.promptText}>What should we call you?</Text>
                 </View>
             </View>
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={getTextInputStyle(isNameFocused)}
+                    placeholder="Your name"
+                    value={name}
+                    onChangeText={setName}
+                    onFocus={() => setIsNameFocused(true)}
+                    onBlur={() => setIsNameFocused(false)}
+                    placeholderTextColor="#D3D3D3"
+                    maxLength={25} // Maximum character limit
+                />
+                <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
+            </View>
+            <View
+                style={{
+                    alignItems: 'center',
+                }}
+            >
+                <Button
+                    disabled={name.length < 1}
+                    title="Save"
+                    onPress={() => {
+                        addName(name);
+                        navigation.navigate(PAGES.GROUP_LIST);
+                    }}
+                />
+            </View>
+        </View>
     );
 };
 
@@ -95,9 +99,14 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         fontSize: 18,
         borderBottomWidth: 1,
-        marginBottom: 20,
+        marginBottom: 10, // Adjust as needed
         paddingBottom: calcHeight(2),
         paddingHorizontal: calcWidth(5),
+    },
+    characterCount: {
+        fontSize: 12,
+        color: COLOR.TEXT,
+        textAlign: 'right',
     },
 });
 

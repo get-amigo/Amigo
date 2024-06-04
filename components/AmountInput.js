@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View,Platform , Text, TextInput, StyleSheet } from 'react-native';
+import { View, Platform, Text, TextInput, StyleSheet } from 'react-native';
 import COLOR from '../constants/Colors';
 import getFontSize from '../helper/getFontSize';
 import { getFontSizeByWindowWidth, calcHeight, calcWidth } from '../helper/res';
@@ -22,17 +22,16 @@ const AmountInput = ({ amount = '', handleInputChange, isTextInput = false }) =>
 
     const commonStyles = {
         fontSize: fontSize,
-        lineHeight: fontSize *(Platform.OS === 'ios' ? 1.2 : 1.5),
+        lineHeight: fontSize * (Platform.OS === 'ios' ? 1.2 : 1.5),
         paddingVertical: (baseFontSize * 1.2 - fontSize * 1.2) / 2,
-
-        
     };
 
     const handleChange = (newAmount) => {
+        const sanitizedAmount = newAmount.replace(/\D/g, '');
         if (handleInputChange) {
-            handleInputChange(newAmount);
+            handleInputChange(sanitizedAmount);
         }
-        setFontSize(getFontSize('₹' + newAmount, calcWidth(65), baseFontSize));
+        setFontSize(getFontSize('₹' + sanitizedAmount, calcWidth(65), baseFontSize));
     };
 
     return (
@@ -67,11 +66,9 @@ const styles = StyleSheet.create({
     rowCentered: {
         flexDirection: 'row',
         justifyContent: 'center',
-
     },
     amount: {
         color: COLOR.TEXT,
         fontWeight: 'bold',
-
     },
 });

@@ -19,6 +19,8 @@ function ProfileScreen({ navigation }) {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const remainingCharacters = 25 - name.length;
+
     function submitUserData() {
         setIsSubmitting(true);
     }
@@ -130,7 +132,10 @@ function ProfileScreen({ navigation }) {
                 <UserAvatar user={user} size={7} />
                 <View>
                     {editMode ? (
-                        <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus />
+                        <View>
+                            <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus maxLength={25} />
+                            <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
+                        </View>
                     ) : (
                         <Text style={styles.userName}>{name}</Text>
                     )}
@@ -197,6 +202,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: COLOR.APP_BACKGROUND,
     },
+    characterCount: {
+        fontWeight: 'bold',
+        color: COLOR.BUTTON,
+        fontSize: getFontSizeByWindowWidth(8),
+        left: calcWidth(36),
+        paddingTop: calcWidth(2),
+    },
     userInfo: {
         flexDirection: 'row',
         margin: calcHeight(3),
@@ -214,12 +226,14 @@ const styles = StyleSheet.create({
     userName: {
         fontWeight: 'bold',
         color: 'white',
-        fontSize: getFontSizeByWindowWidth(18),
+        fontSize: getFontSizeByWindowWidth(16),
+        paddingHorizontal: calcWidth(2),
     },
     userPhone: {
         color: 'white',
         fontSize: getFontSizeByWindowWidth(10),
         paddingTop: calcHeight(1),
+        paddingHorizontal: calcWidth(2),
     },
     inviteFriends: {
         alignItems: 'center',

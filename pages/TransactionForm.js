@@ -66,11 +66,16 @@ function TransactionFormScreen({ navigation }) {
     }, []);
 
     const handleInputChange = (field, value) => {
-        setTransactionData((prev) => ({
-            ...prev,
-            [field]: value,
-        }));
+        if (value.length <= 100) {
+            setTransactionData((prev) => ({
+                ...prev,
+                [field]: value,
+            }));
+        }
     };
+
+    // const remainingCharacters = 100 - transactionData.description.length;
+    const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
     const handleCategorySelect = (category) => {
         setTransactionData((prev) => ({
@@ -106,6 +111,7 @@ function TransactionFormScreen({ navigation }) {
                     amount: user.amount,
                     user: user.user._id || user.user.id,
                 })),
+                description: transactionData.description || ' ',
             };
             const newActivity = {
                 relatedId: {
@@ -185,8 +191,11 @@ function TransactionFormScreen({ navigation }) {
                         placeholderTextColor="#ccc"
                         ref={descriptionRef}
                         textAlign="center"
+                        maxLength={100}
+                        multiline={true}
                     />
                 </Pressable>
+                <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
             <ScrollView
@@ -330,7 +339,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.APP_BACKGROUND,
     },
     rowCentered: {
-        flexDirection: 'row',
+        // flexDirection: 'row',
         justifyContent: 'center',
     },
     amount: {
@@ -345,11 +354,18 @@ const styles = StyleSheet.create({
     },
     descriptionContainer: {
         flexDirection: 'row',
+        alignSelf: 'center',
         padding: calcWidth(3),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
         width: calcWidth(30),
+    },
+    remainingCharacters: {
+        color: COLOR.BUTTON,
+        fontSize: getFontSizeByWindowWidth(10),
+        alignSelf: 'center',
+        paddingTop: calcHeight(1),
     },
     categoryItem: {
         flexDirection: 'row',

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, Image } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image } from 'react-native';
 import LoginImage from '../assets/Login.png';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useOtp } from '../context/OtpContext';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CountryCodeInput = ({ countryCode }) => (
     <View style={styles.countryCodeContainer}>

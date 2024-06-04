@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Alert, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Button } from 'react-native';
 import Loader from '../components/Loader';
 import Search from '../components/Search';
 import apiHelper from '../helper/apiHelper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SearchScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);

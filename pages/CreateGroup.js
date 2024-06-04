@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, SafeAreaView, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import Button from '../components/Button';
@@ -16,6 +16,7 @@ import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
 import { useAuth } from '../stores/auth';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CreateGroup = ({ navigation }) => {
     const { selectedContacts } = useContacts();

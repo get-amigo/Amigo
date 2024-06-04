@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
 import { useAuth } from '../stores/auth';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -9,6 +9,7 @@ import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } f
 import MenuOption from '../components/AccountPageOption';
 import PAGES from '../constants/pages';
 import { useBalance } from '../stores/balance';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function ProfileScreen({ navigation }) {
     const { user, logout, editUser, deleteAccount } = useAuth();

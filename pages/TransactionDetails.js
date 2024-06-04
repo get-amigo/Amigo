@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import COLOR from '../constants/Colors';
 import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
@@ -14,6 +14,7 @@ import sliceText from '../helper/sliceText';
 import CalendarIcon from '../assets/icons/calendar.png';
 import AmountInput from '../components/AmountInput';
 import { useExpense } from '../stores/expense';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TransactionDetail = ({
     navigation,

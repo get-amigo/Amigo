@@ -1,11 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Pressable, Linking } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from 'react-native';
 import { MaterialIcons, Foundation } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import COLOR from '../constants/Colors';
 import about from '../constants/about';
 import { calcHeight, calcWidth } from '../helper/res';
 import icon from '../assets/icon.png';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const About = () => {
     const renderLink = (iconName, text, onPress = () => {}) => (
@@ -24,12 +25,8 @@ const About = () => {
                 </View>
                 <Text style={styles.text}>{about}</Text>
                 <View style={styles.linksContainer}>
-                    {renderLink('info', 'Terms and conditions', () =>
-                        WebBrowser.openBrowserAsync('https://www.getamigo.today/terms'),
-                    )}
-                    {renderLink('lock', 'Privacy Policy', () =>
-                        WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy'),
-                    )}
+                    {renderLink('info', 'Terms and conditions', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms'))}
+                    {renderLink('lock', 'Privacy Policy', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy'))}
                 </View>
             </ScrollView>
         </SafeAreaView>

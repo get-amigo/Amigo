@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import COLOR from '../constants/Colors';
 import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import ContactList from '../components/ContactList';
@@ -8,6 +8,7 @@ import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import Loader from '../components/Loader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const AddPeople = ({ navigation }) => {
     const { selectedContacts } = useContacts();
     const { group, setGroup } = useGroup();

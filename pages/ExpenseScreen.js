@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useAuth } from '../stores/auth';
 import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
 import ExpenseCard from '../components/ExpenseCard';
@@ -9,6 +9,7 @@ import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function ExpenseScreen() {
     const { expense, resetParams, loading } = useExpense();
@@ -110,7 +111,8 @@ const styles = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,
         fontWeight: 'bold',
-        margin: calcHeight(3),
+        marginHorizontal: calcHeight(3),
+        marginVertical: calcHeight(2),
     },
     selectorContainer: {
         flexDirection: 'row',

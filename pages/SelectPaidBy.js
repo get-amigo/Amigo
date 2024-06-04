@@ -1,10 +1,11 @@
 import React, { useCallback, useState } from 'react';
-import { Text, StyleSheet, SafeAreaView, ScrollView, Pressable, View, TextInput } from 'react-native';
+import { Text, StyleSheet, ScrollView, Pressable, View, TextInput } from 'react-native';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import GroupSelectCard from '../components/GroupSelectCard';
 import { useTransaction } from '../context/TransactionContext';
 import UserAvatar from '../components/UserAvatar';
+import { SafeAreaView } from 'react-native-safe-area-context';
 function GroupListScreen({ navigation }) {
     const { setTransactionData, transactionData } = useTransaction();
     return (

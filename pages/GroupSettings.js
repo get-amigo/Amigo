@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, ScrollView, TextInput, Image, Share, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, TextInput, Image, Share, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { DEEP_LINK_URL } from '@env';
 import GroupIcon from '../components/GroupIcon';
@@ -12,6 +12,7 @@ import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import { Octicons } from '@expo/vector-icons';
 import showToast from '../helper/Toast';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const MemberItem = ({ name, phone, _id }) => (
     <View style={styles.memberItem}>

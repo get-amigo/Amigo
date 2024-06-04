@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
@@ -15,6 +15,7 @@ import checkConnectivity from '../helper/getNetworkStateAsync';
 import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, getFontSizeByWindowWidth, calcWidth, deviceHeight } from '../helper/res';
 import sliceText from '../helper/sliceText';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function GroupScreen({
     route: {

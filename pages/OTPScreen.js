@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native';
 import COLOR from '../constants/Colors';
 import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -8,6 +8,7 @@ import Loader from '../components/Loader';
 import OTPFilled from '../assets/OTPFilled.png';
 import { useOtp } from '../context/OtpContext';
 import * as Haptics from 'expo-haptics';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OTPScreen = ({
     navigation,
@@ -42,7 +43,7 @@ const OTPScreen = ({
                 setLoading(false);
                 setError(true);
             });
-    }
+    };
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;
@@ -92,9 +93,7 @@ const OTPScreen = ({
                     />
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.resendText}>Didn't receive the code? </Text>
-                        <TouchableOpacity
-                            onPress={() => loginWithPhoneNumber(phoneNumber)}
-                        >
+                        <TouchableOpacity onPress={() => loginWithPhoneNumber(phoneNumber)}>
                             <Text
                                 style={{
                                     fontWeight: 'bold',

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, StyleSheet, SafeAreaView, FlatList, View, TextInput, Keyboard } from 'react-native';
+import { Text, StyleSheet, FlatList, View, TextInput, Keyboard } from 'react-native';
 import Loader from '../components/Loader';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
@@ -13,6 +13,7 @@ import NoGroupsImage from '../assets/NoGroups.png';
 import Search from '../components/Search';
 import { useGroupList } from '../stores/groupList';
 import { useAuth } from '../stores/auth';
+import { SafeAreaView } from 'react-native-safe-area-context';
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
     const { user } = useAuth();

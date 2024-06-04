@@ -4,7 +4,6 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
     Text,
     StyleSheet,
-    SafeAreaView,
     View,
     Pressable,
     FlatList,
@@ -41,6 +40,7 @@ import getMembersString from '../utility/getMembersString';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 import syncAllChat from '../utility/syncAllChat';
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function isNumber(text) {
     return !isNaN(+text);
@@ -179,6 +179,7 @@ function GroupScreen({ navigation }) {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         gap: calcWidth(5),
+                        paddingHorizontal: calcWidth(1),
                     }}
                 >
                     <Pressable onPress={() => navigation.goBack()}>

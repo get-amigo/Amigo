@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 // Assuming this is the path to your image
 import OnboardingImage from '../assets/Onboarding.png'; // Update the image path if necessary
@@ -7,6 +7,7 @@ import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import Button from '../components/Button';
+import { SafeAreaView } from 'react-native-safe-area-context';
 const OnboardingScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>

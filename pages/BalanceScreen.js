@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, FlatList, Pressable, Image } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Pressable, Image } from 'react-native';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import FabIcon from '../components/FabIcon';
@@ -16,6 +16,7 @@ const headerIconSize = calcHeight(1);
 import NetInfo from '@react-native-community/netinfo';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 import { useBalance } from '../stores/balance';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
@@ -108,7 +109,8 @@ function BalanceScreen({ navigation }) {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    margin: calcWidth(headerIconSize),
+                    marginHorizontal: calcWidth(headerIconSize),
+                    marginVertical: calcWidth(3),
                 }}
             >
                 <Pressable onPress={() => navigation.navigate(PAGES.SCANNER)}>

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, SafeAreaView, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import Button from '../components/Button';
@@ -32,6 +32,17 @@ const CreateGroup = ({ navigation }) => {
             return;
         }
         setIsLoading(true);
+
+        const userPhoneNumber = user.phoneNumber;
+        const hasUserNumber = selectedContacts.some(({ phoneNumber }) => phoneNumber === userPhoneNumber);
+
+        if (hasUserNumber) {
+            Alert.alert('Error', 'Your own contact number cannot be added to the group.', [
+                { text: 'OK', onPress: () => setIsLoading(false) },
+            ]);
+            return;
+        }
+
         const phoneNumbers = selectedContacts.map(({ phoneNumber }) => ({
             phoneNumber,
             countryCode: '+91',

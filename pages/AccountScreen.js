@@ -130,10 +130,10 @@ function ProfileScreen({ navigation }) {
         <SafeAreaView style={styles.container}>
             <View style={styles.userInfo}>
                 <UserAvatar user={user} size={7} />
-                <View>
+                <View style={styles.userDetails}>
                     {editMode ? (
-                        <View>
-                            <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus maxLength={25} />
+                        <View style={styles.editContainer}>
+                            <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus maxLength={25} multiline />
                             <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
                         </View>
                     ) : (
@@ -206,13 +206,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: COLOR.BUTTON,
         fontSize: getFontSizeByWindowWidth(8),
-        left: calcWidth(36),
-        paddingTop: calcWidth(2),
+        alignSelf: 'flex-end',
+        marginRight: calcWidth(1),
+        paddingTop: calcWidth(4),
     },
     userInfo: {
         flexDirection: 'row',
         margin: calcHeight(3),
-        // alignItems: 'center',
+        alignItems: 'center',
         justifyContent: 'space-between',
     },
     userImage: {
@@ -257,6 +258,13 @@ const styles = StyleSheet.create({
     },
     bottomBarText: {
         color: COLOR.BUTTON,
+    },
+    userDetails: {
+        flex: 1,
+        marginLeft: calcWidth(2),
+    },
+    editContainer: {
+        flexDirection: 'column',
     },
 });
 

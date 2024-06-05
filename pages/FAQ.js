@@ -4,6 +4,7 @@ import COLOR from '../constants/Colors';
 import faqArray from '../constants/faq';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { MaterialIcons } from '@expo/vector-icons';
+import { MotiView } from 'moti';
 
 const FAQ = () => {
     // This state will track which FAQ is expanded
@@ -18,20 +19,31 @@ const FAQ = () => {
         <SafeAreaView style={styles.container}>
             <ScrollView
                 contentContainerStyle={{
-                    padding: calcWidth(10),
+                    paddingVertical: calcHeight(4),
+                    paddingHorizontal: calcWidth(6),
                 }}
             >
                 {faqArray.map((faq, index) => (
-                    <TouchableOpacity key={index} style={styles.faqItem} onPress={() => toggleExpand(index)}>
+                    <TouchableOpacity activeOpacity={1} style={styles.faqItem} onPress={() => toggleExpand(index)}>
                         <View style={styles.questionContainer}>
                             <Text style={styles.question}>{faq.question}</Text>
                             <MaterialIcons
                                 name={expandedFAQ === index ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
                                 size={calcHeight(2)}
                                 color="rgba(255,255,255,0.75)"
+                                style={styles.arrowIcon}
                             />
                         </View>
-                        {expandedFAQ === index && <Text style={styles.answer}>{faq.answer}</Text>}
+                        <MotiView
+                            from={{ height: 0 }}
+                            animate={{ height: expandedFAQ === index ? calcHeight(8) : 0 }}
+                            transition={{ type: 'timing', duration: 300 }}
+                            style={{
+                                marginTop: calcWidth(2),
+                            }}
+                        >
+                            <Text style={styles.answer}>{faq.answer}</Text>
+                        </MotiView>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
@@ -45,23 +57,38 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.APP_BACKGROUND,
     },
     faqItem: {
-        borderBottomWidth: 1,
+        // borderBottomWidth: 1,
         borderBottomColor: '#fff',
-        paddingVertical: calcHeight(3),
+        paddingVertical: calcHeight(2.4),
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        marginBottom: calcWidth(4),
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 12,
+        paddingHorizontal: calcWidth(4),
     },
     questionContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
+        gap: calcWidth(1.2),
     },
     question: {
-        flex: 1, // Take up all available space
+        flex: 1,
         fontSize: getFontSizeByWindowWidth(12),
-        color: 'rgba(255,255,255,0.75)',
+        color: 'rgba(255,255,255,1)',
+        // color:COLOR.BUTTON,
+        // color:"rgba(135, 64, 253, 0.85)"
     },
     answer: {
-        paddingTop: 10,
-        color: '#666',
+        paddingTop: calcWidth(2),
+        // color:COLOR.TEXT
+        color: 'rgba(255,255,255,0.8)',
+        lineHeight: calcHeight(2.4),
+    },
+    arrowIcon: {
+        backgroundColor: COLOR.BUTTON,
+        borderRadius: 100,
     },
 });
 

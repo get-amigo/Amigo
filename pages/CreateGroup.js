@@ -68,6 +68,7 @@ const CreateGroup = ({ navigation }) => {
                             <Text style={styles.titleText}>Add members</Text>
                         </View>
                         <View style={styles.contactListContainer}>
+                            <View></View>
                             <ContactList />
                         </View>
 

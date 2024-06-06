@@ -11,21 +11,12 @@ import AddMemberWithoutContact from './AddMemberWithoutContact';
 
 const ContactList = ({ eliminatedContacts }) => {
     const { search, setSearch, contacts, selectedContacts, handleSelectContact, setSelectedContacts, contactPermission } = useContacts();
-    const [isContactFound, setIsContactFound] = useState(true);
     const flatListRef = useRef(null);
 
     useEffect(() => {
         setSelectedContacts([]);
         setSearch('');
     }, []);
-
-    useEffect(() => {
-        if (contacts.length == 0) {
-            setIsContactFound(false);
-        } else {
-            setIsContactFound(true);
-        }
-    }, [contacts]);
 
     function eliminateContacts() {
         if (!eliminatedContacts) return contacts;
@@ -54,7 +45,7 @@ const ContactList = ({ eliminatedContacts }) => {
         <View>
             <Search search={search} setSearch={setSearch} />
             <View>
-                <AddMemberWithoutContact isContactFound={isContactFound} search={search} />
+                <AddMemberWithoutContact />
             </View>
             {contactPermission ? (
                 <FlatList

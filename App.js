@@ -5,6 +5,7 @@ import RootNavigator from './navigator/RootNavigator';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import * as Sentry from '@sentry/react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 Sentry.init({
     dsn: 'https://5e35d45895f220b8681a2ce7bb0728df@o4507295198085120.ingest.us.sentry.io/4507295216762880',
@@ -17,14 +18,20 @@ Sentry.init({
 
 function App() {
     return (
-        <SafeAreaProvider>
-            <StatusBar style="auto" />
-            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined} enabled
-            keyboardVerticalOffset={-900}>
-                <RootNavigator />
-            </KeyboardAvoidingView>
-            <FlashMessage position="top" duration={2000} />
-        </SafeAreaProvider>
+        <GestureHandlerRootView>
+            <SafeAreaProvider>
+                <StatusBar style="auto" />
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                    enabled
+                    keyboardVerticalOffset={-900}
+                >
+                    <RootNavigator />
+                </KeyboardAvoidingView>
+                <FlashMessage position="top" duration={2000} />
+            </SafeAreaProvider>
+        </GestureHandlerRootView>
     );
 }
 

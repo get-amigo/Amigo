@@ -1,87 +1,35 @@
 import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { AntDesign } from '@expo/vector-icons';
 import COLOR from '../constants/Colors';
 import parsePhoneNumber from 'libphonenumber-js';
 import { useContacts } from '../hooks/useContacts';
 import { Entypo } from '@expo/vector-icons';
+import { PhoneNumberBottomSheetContext } from '../context/PhoneNumberBottomSheetContext';
 
-const PhoneModal = ({ modalVisible, setModalVisible, phoneNumber, setPhoneNumber }) => {
-    const { setSelectedContacts } = useContacts();
-    const [error, setError] = useState();
+const AddMemberWithoutContact = () => {
+    const { bottomSheetRef, setPhoneNumber } = useContext(PhoneNumberBottomSheetContext);
+    const { search, contacts, selectedContacts, setSelectedContacts } = useContacts();
 
-    const addToSelectedContacts = (phoneNumber) => {
-        // validate phone number
-        if (phoneNumber) {
-            const parsedNumber = parsePhoneNumber(phoneNumber, 'IN');
-            if (parsedNumber && parsedNumber.isPossible() && phoneNumber.length == 10) {
-                // if phone number is valid
-                setSelectedContacts((prev) => [...prev, { phoneNumber }]);
-                setModalVisible(false);
-                setError();
-            } else {
-                // if phone number is not valid
-                setError('Invalid Phone Number');
-            }
+    const [isContactFound, setIsContactFound] = useState(true);
+
+    const isContactAvailable = () => {
+        if (contacts && contacts.length == 0) {
+            setIsContactFound(false);
+        } else {
+            setIsContactFound(true);
         }
     };
 
-    const handleClose = () => {
-        setError();
-        setModalVisible(false);
-    };
+    useEffect(() => {
+        isContactAvailable();
+    }, [search]);
 
-    return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            statusBarTranslucent
-            onRequestClose={() => {
-                setModalVisible(false);
-            }}
-        >
-            <View style={modalStyles.centeredView}>
-                <View style={modalStyles.modalView}>
-                    <Pressable style={modalStyles.cross} onPress={handleClose}>
-                        <Entypo name="cross" size={getFontSizeByWindowWidth(21)} color={COLOR.PRIMARY} />
-                    </Pressable>
-                    <View style={modalStyles.form}>
-                        <Text style={modalStyles.modalText}>Enter Phone Number</Text>
-                        <TextInput
-                            keyboardType="number-pad"
-                            maxLength={10}
-                            style={[modalStyles.textInput, error && { borderColor: COLOR.ERROR_BORDER }]}
-                            onChangeText={setPhoneNumber}
-                            value={phoneNumber}
-                            autoFocus
-                            textContentType="telephoneNumber"
-                        />
-                        <View>
-                            <Text style={modalStyles.errorText}>{error}</Text>
-                        </View>
-                    </View>
-                    <View style={modalStyles.buttonWrapper}>
-                        <Pressable style={modalStyles.button} onPress={() => addToSelectedContacts(phoneNumber)}>
-                            <Text style={modalStyles.textStyle}>Save</Text>
-                        </Pressable>
-                        {/* <Pressable style={modalStyles.button} onPress={() => setModalVisible(false)}>
-                            <Text style={modalStyles.textStyle}>Cancel</Text>
-                        </Pressable> */}
-                    </View>
-                </View>
-            </View>
-        </Modal>
-    );
-};
+    const handleOpenSheet = (number) => {
+        // open bottom sheet
+        bottomSheetRef.current.expand();
 
-const AddMemberWithoutContact = ({ isContactFound, search }) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [phoneNumber, setPhoneNumber] = useState();
-
-    const handleOpenModal = (number) => {
-        setModalVisible(true);
         // validate phone number - check only whether the number have digits only
         const isNumber = !isNaN(Number(number));
         if (isNumber) {
@@ -89,19 +37,11 @@ const AddMemberWithoutContact = ({ isContactFound, search }) => {
         } else {
             setPhoneNumber();
         }
-
-        // remove later
-        // const parsedNumber = parsePhoneNumber(number, 'IN');
-        // if (parsedNumber && parsedNumber.isPossible()) {
-        //     setPhoneNumber(parsedNumber.nationalNumber);
-        // } else {
-        //     setPhoneNumber();
-        // }
     };
 
     return (
         <>
-            <Pressable style={styles.container} onPress={() => handleOpenModal(search)}>
+            <Pressable style={styles.container} onPress={() => handleOpenSheet(search)}>
                 <View style={styles.row}>
                     <View style={[styles.placeHolderView, { backgroundColor: 'white' }]}>
                         <AntDesign name="adduser" size={calcHeight(selectorSize - 2.2)} color="black" />
@@ -115,12 +55,6 @@ const AddMemberWithoutContact = ({ isContactFound, search }) => {
                     )}
                 </View>
             </Pressable>
-            <PhoneModal
-                modalVisible={modalVisible}
-                setModalVisible={setModalVisible}
-                phoneNumber={phoneNumber}
-                setPhoneNumber={setPhoneNumber}
-            />
         </>
     );
 };

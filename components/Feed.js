@@ -1,7 +1,7 @@
 import { Octicons, EvilIcons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { StyleSheet, View, Pressable, Text, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Pressable, Text, Image, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
 
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
@@ -10,6 +10,8 @@ import PAGES from '../constants/pages';
 import editNames from '../helper/editNames';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
+import apiHelper from '../helper/apiHelper';
+import Toast from 'react-native-root-toast';
 
 function convertToCustomFormat(dateString) {
     const date = new Date(dateString);
@@ -103,12 +105,126 @@ function Amount({ amount, description }) {
     );
 }
 
-function TransactionActivity({ transaction, createdAt, contacts, synced, creator }) {
+function TransactionActivity({ transaction, createdAt, contacts, synced, creator, onDelete }) {
     const { user } = useAuth();
     const navigation = useNavigation();
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+    const transactionId = transaction._id;
+
+    // TODO : HandleDelete functionality not implemented for Offline Mode
+
+    const handleDelete = async () => {
+        Alert.alert(
+            'Confirm Delete',
+            'Are you sure you want to delete this transaction?',
+            [
+                {
+                    text: 'No',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: async () => {
+                        try {
+                            await apiHelper.delete(`/transaction/${transactionId}`);
+                            onDelete(transactionId);
+                        } catch (error) {
+                            console.error('Error deleting transaction:', error);
+                        }
+                    },
+                    style: 'destructive',
+                },
+            ],
+            { cancelable: false },
+        );
+    };
+
+    const renderDeleteModal = () => {
+        if (user._id === creator._id) {
+            return (
+                <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
+                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                        <View style={styles.modalOverlay}>
+                            <TouchableWithoutFeedback>
+                                <View style={styles.modalContainer}>
+                                    {selectedTransaction && (
+                                        <>
+                                            <View style={styles.selectedTransactionCard}>
+                                                <ActivityHeader
+                                                    icon={Octicons}
+                                                    iconName="person"
+                                                    size={calcHeight(2.4)}
+                                                    text={`${selectedTransaction.splitAmong?.length}`}
+                                                />
+                                                <View style={{ marginTop: calcHeight(3) }}>
+                                                    <Amount
+                                                        amount={selectedTransaction.amount}
+                                                        description={selectedTransaction.description}
+                                                    />
+                                                </View>
+                                                <View
+                                                    style={{
+                                                        flexDirection: 'row',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'space-between',
+                                                        marginTop: calcHeight(3),
+                                                    }}
+                                                >
+                                                    <View
+                                                        style={{
+                                                            flexDirection: 'row',
+                                                            gap: calcWidth(2),
+                                                        }}
+                                                    >
+                                                        <EvilIcons name="calendar" size={calcWidth(5)} color="white" />
+                                                        <Text style={styles.description}>
+                                                            {getDateAndMonth(selectedTransaction.createdAt)}
+                                                        </Text>
+                                                    </View>
+                                                    {synced === false && (
+                                                        <Image
+                                                            source={ClockIcon}
+                                                            style={{
+                                                                height: calcHeight(1),
+                                                                width: calcHeight(1),
+                                                            }}
+                                                        />
+                                                    )}
+                                                </View>
+                                            </View>
+                                        </>
+                                    )}
+                                    <View style={styles.modalButtons}>
+                                        <Pressable
+                                            style={styles.modalButton}
+                                            onPress={() => {
+                                                setModalVisible(false);
+                                                handleDelete();
+                                            }}
+                                        >
+                                            <Text style={styles.modalButtonText}>Delete</Text>
+                                            <MaterialIcons name="delete" size={calcWidth(6)} color="red" />
+                                        </Pressable>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+            );
+        } else {
+            return null;
+        }
+    };
 
     return (
         <Pressable
+            onLongPress={() => {
+                setSelectedTransaction(transaction);
+                setModalVisible(true);
+            }}
             onPress={() => {
                 const editedTransaction = transaction;
                 for (const i in editedTransaction.splitAmong) {
@@ -155,6 +271,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                     />
                 )}
             </View>
+            {renderDeleteModal()}
         </Pressable>
     );
 }
@@ -223,7 +340,7 @@ function ChatActivity({ chat, synced }) {
 
 function Feed(props) {
     const { user } = useAuth();
-    const { creator, activityType, createdAt } = props;
+    const { creator, activityType, createdAt, onDelete } = props;
 
     const renderActivity = () => {
         const activityStrategy = ActivityStrategyFactory(activityType);
@@ -310,6 +427,7 @@ const ActivityStrategyFactory = (activityType) => {
                         contacts={contacts}
                         synced={synced}
                         creator={creator}
+                        onDelete={transaction}
                     />
                 ),
             };
@@ -376,6 +494,77 @@ const styles = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(12),
         color: 'white',
         marginTop: calcHeight(2),
+    },
+
+    // Delete Modal styling
+    selectedTransactionCard: {
+        // right:calcWidth(16),
+        flexDirection: 'column',
+        // marginLeft:calcWidth(-28),
+        // borderWidth:1,
+        // borderColor:"white",
+        width: calcWidth(76),
+        paddingHorizontal: calcWidth(4),
+    },
+
+    modalOverlay: {
+        flex: 1,
+        // paddingTop:calcHeight(40),
+        paddingTop: calcHeight(32),
+        alignItems: 'flex-end',
+        paddingRight: calcWidth(6),
+        backgroundColor: 'rgba(10, 10, 10, 0.8)',
+        // backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    },
+    modalContainer: {
+        width: '80%',
+        backgroundColor: COLOR.APP_BACKGROUND,
+        borderWidth: 1,
+        // borderColor:COLOR.BUTTON,
+        borderRadius: 10,
+        paddingHorizontal: calcWidth(4),
+        paddingVertical: calcHeight(4),
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: getFontSizeByWindowWidth(16),
+        fontWeight: 'bold',
+        color: 'rgba(255,255,255,0.8)',
+        marginBottom: calcHeight(1),
+    },
+    modalText: {
+        fontSize: getFontSizeByWindowWidth(14),
+        marginBottom: calcHeight(2),
+        // color:COLOR.TEXT,
+        color: 'rgba(255,255,255,0.6)',
+    },
+    modalButtons: {
+        position: 'absolute',
+        top: calcHeight(22.8),
+        // top:calcHeight(28),
+        left: calcWidth(22),
+        // alignSelf:"center",
+    },
+    modalButton: {
+        // flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: calcWidth(54),
+        paddingVertical: calcHeight(2),
+        paddingHorizontal: calcWidth(4),
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: 'rgba(44, 44, 46, 1)',
+        // backgroundColor: COLOR.BUTTON,
+        backgroundColor: 'rgba(28, 28, 30, 1)',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        // color: 'rgba(255,255,255,1)',
+        // color: "red",
+        color: 'rgba(255, 69, 58, 1)',
+        fontSize: getFontSizeByWindowWidth(14),
+        // fontWeight: 'bold',
     },
 });
 

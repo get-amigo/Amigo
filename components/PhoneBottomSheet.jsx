@@ -27,6 +27,7 @@ const PhoneBottomSheet = () => {
     const addToSelectedContacts = (phoneNumber) => {
         // validate phone number
         if (phoneNumber && !isNaN(Number(phoneNumber))) {
+            phoneNumber = phoneNumber.substring(0, 10);
             const parsedNumber = parsePhoneNumber(phoneNumber, 'IN');
             if (parsedNumber && parsedNumber.isPossible() && phoneNumber.length == 10) {
                 // if phone number is valid

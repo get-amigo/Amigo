@@ -47,7 +47,7 @@ const CreateGroup = ({ navigation }) => {
         else navigation.goBack();
     };
 
-    const handleCreateGroupPress = () => {
+    const handleCreateGroup = () => {
         if (!groupName && selectedContacts.length === 0) {
             Toast.show('Please Enter group name and select a contact', {
                 duration: Toast.durations.LONG,
@@ -92,7 +92,7 @@ const CreateGroup = ({ navigation }) => {
                         <View style={styles.button}>
                             <Button
                                 title="Create Group"
-                                onPress={handleCreateGroupPress}
+                                onPress={handleCreateGroup}
                                 styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
                             />
                         </View>

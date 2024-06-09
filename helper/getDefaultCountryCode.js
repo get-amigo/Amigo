@@ -1,5 +1,5 @@
 const getDefaultCountryCode = () => {
-    return 'IN'; 
+    return 'IN';
 };
 
 export default getDefaultCountryCode;

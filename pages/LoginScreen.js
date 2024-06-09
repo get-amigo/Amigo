@@ -23,9 +23,6 @@ const LoginScreen = ({ navigation }) => {
     const indiaIndex = COUNTRY.findIndex(country => country.name === 'India');
     const [selectedCountry, setSelectedCountry] = useState(COUNTRY[indiaIndex]);
 
-    // const [selectedCountry, setSelectedCountry] = useState(COUNTRY[0]); 
-
-
     const { loginWithPhoneNumber } = useOtp();
 
     const getTextInputStyle = (isFocused) => ({
@@ -196,7 +193,6 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         paddingBottom: calcHeight(2),
         paddingLeft:calcWidth(2),
-        // marginLeft: calcWidth(1),
         fontWeight: 'bold',
     },
     countryCodeText: {
@@ -231,7 +227,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: calcHeight(1.2),
-        // paddingHorizontal: calcWidth(2),
         borderBottomColor:COLOR.BORDER_COLOR,
         borderBottomWidth:0.5,
     },

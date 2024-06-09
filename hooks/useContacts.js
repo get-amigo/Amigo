@@ -29,9 +29,7 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
     });
 };
 
-const handleLoadContactsError = (error) => {
-    // console.error('Error loading contacts:', error);
-};
+const handleLoadContactsError = (error) => {};
 
 const fetchContactsData = async () => {
     try {
@@ -42,7 +40,7 @@ const fetchContactsData = async () => {
         if (!data) {
             return [];
         }
-        // console.log(data)
+
         const contactsWithMultipleNumbers = [];
 
         // Iterate through each contact

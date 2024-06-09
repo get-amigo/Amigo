@@ -32,9 +32,9 @@ const CreateGroup = ({ navigation }) => {
             return;
         }
         setIsLoading(true);
-        const phoneNumbers = selectedContacts.map(({ phoneNumber }) => ({
+        const phoneNumbers = selectedContacts.map(({ phoneNumber,countryCode }) => ({
             phoneNumber,
-            countryCode: '+91',
+            countryCode,
         }));
         const { data } = await apiHelper.post('/group', {
             name: groupName,

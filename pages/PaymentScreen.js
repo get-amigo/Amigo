@@ -1,4 +1,3 @@
-// 1. Import Statements
 import { AntDesign } from '@expo/vector-icons';
 import React, { useState, useRef, useEffect } from 'react';
 import { SafeAreaView, View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
@@ -16,7 +15,7 @@ import checkConnectivity from '../helper/getNetworkStateAsync';
 import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, getFontSizeByWindowWidth, calcWidth, deviceHeight } from '../helper/res';
 import sliceText from '../helper/sliceText';
-// GroupScreen Component
+
 function GroupScreen({
     route: {
         params: { payment },
@@ -24,12 +23,11 @@ function GroupScreen({
     navigation,
 }) {
     const [amount, setAmount] = useState(payment.amount + '');
-
     const [description, setDescription] = useState('');
     const [remainingChars, setRemainingChars] = useState(100);
 
     const descriptionRef = useRef();
-    const [isLoading, seIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     async function submitPayment() {
         const isOnline = await checkConnectivity();
@@ -37,7 +35,7 @@ function GroupScreen({
             offlineMessage();
             return;
         }
-        seIsLoading(true);
+        setIsLoading(true);
         try {
             const { data } = await apiHelper.post('/payment', {
                 payer: payment.from._id || payment.from.id,
@@ -49,115 +47,71 @@ function GroupScreen({
             Toast.show('Payment Added', {
                 duration: Toast.durations.LONG,
             });
-            seIsLoading(false);
+            setIsLoading(false);
             navigation.navigate(PAGES.BALANCE);
         } catch (e) {
-            seIsLoading(false);
+            setIsLoading(false);
             alert(e);
         }
     }
+
     if (isLoading) return <Loader />;
 
     return (
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }} enabled
-        keyboardVerticalOffset={calcHeight(10)}>
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={{ flex: 1 }}
+            enabled
+            keyboardVerticalOffset={calcHeight(10)}
+        >
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.headerItem}>
                         <UserAvatar user={payment.from} />
-                        <Text
-                            style={{
-                                color: COLOR.TEXT,
-                                fontWeight: 'bold',
-                                marginTop: calcHeight(2),
-                            }}
-                        >
+                        <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
                             {sliceText(payment.from.name, 10)}
                         </Text>
                     </View>
-                    <View
-                        style={{
-                            ...styles.headerItem,
-                            justifyContent: 'flex-end',
-                            marginTop: calcHeight(1.7),
-                        }}
-                    >
-                        <Text
-                            style={{
-                                color: '#D9D9D9',
-                            }}
-                        >
-                            Paying To
-                        </Text>
-                        <AntDesign
-                            style={{
-                                marginTop: calcHeight(3),
-                            }}
-                            name="arrowright"
-                            size={24}
-                            color="white"
-                        />
+                    <View style={{ ...styles.headerItem, justifyContent: 'flex-end', marginTop: calcHeight(1.7) }}>
+                        <Text style={{ color: '#D9D9D9' }}>Paying To</Text>
+                        <AntDesign style={{ marginTop: calcHeight(3) }} name="arrowright" size={24} color="white" />
                     </View>
                     <View style={styles.headerItem}>
                         <UserAvatar user={payment.to} />
-                        <Text
-                            style={{
-                                color: COLOR.TEXT,
-                                fontWeight: 'bold',
-                                marginTop: calcHeight(2),
-                            }}
-                        >
+                        <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
                             {sliceText(payment.to.name, 10)}
                         </Text>
                     </View>
                 </View>
-                 <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
-                            
+                <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
                 <View style={styles.rowCentered}>
                     <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
                         <TextInput
                             style={styles.description}
                             onChangeText={(text) => {
-                                setDescription(text);
-                                setRemainingChars(100 - text.length);
+                                const remaining = 100 - text.length;
+                                setRemainingChars(remaining >= 0 ? remaining : 0);
+                                setDescription(text.slice(0, 100));
                             }}
-
                             value={description}
                             placeholder="Description"
                             placeholderTextColor="#ccc"
                             ref={descriptionRef}
                             textAlign="center"
-                            multiline={true} 
-                            numberOfLines={4} 
-                            // Adjusting  the height of the text box based on the content
-                            onContentSizeChange={(event) => {
-                                const { height } = event.nativeEvent.contentSize;
-                                descriptionRef.current.setNativeProps({
-                                    style: { height },
-                                });
-                            }}
-                            
+                            multiline={true}
+                            numberOfLines={4}
                         />
-                      
                     </Pressable>
-                    <Text style={{color:'white'}}>{remainingChars} left</Text>
-                </View> 
-                <View
-                    style={{
-                        flex: 1,
-                        alignItems: 'center',
-                        justifyContent: 'flex-end',
-                        marginBottom: calcHeight(2),
-                    }}>
-                    <Button onPress={submitPayment} title="Record as  Cash Payment" />
+                    <Text style={styles.remainingCharacter}>{remainingChars} left</Text>
+                </View>
+                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: calcHeight(2) }}>
+                    <Button onPress={submitPayment} title="Record as Cash Payment" />
                 </View>
             </SafeAreaView>
         </KeyboardAvoidingView>
-
     );
 }
 
-// StyleSheet
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -172,27 +126,25 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rowCentered: {
-
         flexDirection: 'column',
         alignItems: 'center',
-
-
     },
     description: {
         flex: 1,
-
         color: 'white',
     },
     descriptionContainer: {
         flexDirection: 'row',
-        padding: calcWidth(3),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
         width: calcWidth(30),
         marginTop: calcHeight(1),
     },
+    remainingCharacter: {
+        paddingTop: calcHeight(1),
+        color: COLOR.BUTTON,
+    },
 });
 
-// Export Statement
 export default GroupScreen;

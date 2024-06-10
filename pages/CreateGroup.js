@@ -32,19 +32,29 @@ const CreateGroup = ({ navigation }) => {
             return;
         }
         setIsLoading(true);
-        const phoneNumbers = selectedContacts.map(({ phoneNumber,countryCode }) => ({
-            phoneNumber,
-            countryCode,
-        }));
-        const { data } = await apiHelper.post('/group', {
-            name: groupName,
-            phoneNumbers,
-        });
-        Toast.show(`${groupName} created`, {
-            duration: Toast.durations.LONG,
-        });
-        if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) navigation.navigate(PAGES.ADD_TRANSACTION);
-        else navigation.goBack();
+        try {
+            const phoneNumbers = selectedContacts.map(({ phoneNumber, countryCode }) => ({
+                phoneNumber,
+                countryCode,
+            }));
+            const { data } = await apiHelper.post('/group', {
+                name: groupName,
+                phoneNumbers,
+            });
+            Toast.show(`${groupName} created`, {
+                duration: Toast.durations.LONG,
+            });
+            if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) navigation.navigate(PAGES.ADD_TRANSACTION);
+            else {
+                navigation.goBack();
+            }
+        } catch (error) {
+            Toast.show('Error creating group. Please try again.', {
+                duration: Toast.durations.LONG,
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (

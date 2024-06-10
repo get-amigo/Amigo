@@ -21,6 +21,7 @@ const OTPScreen = ({
     const [loading, setLoading] = useState(false);
     const [seconds, setSeconds] = useState(30);
     const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
+
     useEffect(() => {
         // Function to handle the countdown logic
         const interval = setInterval(() => {
@@ -63,6 +64,7 @@ const OTPScreen = ({
                 setError(true);
             });
     };
+
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;
@@ -111,28 +113,42 @@ const OTPScreen = ({
                         autoFocus
                     />
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.resendText}>Didn't receive the code? </Text>
+                        <Text style={styles.resendText}>Didn't get the OTP? </Text>
 
                         <Pressable
                             disabled={seconds > 0}
                             style={{
                                 color: seconds >= 0 ? '#808080' : 'red',
                             }}
-                            onPress={resendOTP}
+                            onPress={() => seconds === 0 && resendOTP()}
                         >
-                            <Text style={{ color: seconds > 0 ? '#A9A9A9' : '#FFFFFF', fontSize: getFontSizeByWindowWidth(12) }}>
-                                Resend
-                            </Text>
+                            {seconds > 0 ? (
+                                <Text
+                                    style={{
+                                        color: '#808080',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'normal',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend SMS in {seconds.toString().padStart(2, '0')}s
+                                </Text>
+                            ) : (
+                                <Text
+                                    style={{
+                                        color: '#FFFFFF',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'bold',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend
+                                </Text>
+                            )}
                         </Pressable>
                     </View>
                     <View style={{}}>
-                        {seconds > 0 ? (
-                            <Text style={{ color: '#808080', fontSize: getFontSizeByWindowWidth(12), margin: 10 }}>
-                                Resend in {seconds}
-                            </Text>
-                        ) : (
-                            <Button title="Verify" onPress={handleVerifyOTP} />
-                        )}
+                        <Button title="Verify" onPress={handleVerifyOTP} />
                     </View>
                 </View>
             </View>
@@ -185,9 +201,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(10),
         color: COLOR.TEXT,
-        justifyContent: 'center', // Center content vertically
-        alignItems: 'center', // Center content horizontally
-        height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: calcHeight(7),
     },
     indicator: {
         marginTop: calcHeight(-1),
@@ -201,8 +217,8 @@ const styles = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(15),
         color: COLOR.TEXT,
         justifyContent: 'center',
-        alignItems: 'center', // Center content horizontally
-        height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
+        alignItems: 'center',
+        height: calcHeight(7),
     },
     otpText: {
         fontSize: getFontSizeByWindowWidth(15),
@@ -216,7 +232,7 @@ const styles = StyleSheet.create({
     },
     resendText: {
         color: COLOR.PRIMARY,
-        fontSize: getFontSizeByWindowWidth(12),
+        fontSize: getFontSizeByWindowWidth(10.5),
     },
 });
 

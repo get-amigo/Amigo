@@ -1,4 +1,3 @@
-// 1. Import Statements
 import { Ionicons, AntDesign, SimpleLineIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useRef, useState, useCallback, useEffect } from 'react';
@@ -156,6 +155,14 @@ function GroupScreen({ navigation }) {
 
     useSocket('activity created', fetchActivity);
 
+    const handleInputChange = (text) => {
+        if (isNumber(text)) {
+            // If it's a number, strip out non-digit characters
+            text = text.replace(/[^0-9]/g, '');
+        }
+        setAmount(text);
+    };
+
     return (
         <SafeAreaView style={styles.container}>
             <Pressable
@@ -245,7 +252,7 @@ function GroupScreen({ navigation }) {
                         placeholder="Enter the amount"
                         textAlign="center"
                         value={amount}
-                        onChangeText={setAmount}
+                        onChangeText={handleInputChange}
                     />
                 </Pressable>
                 {isNumber(amount) ? (

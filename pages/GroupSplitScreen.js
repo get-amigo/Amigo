@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput, Pressable } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTransaction } from '../context/TransactionContext';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
-import LoginImage from '../assets/Login.png';
 import { FontAwesome5 } from '@expo/vector-icons';
 import UserAvatar from '../components/UserAvatar';
 
@@ -15,59 +14,36 @@ const GroupSplitScreen = ({ navigation }) => {
     const [members, setMembers] = useState([]);
     const membersRef = useRef(members);
 
-    function countIncludedMembers() {
-        return members.filter((member) => member.included).length;
-    }
-
-    function allSelected() {
-        return countIncludedMembers() === members.length;
-    }
-
-    function selectionFraction() {
-        return `${countIncludedMembers()}/${members.length}`;
-    }
-
     useEffect(() => {
-        const parsedMembers = [];
-
-        for (i of transactionData.group.members) {
-            const memberAmount = transactionData.splitAmong.find(({ user }) => user._id == i._id)?.amount;
-            parsedMembers.push({
+        const parsedMembers = transactionData.group.members.map((member) => {
+            const memberAmount = transactionData.splitAmong.find(({ user }) => user._id === member._id)?.amount;
+            return {
                 amount: memberAmount || 0,
-                user: i,
-                included: memberAmount && true,
+                user: member,
+                included: !!memberAmount,
                 isAmountManuallyEntered: false,
-            });
-        }
+            };
+        });
+        setMembers(parsedMembers);
+    }, [transactionData]);
 
-        setMembers([...parsedMembers]);
-    }, []);
     useEffect(() => {
         membersRef.current = members;
     }, [members]);
 
+    const countIncludedMembers = () => members.filter((member) => member.included).length;
+    const allSelected = () => countIncludedMembers() === members.length;
+    const selectionFraction = () => `${countIncludedMembers()}/${members.length}`;
+
     const submitSplit = () => {
-        let totalSplitAmount = 0;
-        const includedMembers = [];
+        const includedMembers = members.filter((member) => member.included);
+        const totalSplitAmount = includedMembers.reduce((acc, member) => acc + member.amount, 0);
 
-        // Single iteration for filtering and summing
-        membersRef.current.forEach((member) => {
-            if (member.included) {
-                includedMembers.push({
-                    user: member.user,
-                    amount: member.amount,
-                });
-                totalSplitAmount += member.amount;
-            }
-        });
-
-        // Compare with the total transaction amount
-        if (totalSplitAmount != transactionData.amount) {
+        if (totalSplitAmount !== transactionData.amount) {
             alert('The split amounts do not sum up to the total transaction amount.');
-            return; // Stop the function execution
+            return;
         }
 
-        // Proceed if amounts are equal
         setTransactionData((prev) => ({
             ...prev,
             splitAmong: includedMembers,
@@ -76,33 +52,19 @@ const GroupSplitScreen = ({ navigation }) => {
     };
 
     const splitEqually = () => {
-        // Count the number of included members
-        const includedCount = members.filter((member) => member.included).length;
+        const includedMembers = members.filter((member) => member.included);
+        if (includedMembers.length === 0) return;
 
-        if (includedCount === 0) {
-            return; // Exit if no members are included
-        }
+        const totalAmount = transactionData.amount;
+        const equalShare = Math.floor(totalAmount / includedMembers.length);
+        let remainder = totalAmount % includedMembers.length;
 
-        // Calculate the amount to be assigned to each included member
-        const totalAmount = transactionData.amount || 0;
-        const equalShare = Math.floor(totalAmount / includedCount);
-        let remainder = totalAmount % includedCount;
-
-        // Update the members state
         setMembers((prevMembers) =>
             prevMembers.map((member) => {
                 if (member.included) {
-                    // Distribute the remainder among the first few members
-                    let adjustedAmount = equalShare;
-                    if (remainder > 0) {
-                        adjustedAmount += 1;
-                        remainder--;
-                    }
-                    return {
-                        ...member,
-                        amount: adjustedAmount,
-                        isAmountManuallyEntered: false,
-                    };
+                    const adjustedAmount = equalShare + (remainder > 0 ? 1 : 0);
+                    remainder = Math.max(0, remainder - 1);
+                    return { ...member, amount: adjustedAmount, isAmountManuallyEntered: false };
                 }
                 return member;
             }),
@@ -117,8 +79,8 @@ const GroupSplitScreen = ({ navigation }) => {
                     return {
                         ...member,
                         included: !member.included,
-                        isAmountManuallyEntered: member.included ? false : member.isAmountManuallyEntered,
-                        amount: member.included ? 0 : member.amount,
+                        isAmountManuallyEntered: !member.included && member.isAmountManuallyEntered,
+                        amount: !member.included ? 0 : member.amount,
                     };
                 }
                 return member;
@@ -129,72 +91,55 @@ const GroupSplitScreen = ({ navigation }) => {
     };
 
     const redistributeAmounts = (updatedMembers) => {
-        let totalAmount = transactionData.amount || 0;
-
-        // Calculate total amount already manually entered by included members
-        let manuallyEnteredTotal = updatedMembers.reduce((acc, member) => {
-            return member.isAmountManuallyEntered && member.included ? acc + member.amount : acc;
-        }, 0);
-
-        // Calculate remaining amount to distribute
-        let amountToDistribute = totalAmount - manuallyEnteredTotal;
-
-        // Distribute the remaining amount among the members who haven't manually entered their amounts and are included
-        let membersNotEntered = updatedMembers.filter((m) => !m.isAmountManuallyEntered && m.included);
-        const perUserPayment = Math.max(Math.floor(amountToDistribute / membersNotEntered.length), 0);
+        const totalAmount = transactionData.amount;
+        const manuallyEnteredTotal = updatedMembers.reduce(
+            (acc, member) => (member.isAmountManuallyEntered && member.included ? acc + member.amount : acc),
+            0,
+        );
+        const amountToDistribute = totalAmount - manuallyEnteredTotal;
+        const membersNotEntered = updatedMembers.filter((member) => !member.isAmountManuallyEntered && member.included);
+        const perUserPayment = Math.floor(amountToDistribute / membersNotEntered.length);
         const remainder = amountToDistribute % membersNotEntered.length;
 
         let distributedRemainder = 0;
-        updatedMembers.forEach((member) => {
-            if (!member.isAmountManuallyEntered && member.included) {
-                let adjustedAmount = perUserPayment;
-                if (distributedRemainder < remainder) {
-                    adjustedAmount += 1;
-                    distributedRemainder++;
+        setMembers((prevMembers) =>
+            prevMembers.map((member) => {
+                if (!member.isAmountManuallyEntered && member.included) {
+                    const adjustedAmount = perUserPayment + (distributedRemainder < remainder ? 1 : 0);
+                    distributedRemainder = Math.max(0, distributedRemainder - 1);
+                    return { ...member, amount: adjustedAmount };
                 }
-                member.amount = adjustedAmount;
-            }
-        });
+                return member;
+            }),
+        );
     };
 
     const handleAmountChange = (amount, id) => {
         const newAmount = Math.max(parseInt(amount) || 0, 0);
-        let totalAmount = transactionData.amount || 0;
+        const totalAmount = transactionData.amount;
+        const manuallyEnteredTotal = members.reduce(
+            (acc, member) => (member.isAmountManuallyEntered && member.user._id !== id && member.included ? acc + member.amount : acc),
+            newAmount,
+        );
 
-        let manuallyEnteredTotal = newAmount;
-        members.forEach((member) => {
-            if (member.isAmountManuallyEntered && member.user._id !== id && member.included) {
-                manuallyEnteredTotal += member.amount;
-            }
-        });
-
-        if (manuallyEnteredTotal > totalAmount) {
-            // Handle the case where the total exceeds the limit
-            // Reset newAmount or alert the user
-            return; // Exit the function or reset newAmount as needed
-        }
+        if (manuallyEnteredTotal > totalAmount) return;
 
         setMembers((prevMembers) => {
-            let amountToDistribute = totalAmount - manuallyEnteredTotal;
-            let membersNotEntered = prevMembers.filter((m) => !m.isAmountManuallyEntered && m.user._id !== id && m.included);
-            const perUserPayment = Math.max(Math.floor(amountToDistribute / membersNotEntered.length), 0);
+            const amountToDistribute = totalAmount - manuallyEnteredTotal;
+            const membersNotEntered = prevMembers.filter(
+                (member) => !member.isAmountManuallyEntered && member.user._id !== id && member.included,
+            );
+            const perUserPayment = Math.floor(amountToDistribute / membersNotEntered.length);
             const remainder = amountToDistribute % membersNotEntered.length;
 
             let distributedRemainder = 0;
             return prevMembers.map((member) => {
                 if (member.user._id === id) {
-                    return {
-                        ...member,
-                        amount: newAmount,
-                        isAmountManuallyEntered: true,
-                        included: true,
-                    };
-                } else if (!member.isAmountManuallyEntered && member.included) {
-                    let adjustedAmount = perUserPayment;
-                    if (distributedRemainder < remainder) {
-                        adjustedAmount += 1;
-                        distributedRemainder++;
-                    }
+                    return { ...member, amount: newAmount, isAmountManuallyEntered: true, included: true };
+                }
+                if (!member.isAmountManuallyEntered && member.included) {
+                    const adjustedAmount = perUserPayment + (distributedRemainder < remainder ? 1 : 0);
+                    distributedRemainder = Math.max(0, distributedRemainder - 1);
                     return { ...member, amount: adjustedAmount };
                 }
                 return member;
@@ -206,112 +151,56 @@ const GroupSplitScreen = ({ navigation }) => {
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity onPress={submitSplit}>
-                    <Text style={[styles.tabBarText]}>Done</Text>
+                    <Text style={styles.tabBarText}>Done</Text>
                 </TouchableOpacity>
             ),
         });
     }, [navigation]);
 
-    const renderItem = ({ item }) => {
-        return (
-            <View style={styles.memberContainer}>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: calcWidth(10),
-                    }}
-                >
-                    <TouchableOpacity onPress={() => toggleMemberIncluded(item.user._id)}>
-                        <MaterialCommunityIcons
-                            name={item.included ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                            size={calcWidth(7)}
-                            color={item.included ? COLOR.BUTTON : COLOR.TEXT}
-                        />
-                    </TouchableOpacity>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <UserAvatar user={item.user} />
-                        <Text style={styles.memberName}>{item.user.name}</Text>
-                    </View>
-                </View>
-
-                <View style={styles.rowCentered}>
-                    <Text style={styles.amount}>₹</Text>
-                    <TextInput
-                        style={styles.amount}
-                        value={String(item.amount)}
-                        onChangeText={(newAmount) => handleAmountChange(newAmount, item.user._id)}
+    const renderItem = ({ item }) => (
+        <View style={styles.memberContainer}>
+            <View style={styles.memberInfo}>
+                <TouchableOpacity onPress={() => toggleMemberIncluded(item.user._id)}>
+                    <MaterialCommunityIcons
+                        name={item.included ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                        size={calcWidth(7)}
+                        color={item.included ? COLOR.BUTTON : COLOR.TEXT}
                     />
+                </TouchableOpacity>
+                <View style={styles.memberDetails}>
+                    <UserAvatar user={item.user} />
+                    <Text style={styles.memberName}>{item.user.name}</Text>
                 </View>
             </View>
-        );
-    };
+            <View style={styles.rowCentered}>
+                <Text style={styles.amount}>₹</Text>
+                <TextInput
+                    style={styles.amount}
+                    value={String(item.amount)}
+                    onChangeText={(newAmount) => handleAmountChange(newAmount, item.user._id)}
+                />
+            </View>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerText}>₹{transactionData.amount || 0} Paid by</Text>
-                <Pressable
-                    onPress={() => navigation.navigate(PAGES.SELECT_PAID_BY)}
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        borderWidth: 1,
-                        padding: calcHeight(0.5),
-                        borderColor: '#D9D9D9',
-                        borderRadius: 5,
-                    }}
-                >
+                <Pressable onPress={() => navigation.navigate(PAGES.SELECT_PAID_BY)} style={styles.paidByButton}>
                     <UserAvatar size={2} user={transactionData.paidBy} />
-
-                    <Text
-                        style={{
-                            color: COLOR.TEXT,
-                            fontWeight: 'bold',
-                            fontSize: getFontSizeByWindowWidth(12),
-                        }}
-                    >
-                        {sliceText(transactionData.paidBy.name, 7)}
-                    </Text>
+                    <Text style={styles.paidByText}>{sliceText(transactionData.paidBy.name, 7)}</Text>
                 </Pressable>
             </View>
-
-            <View
-                style={{
-                    paddingHorizontal: calcWidth(5),
-                    paddingBottom: calcHeight(2),
-                    marginTop: calcHeight(5),
-                    borderBottomColor: 'rgba(255, 255, 255, 0.13)',
-                    borderBottomWidth: 1,
-                }}
-            >
-                <Text
-                    style={{
-                        color: COLOR.TEXT,
-                        fontSize: getFontSizeByWindowWidth(15),
-                        fontWeight: 'bold',
-                    }}
-                >
-                    Split between
-                </Text>
+            <View style={styles.splitHeader}>
+                <Text style={styles.splitHeaderText}>Split between</Text>
             </View>
-            <View style={styles.memberContainer}>
+            <View style={styles.memberSelection}>
                 <TouchableOpacity
                     onPress={() => {
-                        if (allSelected()) {
-                            members.map((member) => {
-                                toggleMemberIncluded(member.user._id);
-                            });
-                        } else {
-                            members.map((member) => {
-                                if (!member.included) toggleMemberIncluded(member.user._id);
-                            });
-                        }
+                        const toggleAll = allSelected()
+                            ? members.map((member) => toggleMemberIncluded(member.user._id))
+                            : members.map((member) => !member.included && toggleMemberIncluded(member.user._id));
                     }}
                 >
                     <MaterialCommunityIcons
@@ -320,32 +209,13 @@ const GroupSplitScreen = ({ navigation }) => {
                         color={allSelected() ? COLOR.BUTTON : COLOR.TEXT}
                     />
                 </TouchableOpacity>
-                <Text
-                    style={{
-                        color: '#FFFFFF',
-                    }}
-                >
-                    {selectionFraction()} Selected
-                </Text>
-                <TouchableOpacity
-                    onPress={() => splitEqually()}
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: calcWidth(1),
-                    }}
-                >
+                <Text style={styles.selectionText}>{selectionFraction()} Selected</Text>
+                <TouchableOpacity onPress={splitEqually} style={styles.splitEquallyButton}>
                     <FontAwesome5 name="redo" size={calcWidth(3)} color={COLOR.BUTTON} />
-                    <Text
-                        style={{
-                            color: COLOR.BUTTON,
-                        }}
-                    >
-                        Split Equally
-                    </Text>
+                    <Text style={styles.splitEquallyText}>Split Equally</Text>
                 </TouchableOpacity>
             </View>
-            <FlatList data={members} renderItem={renderItem} keyExtractor={(item) => item.id} />
+            <FlatList data={members} renderItem={renderItem} keyExtractor={(item) => item.user._id} />
         </View>
     );
 };
@@ -371,10 +241,61 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: getFontSizeByWindowWidth(14),
     },
+    paidByButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        padding: calcHeight(0.5),
+        borderColor: '#D9D9D9',
+        borderRadius: 5,
+    },
+    paidByText: {
+        color: COLOR.TEXT,
+        fontWeight: 'bold',
+        fontSize: getFontSizeByWindowWidth(12),
+    },
+    splitHeader: {
+        paddingHorizontal: calcWidth(5),
+        paddingBottom: calcHeight(2),
+        marginTop: calcHeight(5),
+        borderBottomColor: 'rgba(255, 255, 255, 0.13)',
+        borderBottomWidth: 1,
+    },
+    splitHeaderText: {
+        color: COLOR.TEXT,
+        fontSize: getFontSizeByWindowWidth(15),
+        fontWeight: 'bold',
+    },
+    memberSelection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: calcHeight(3),
+    },
+    selectionText: {
+        color: '#FFFFFF',
+    },
+    splitEquallyButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: calcWidth(1),
+    },
+    splitEquallyText: {
+        color: COLOR.BUTTON,
+    },
     memberContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         padding: calcHeight(3),
+        alignItems: 'center',
+    },
+    memberInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: calcWidth(10),
+    },
+    memberDetails: {
+        flexDirection: 'row',
         alignItems: 'center',
     },
     memberName: {
@@ -383,19 +304,12 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         marginLeft: calcWidth(2),
     },
-    memberAmount: {
-        fontSize: getFontSizeByWindowWidth(15),
-        color: COLOR.TEXT,
-        fontWeight: 'bold',
-    },
     rowCentered: {
         flexDirection: 'row',
         justifyContent: 'center',
         alignContent: 'center',
     },
     amount: {
-        alignItems: 'center',
-        alignContent: 'center',
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(20),
     },

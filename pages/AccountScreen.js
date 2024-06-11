@@ -127,73 +127,75 @@ function ProfileScreen({ navigation }) {
     }, [navigation, editMode]);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.userInfo}>
-                <UserAvatar user={user} size={7} />
-                <View>
-                    {editMode ? (
-                        <View>
-                            <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus maxLength={25} />
-                            <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
-                        </View>
-                    ) : (
-                        <Text style={styles.userName}>{name}</Text>
-                    )}
-                    <Text style={styles.userPhone}>{phoneNumber}</Text>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.userInfo}>
+                    <UserAvatar user={user} size={7} />
+                    <View>
+                        {editMode ? (
+                            <View>
+                                <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus maxLength={25} />
+                                <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
+                            </View>
+                        ) : (
+                            <Text style={styles.userName}>{name}</Text>
+                        )}
+                        <Text style={styles.userPhone}>{phoneNumber}</Text>
+                    </View>
+                    <Pressable
+                        onPress={() => {
+                            setEditMode((prev) => !prev);
+                        }}
+                    >
+                        <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} />
+                    </Pressable>
                 </View>
+
                 <Pressable
+                    style={styles.inviteFriends}
                     onPress={() => {
-                        setEditMode((prev) => !prev);
+                        Share.share({
+                            message:
+                                'Download our App: ' +
+                                `${
+                                    Platform.OS == 'ios'
+                                        ? 'https://apps.apple.com/us/app/qr-generator-app/id6469707187'
+                                        : 'https://play.google.com/store/apps/details?id=com.devonetech.android.qrguru&hl=en_IN&gl=US'
+                                }`,
+                        });
                     }}
                 >
-                    <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} />
+                    <Octicons name="cross-reference" size={calcHeight(2)} color="white" />
+                    <Text style={styles.menuText}>Invite Friends</Text>
                 </Pressable>
-            </View>
 
-            <Pressable
-                style={styles.inviteFriends}
-                onPress={() => {
-                    Share.share({
-                        message:
-                            'Download our App: ' +
-                            `${
-                                Platform.OS == 'ios'
-                                    ? 'https://apps.apple.com/us/app/qr-generator-app/id6469707187'
-                                    : 'https://play.google.com/store/apps/details?id=com.devonetech.android.qrguru&hl=en_IN&gl=US'
-                            }`,
-                    });
-                }}
-            >
-                <Octicons name="cross-reference" size={calcHeight(2)} color="white" />
-                <Text style={styles.menuText}>Invite Friends</Text>
-            </Pressable>
+                {menuOptions.map((option, index) => (
+                    <MenuOption
+                        key={index}
+                        label={option.label}
+                        iconName={option.iconName}
+                        IconComponent={option.IconComponent}
+                        onPress={option.onPress}
+                    />
+                ))}
 
-            {menuOptions.map((option, index) => (
                 <MenuOption
-                    key={index}
-                    label={option.label}
-                    iconName={option.iconName}
-                    IconComponent={option.IconComponent}
-                    onPress={option.onPress}
+                    label="Logout"
+                    iconName="logout"
+                    IconComponent={MaterialIcons}
+                    additionalStyle={styles.logoutStyle}
+                    onPress={logoutHandler}
                 />
-            ))}
-
-            <MenuOption
-                label="Logout"
-                iconName="logout"
-                IconComponent={MaterialIcons}
-                additionalStyle={styles.logoutStyle}
-                onPress={logoutHandler}
-            />
-            <MenuOption
-                label="Delete"
-                iconName="delete-forever"
-                IconComponent={MaterialIcons}
-                additionalStyle={{ color: COLOR.DELETION_COLOR }}
-                onPress={deleteHandler}
-                color={COLOR.DELETION_COLOR}
-            />
-        </SafeAreaView>
+                <MenuOption
+                    label="Delete"
+                    iconName="delete-forever"
+                    IconComponent={MaterialIcons}
+                    additionalStyle={{ color: COLOR.DELETION_COLOR }}
+                    onPress={deleteHandler}
+                    color={COLOR.DELETION_COLOR}
+                />
+            </SafeAreaView>
+        </TouchableWithoutFeedback>
     );
 }
 

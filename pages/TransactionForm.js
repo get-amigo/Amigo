@@ -21,11 +21,11 @@ import useGroupActivities, { useGroupActivitiesStore } from '../stores/groupActi
 
 function TransactionFormScreen({ navigation }) {
     const [loading, setIsLoading] = useState(false);
+    const [height, setHeight] = useState(50);
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
-
     const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
 
     useEffect(() => {
@@ -74,7 +74,6 @@ function TransactionFormScreen({ navigation }) {
         }
     };
 
-    // const remainingCharacters = 100 - transactionData.description.length;
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
     const handleCategorySelect = (category) => {
@@ -101,7 +100,6 @@ function TransactionFormScreen({ navigation }) {
         }
 
         try {
-            // Create a new object with modifications, leaving original transactionData unchanged
             const newTransaction = {
                 ...transactionData,
                 amount: parseInt(transactionData.amount, 10),
@@ -175,6 +173,10 @@ function TransactionFormScreen({ navigation }) {
         }
     };
 
+    const handleContentSizeChange = (contentWidth, contentHeight) => {
+        setHeight(contentHeight + 20);
+    };
+
     return loading ? (
         <Loader />
     ) : (
@@ -184,7 +186,7 @@ function TransactionFormScreen({ navigation }) {
             <View style={styles.rowCentered}>
                 <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
                     <TextInput
-                        style={styles.description}
+                        style={[styles.description, { height, minWidth: '30%', maxWidth: '80%' }]}
                         onChangeText={(text) => handleInputChange('description', text)}
                         value={transactionData.description}
                         placeholder="Description"
@@ -193,6 +195,7 @@ function TransactionFormScreen({ navigation }) {
                         textAlign="center"
                         maxLength={100}
                         multiline={true}
+                        onContentSizeChange={(e) => handleContentSizeChange(e.nativeEvent.contentSize.width, e.nativeEvent.contentSize.height)}
                     />
                 </Pressable>
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
@@ -273,6 +276,7 @@ function TransactionFormScreen({ navigation }) {
                             padding: calcWidth(4),
                             borderRadius: 8,
                             flexDirection: 'row',
+                            alignItems: 'center',
                             justifyContent: 'space-evenly',
                             marginTop: calcHeight(2),
                             width: calcWidth(40),
@@ -349,7 +353,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     description: {
-        flex: 1,
         color: 'white',
     },
     descriptionContainer: {
@@ -359,7 +362,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        width: calcWidth(30),
     },
     remainingCharacters: {
         color: COLOR.BUTTON,
@@ -382,6 +384,10 @@ const styles = StyleSheet.create({
         backgroundColor: '#4D426C', // Highlight color for selected category,
         borderRadius: 10,
         color: COLOR.TEXT,
+    },
+    TextInput: {
+        flexGrow: 1,
+        color: 'white',
     },
 });
 

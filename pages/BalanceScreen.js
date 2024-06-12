@@ -20,14 +20,15 @@ import { useBalance } from '../stores/balance';
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
     const { fetchData, loading, totalBalances, balances } = useBalance();
+    const [isLoading, setIsLoading] = useState(true);
 
     useFocusEffect(
         useCallback(() => {
-            fetchData(user);
+            fetchData(user).then(() => setIsLoading(false));
         }, []),
     );
 
-    if (loading)
+    if (isLoading)
         return (
             <SafeAreaView style={styles.container}>
                 <View

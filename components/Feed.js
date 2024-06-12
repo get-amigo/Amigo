@@ -12,6 +12,8 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import apiHelper from '../helper/apiHelper';
 import Toast from 'react-native-root-toast';
+// import { BlurView } from 'expo-blur';
+import { BlurView } from '@react-native-community/blur';
 
 function convertToCustomFormat(dateString) {
     const date = new Date(dateString);
@@ -147,6 +149,8 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
                     <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                         <View style={styles.modalOverlay}>
+                            {/* <BlurView style={[StyleSheet.absoluteFillObject,{backgroundColor:"rgba(10,10,10,0.85)"}]} tint='dark' intensity={100} /> */}
+                            <BlurView style={styles.absolute} blurType="regular" blurAmount={12} reducedTransparencyFallbackColor="white" />
                             <TouchableWithoutFeedback>
                                 <View style={styles.modalContainer}>
                                     {selectedTransaction && (
@@ -506,14 +510,20 @@ const styles = StyleSheet.create({
         width: calcWidth(76),
         paddingHorizontal: calcWidth(4),
     },
-
+    absolute: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+    },
     modalOverlay: {
         flex: 1,
         // paddingTop:calcHeight(40),
         paddingTop: calcHeight(32),
         alignItems: 'flex-end',
         paddingRight: calcWidth(6),
-        backgroundColor: 'rgba(10, 10, 10, 0.8)',
+        // backgroundColor: 'rgba(10, 10, 10, 0.8)',
         // backgroundColor: 'rgba(0, 0, 0, 0.9)',
     },
     modalContainer: {
@@ -556,7 +566,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(44, 44, 46, 1)',
         // backgroundColor: COLOR.BUTTON,
-        backgroundColor: 'rgba(28, 28, 30, 1)',
+        backgroundColor: 'rgba(28, 28, 30, 0.8)',
+        // backgroundColor: 'rgba(28, 28, 30, 1)',
         alignItems: 'center',
     },
     modalButtonText: {

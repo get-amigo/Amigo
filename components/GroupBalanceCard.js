@@ -9,6 +9,7 @@ import PAGES from '../constants/pages';
 import GroupIcon from './GroupIcon';
 import sliceText from '../helper/sliceText';
 function GroupBalanceCard({ group, loading }) {
+    
     if (loading)
         return (
             <Pressable
@@ -16,6 +17,7 @@ function GroupBalanceCard({ group, loading }) {
                     navigation.navigate(PAGES.GROUP_BALANCE, { group });
                 }}
                 style={styles.container}
+                disabled={loading}                
             >
                 <View
                     style={{

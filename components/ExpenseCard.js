@@ -15,40 +15,44 @@ import PAGES from '../constants/pages';
 import getNamesFromContacts from '../helper/getNamesFromContacts';
 import editNames from '../helper/editNames';
 import { getCategoryIcon } from '../constants/Categories';
+import { ScrollView } from 'react-native';
+
 // ExpenseCard Component
 function ExpenseCard({ item, loading }) {
     if (loading) {
         return (
-            <View style={styles.cardContainer}>
-                <View style={styles.cardInnerContainer}>
-                    <GroupIcon size={5} />
-                    <View style={styles.textContainer}>
-                        <Text
-                            style={[
-                                styles.descriptionText,
-                                {
-                                    backgroundColor: COLOR.SKELETON_MASK_COLOR,
-                                    width: calcWidth(30),
-                                    borderRadius: 10,
-                                },
-                            ]}
-                        >
-                            {/* Adjust the value (10) to your desired border radius */}
-                        </Text>
-                        <Text
-                            style={[
-                                styles.groupText,
-                                {
-                                    backgroundColor: COLOR.SKELETON_MASK_COLOR,
-                                    width: calcWidth(50),
-                                    borderRadius: 10,
-                                },
-                            ]}
-                        ></Text>
-                        <Text style={[styles.dateText, { opacity: 0 }]}>Ramdom</Text>
+            <ScrollView scrollEnabled={false}>
+                <View style={styles.cardContainer}>
+                    <View style={styles.cardInnerContainer}>
+                        <GroupIcon size={5} />
+                        <View style={styles.textContainer}>
+                            <Text
+                                style={[
+                                    styles.descriptionText,
+                                    {
+                                        backgroundColor: COLOR.SKELETON_MASK_COLOR,
+                                        width: calcWidth(30),
+                                        borderRadius: 10,
+                                    },
+                                ]}
+                            >
+                                {/* Adjust the value (10) to your desired border radius */}
+                            </Text>
+                            <Text
+                                style={[
+                                    styles.groupText,
+                                    {
+                                        backgroundColor: COLOR.SKELETON_MASK_COLOR,
+                                        width: calcWidth(50),
+                                        borderRadius: 10,
+                                    },
+                                ]}
+                            ></Text>
+                            <Text style={[styles.dateText, { opacity: 0 }]}>Random</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 

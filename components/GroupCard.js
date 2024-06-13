@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable, ScrollView } from 'react-native';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
 import LoginImage from '../assets/Login.png';
@@ -12,31 +12,33 @@ import sliceText from '../helper/sliceText';
 function GroupCard({ group, loading }) {
     if (loading)
         return (
-            <View style={styles.container}>
-                <GroupIcon />
-                <View style={styles.textContainer}>
-                    <Text
-                        style={[
-                            styles.nameText,
-                            {
-                                backgroundColor: COLOR.SKELETON_MASK_COLOR,
-                                width: calcWidth(30),
-                                borderRadius: 10,
-                            },
-                        ]}
-                    ></Text>
-                    <Text
-                        style={[
-                            styles.memberText,
-                            {
-                                backgroundColor: COLOR.SKELETON_MASK_COLOR,
-                                width: calcWidth(50),
-                                borderRadius: 10,
-                            },
-                        ]}
-                    ></Text>
+            <ScrollView scrollEnabled={false}>
+                <View style={styles.container}>
+                    <GroupIcon />
+                    <View style={styles.textContainer}>
+                        <Text
+                            style={[
+                                styles.nameText,
+                                {
+                                    backgroundColor: COLOR.SKELETON_MASK_COLOR,
+                                    width: calcWidth(30),
+                                    borderRadius: 10,
+                                },
+                            ]}
+                        ></Text>
+                        <Text
+                            style={[
+                                styles.memberText,
+                                {
+                                    backgroundColor: COLOR.SKELETON_MASK_COLOR,
+                                    width: calcWidth(50),
+                                    borderRadius: 10,
+                                },
+                            ]}
+                        ></Text>
+                    </View>
                 </View>
-            </View>
+            </ScrollView>
         );
     const navigation = useNavigation();
     const { setGroup } = useGroup();

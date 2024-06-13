@@ -97,6 +97,7 @@ function BalanceScreen({ navigation }) {
                     style={{
                         marginTop: calcHeight(5),
                     }}
+                    scrollEnabled={!loading}
                 />
             </SafeAreaView>
         );

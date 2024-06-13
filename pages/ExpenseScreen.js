@@ -55,7 +55,12 @@ function ExpenseScreen() {
                         </Text>
                     </View>
                 </View>
-                <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
+                <FlatList 
+                    data={[{}, {}, {}]} 
+                    renderItem={({ item }) => <ExpenseCard item={item} loading />} 
+                    style={styles.list} 
+                    scrollEnabled={loading}
+                />
             </SafeAreaView>
         );
     return (

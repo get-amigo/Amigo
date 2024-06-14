@@ -16,20 +16,30 @@ const filterUniqueContacts = (contactsData) => {
 const mapToSimplifiedContacts = (uniqueContacts) => {
     const defaultCountryCode = getDefaultCountryCode();
 
-    return uniqueContacts.map((contact) => {
-        const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
+    const simplifiedContacts = uniqueContacts.map((contact) => {
+        let phoneNumber = null;
+        try {
+            phoneNumber = contact.phoneNumbers ? parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode) : null;
+        } catch (error) {
+            console.warn(`Error parsing phone number: ${contact.phoneNumbers[0].number}`, error);
+        }
+
         return {
             id: contact.id,
             name: contact.name || '',
-            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : '',
-            countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : ' ',
+            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : 'Invalid number',
+            countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : '',
             imageURI: contact.imageAvailable ? contact.image.uri : '',
             color: generateRandomColor(),
         };
     });
+
+    return simplifiedContacts;
 };
 
-const handleLoadContactsError = (error) => {};
+const handleLoadContactsError = (error) => {
+    console.error('Error loading contacts:', error);
+};
 
 const fetchContactsData = async () => {
     try {
@@ -49,11 +59,11 @@ const fetchContactsData = async () => {
 
             // Check if there are multiple phone numbers for the contact
             if (phoneNumbers && phoneNumbers.length > 1) {
-                // Create a copy of the contact for each phone number
+                // Create a copy of the contact for each phone number                
                 phoneNumbers.forEach((phoneNumber) => {
                     const contactCopy = {
                         name,
-                        phoneNumbers: [phoneNumber], // Create an array with a single phone number
+                        phoneNumbers: [phoneNumber], // Create an array with a single phone number 
                         image,
                     };
                     contactsWithMultipleNumbers.push(contactCopy);
@@ -66,7 +76,7 @@ const fetchContactsData = async () => {
 
         return contactsWithMultipleNumbers;
     } catch (error) {
-        console.error('Error fetching contacts data:', error);
+        handleLoadContactsError(error);
         throw error;
     }
 };

@@ -12,7 +12,6 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import apiHelper from '../helper/apiHelper';
 import Toast from 'react-native-root-toast';
-// import { BlurView } from 'expo-blur';
 import { BlurView } from '@react-native-community/blur';
 
 function convertToCustomFormat(dateString) {
@@ -500,13 +499,8 @@ const styles = StyleSheet.create({
         marginTop: calcHeight(2),
     },
 
-    // Delete Modal styling
     selectedTransactionCard: {
-        // right:calcWidth(16),
         flexDirection: 'column',
-        // marginLeft:calcWidth(-28),
-        // borderWidth:1,
-        // borderColor:"white",
         width: calcWidth(76),
         paddingHorizontal: calcWidth(4),
     },
@@ -519,18 +513,14 @@ const styles = StyleSheet.create({
     },
     modalOverlay: {
         flex: 1,
-        // paddingTop:calcHeight(40),
         paddingTop: calcHeight(32),
         alignItems: 'flex-end',
         paddingRight: calcWidth(6),
-        // backgroundColor: 'rgba(10, 10, 10, 0.8)',
-        // backgroundColor: 'rgba(0, 0, 0, 0.9)',
     },
     modalContainer: {
         width: '80%',
         backgroundColor: COLOR.APP_BACKGROUND,
         borderWidth: 1,
-        // borderColor:COLOR.BUTTON,
         borderRadius: 10,
         paddingHorizontal: calcWidth(4),
         paddingVertical: calcHeight(4),
@@ -545,18 +535,14 @@ const styles = StyleSheet.create({
     modalText: {
         fontSize: getFontSizeByWindowWidth(14),
         marginBottom: calcHeight(2),
-        // color:COLOR.TEXT,
         color: 'rgba(255,255,255,0.6)',
     },
     modalButtons: {
         position: 'absolute',
         top: calcHeight(22.8),
-        // top:calcHeight(28),
         left: calcWidth(22),
-        // alignSelf:"center",
     },
     modalButton: {
-        // flex: 1,
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: calcWidth(54),
@@ -565,17 +551,12 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         borderColor: 'rgba(44, 44, 46, 1)',
-        // backgroundColor: COLOR.BUTTON,
         backgroundColor: 'rgba(28, 28, 30, 0.8)',
-        // backgroundColor: 'rgba(28, 28, 30, 1)',
         alignItems: 'center',
     },
     modalButtonText: {
-        // color: 'rgba(255,255,255,1)',
-        // color: "red",
         color: 'rgba(255, 69, 58, 1)',
         fontSize: getFontSizeByWindowWidth(14),
-        // fontWeight: 'bold',
     },
 });
 

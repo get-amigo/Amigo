@@ -19,8 +19,29 @@ const OTPScreen = ({
     const inputRef = useRef();
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
-
+    const [seconds, setSeconds] = useState(30);
     const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
+
+    useEffect(() => {
+        // Function to handle the countdown logic
+        const interval = setInterval(() => {
+            if (seconds > 0) {
+                setSeconds(seconds - 1);
+            }
+
+            if (seconds === 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [seconds]);
+
+    const resendOTP = () => {
+        setSeconds(30);
+        loginWithPhoneNumber(phoneNumber);
+    };
 
     const handleOTPChange = (text) => {
         setError(false);
@@ -42,7 +63,8 @@ const OTPScreen = ({
                 setLoading(false);
                 setError(true);
             });
-    }
+    };
+
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;
@@ -91,26 +113,43 @@ const OTPScreen = ({
                         autoFocus
                     />
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.resendText}>Didn't receive the code? </Text>
-                        <TouchableOpacity
-                            onPress={() => loginWithPhoneNumber(phoneNumber)}
-                        >
-                            <Text
-                                style={{
-                                    fontWeight: 'bold',
-                                    ...styles.resendText,
-                                }}
-                            >
-                                Resend
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+                        <Text style={styles.resendText}>Didn't get the OTP? </Text>
 
-                    {isAuthStateLoading ? (
-                        <ActivityIndicator size="medium" color={COLOR.PRIMARY} style={styles.indicator} />
-                    ) : (
+                        <Pressable
+                            disabled={seconds > 0}
+                            style={{
+                                color: seconds >= 0 ? '#808080' : 'red',
+                            }}
+                            onPress={() => seconds === 0 && resendOTP()}
+                        >
+                            {seconds > 0 ? (
+                                <Text
+                                    style={{
+                                        color: '#808080',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'normal',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend SMS in {seconds.toString().padStart(2, '0')}s
+                                </Text>
+                            ) : (
+                                <Text
+                                    style={{
+                                        color: '#FFFFFF',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'bold',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend
+                                </Text>
+                            )}
+                        </Pressable>
+                    </View>
+                    <View style={{}}>
                         <Button title="Verify" onPress={handleVerifyOTP} />
-                    )}
+                    </View>
                 </View>
             </View>
         </SafeAreaView>
@@ -162,12 +201,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(10),
         color: COLOR.TEXT,
-        justifyContent: 'center', // Center content vertically
-        alignItems: 'center', // Center content horizontally
-        height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: calcHeight(7),
     },
     indicator: {
-        marginTop: calcHeight(4),
+        marginTop: calcHeight(-1),
+        paddingHorizontal: calcWidth(2),
     },
     highlightedBox: {
         width: calcWidth(11),
@@ -176,9 +216,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(15),
         color: COLOR.TEXT,
-        justifyContent: 'center', // Center content vertically
-        alignItems: 'center', // Center content horizontally
-        height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: calcHeight(7),
     },
     otpText: {
         fontSize: getFontSizeByWindowWidth(15),
@@ -192,7 +232,7 @@ const styles = StyleSheet.create({
     },
     resendText: {
         color: COLOR.PRIMARY,
-        fontSize: getFontSizeByWindowWidth(12),
+        fontSize: getFontSizeByWindowWidth(10.5),
     },
 });
 

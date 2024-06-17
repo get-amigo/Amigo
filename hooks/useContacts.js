@@ -1,8 +1,9 @@
 import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
 import generateRandomColor from '../helper/generateRandomColor';
 import { useAuth } from '../stores/auth';
+import { parsePhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js';
+import getDefaultCountryCode from '../helper/getDefaultCountryCode';
 
 const ContactsContext = createContext();
 
@@ -15,18 +16,22 @@ const filterUniqueContacts = (contactsData, userPhoneNumber) => {
 };
 
 const mapToSimplifiedContacts = (uniqueContacts) => {
-    return uniqueContacts.map((contact) => ({
-        id: contact.id,
-        name: contact.name || '',
-        phoneNumber: contact.phoneNumbers[0].number.replace(/\D/g, '').slice(-10),
-        imageURI: contact.imageAvailable ? contact.image.uri : '',
-        color: generateRandomColor(),
-    }));
+    const defaultCountryCode = getDefaultCountryCode();
+
+    return uniqueContacts.map((contact) => {
+        const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
+        return {
+            id: contact.id,
+            name: contact.name || '',
+            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : '',
+            countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : ' ',
+            imageURI: contact.imageAvailable ? contact.image.uri : '',
+            color: generateRandomColor(),
+        };
+    });
 };
 
-const handleLoadContactsError = (error) => {
-    console.error('Error loading contacts:', error);
-};
+const handleLoadContactsError = (error) => {};
 
 const fetchContactsData = async () => {
     try {

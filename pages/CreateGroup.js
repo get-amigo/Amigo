@@ -16,8 +16,6 @@ import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
 import { useAuth } from '../stores/auth';
-import PhoneBottomSheet from '../components/PhoneBottomSheet';
-import PhoneNumberBottomSheetProvider from '../context/PhoneNumberBottomSheetContext';
 
 const CreateGroup = ({ navigation }) => {
     const { selectedContacts } = useContacts();
@@ -53,46 +51,43 @@ const CreateGroup = ({ navigation }) => {
         <>
             {isLoading && <Loader />}
             {!isLoading && (
-                <PhoneNumberBottomSheetProvider>
-                    <SafeAreaView style={styles.container}>
-                        <View style={{ marginHorizontal: calcWidth(5) }}>
-                            <Text style={styles.heading}>New group</Text>
-                            <Pressable style={styles.inputContainer} onPress={() => nameRef.current.focus()}>
-                                <TextInput
-                                    style={styles.input}
-                                    onChangeText={setGroupName}
-                                    value={groupName}
-                                    placeholder="Group Name"
-                                    placeholderTextColor="gray"
-                                    ref={nameRef}
-                                />
-                            </Pressable>
-                            <View>
-                                <Text style={styles.titleText}>Add members</Text>
-                            </View>
-                            <View style={styles.contactListContainer}>
-                                <View></View>
-                                <ContactList />
-                            </View>
-
-                            <View style={styles.button}>
-                                <Button
-                                    title="Create Group"
-                                    onPress={
-                                        selectedContacts.length === 0 || groupName === ''
-                                            ? () =>
-                                                  Toast.show('Select a contact', {
-                                                      duration: Toast.durations.LONG,
-                                                  })
-                                            : createGroupAsync
-                                    }
-                                    styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
-                                />
-                            </View>
+                <SafeAreaView style={styles.container}>
+                    <View style={{ marginHorizontal: calcWidth(5) }}>
+                        <Text style={styles.heading}>New group</Text>
+                        <Pressable style={styles.inputContainer} onPress={() => nameRef.current.focus()}>
+                            <TextInput
+                                style={styles.input}
+                                onChangeText={setGroupName}
+                                value={groupName}
+                                placeholder="Group Name"
+                                placeholderTextColor="gray"
+                                ref={nameRef}
+                            />
+                        </Pressable>
+                        <View>
+                            <Text style={styles.titleText}>Add members</Text>
                         </View>
-                        <PhoneBottomSheet />
-                    </SafeAreaView>
-                </PhoneNumberBottomSheetProvider>
+                        <View style={styles.contactListContainer}>
+                            <View></View>
+                            <ContactList />
+                        </View>
+
+                        <View style={styles.button}>
+                            <Button
+                                title="Create Group"
+                                onPress={
+                                    selectedContacts.length === 0 || groupName === ''
+                                        ? () =>
+                                              Toast.show('Select a contact', {
+                                                  duration: Toast.durations.LONG,
+                                              })
+                                        : createGroupAsync
+                                }
+                                styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
+                            />
+                        </View>
+                    </View>
+                </SafeAreaView>
             )}
         </>
     );

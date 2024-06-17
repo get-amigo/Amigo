@@ -1,4 +1,4 @@
-import { Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Dimensions, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { AntDesign } from '@expo/vector-icons';
@@ -6,10 +6,9 @@ import COLOR from '../constants/Colors';
 import parsePhoneNumber from 'libphonenumber-js';
 import { useContacts } from '../hooks/useContacts';
 import { Entypo } from '@expo/vector-icons';
-import { PhoneNumberBottomSheetContext } from '../context/PhoneNumberBottomSheetContext';
+import BottomSheet, { BottomSheetBackdrop, BottomSheetModal, BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
 
 const AddMemberWithoutContact = () => {
-    const { bottomSheetRef, setPhoneNumber } = useContext(PhoneNumberBottomSheetContext);
     const { search, contacts, selectedContacts, setSelectedContacts } = useContacts();
 
     const [isContactFound, setIsContactFound] = useState(true);
@@ -39,6 +38,43 @@ const AddMemberWithoutContact = () => {
         }
     };
 
+    // Bottom sheet
+    const bottomSheetRef = useRef(null);
+
+    const [error, setError] = useState();
+    const [phoneNumber, setPhoneNumber] = useState();
+
+    const renderBackdrop = useCallback((props) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, []);
+    const snapPoints = useMemo(() => ['40%', '70%'], []);
+
+    const handleSheetChanges = useCallback((index) => {
+        console.log('handleSheetChanges', index);
+    }, []);
+
+    const handleClose = useCallback(() => {
+        setError();
+    }, []);
+
+    const addToSelectedContacts = (phoneNumber) => {
+        // validate phone number
+        if (phoneNumber && !isNaN(Number(phoneNumber))) {
+            phoneNumber = phoneNumber.substring(0, 10);
+            const parsedNumber = parsePhoneNumber(phoneNumber, 'IN');
+            if (parsedNumber && parsedNumber.isPossible() && phoneNumber.length == 10) {
+                // if phone number is valid
+                setSelectedContacts((prev) => [...prev, { phoneNumber }]);
+                bottomSheetRef.current.close();
+                setError();
+            } else {
+                // if phone number is not valid
+                setError('Invalid Phone Number');
+            }
+        } else {
+            // if phone number is not valid
+            setError('Invalid Phone Number');
+        }
+    };
+
     return (
         <>
             <Pressable style={styles.container} onPress={() => handleOpenSheet(search)}>
@@ -55,6 +91,54 @@ const AddMemberWithoutContact = () => {
                     )}
                 </View>
             </Pressable>
+
+            {/* Bottom sheet */}
+            <BottomSheet
+                ref={bottomSheetRef}
+                enablePanDownToClose
+                onChange={handleSheetChanges}
+                snapPoints={snapPoints}
+                index={-1}
+                backgroundStyle={{
+                    backgroundColor: COLOR.APP_BACKGROUND,
+                }}
+                handleIndicatorStyle={{
+                    backgroundColor: COLOR.PRIMARY,
+                }}
+                handleStyle={
+                    {
+                        // backgroundColor: 'red',
+                        // borderRadius: 30,
+                        // borderTopWidth: 1,
+                        // borderTopColor: COLOR.PRIMARY_1,
+                    }
+                }
+                backdropComponent={renderBackdrop}
+                onClose={handleClose}
+                style={bottomSheetStyle.bottomsheet}
+            >
+                <BottomSheetView style={bottomSheetStyle.contentContainer}>
+                    <View style={bottomSheetStyle.form}>
+                        <Text style={bottomSheetStyle.modalText}>Enter Phone Number</Text>
+                        <BottomSheetTextInput
+                            keyboardType="number-pad"
+                            maxLength={10}
+                            style={[bottomSheetStyle.textInput, error && { borderColor: COLOR.ERROR_BORDER }]}
+                            onChangeText={setPhoneNumber}
+                            value={phoneNumber}
+                            textContentType="telephoneNumber"
+                        />
+                        <View>
+                            <Text style={bottomSheetStyle.errorText}>{error}</Text>
+                        </View>
+                        <View style={bottomSheetStyle.buttonWrapper}>
+                            <Pressable style={bottomSheetStyle.button} onPress={() => addToSelectedContacts(phoneNumber)}>
+                                <Text style={bottomSheetStyle.textStyle}>Add</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </BottomSheetView>
+            </BottomSheet>
         </>
     );
 };
@@ -98,7 +182,27 @@ const styles = StyleSheet.create({
     },
 });
 
-const modalStyles = StyleSheet.create({
+const bottomSheetStyle = StyleSheet.create({
+    bottomsheet: {
+        // position: 'absolute',
+        // bottom: 0,
+        // width: '100%',
+        // height: Dimensions.get('window').height,
+    },
+    contentContainer: {
+        flex: 1,
+        paddingHorizontal: calcWidth(5),
+        paddingVertical: calcWidth(3),
+    },
+    input: {
+        marginTop: 8,
+        marginBottom: 10,
+        borderRadius: 10,
+        fontSize: 16,
+        lineHeight: 20,
+        padding: 8,
+        backgroundColor: 'rgba(151, 151, 151, 0.25)',
+    },
     centeredView: {
         flex: 1,
         justifyContent: 'center',
@@ -127,21 +231,24 @@ const modalStyles = StyleSheet.create({
         color: COLOR.PRIMARY,
         fontWeight: 'bold',
         textAlign: 'center',
+        fontSize: getFontSizeByWindowWidth(14),
     },
     modalText: {
         color: COLOR.PRIMARY,
         fontWeight: 'bold',
-        fontSize: getFontSizeByWindowWidth(12),
+        fontSize: getFontSizeByWindowWidth(17),
     },
     form: {},
     textInput: {
         color: COLOR.PRIMARY,
         borderBottomWidth: 0.8,
         borderBottomColor: COLOR.PRIMARY_1,
-        width: calcWidth(50),
+        fontSize: getFontSizeByWindowWidth(16),
+        marginTop: calcHeight(2),
+        // width: calcWidth(50),
     },
     buttonWrapper: {
-        marginTop: 'auto',
+        marginTop: calcHeight(5),
         minWidth: calcWidth(50),
         // flexDirection: 'row',
         // justifyContent: 'space-evenly',
@@ -156,8 +263,9 @@ const modalStyles = StyleSheet.create({
     errorText: {
         marginTop: calcHeight(0.7),
         color: COLOR.ERROR_BORDER,
-        fontWeight: 'bold',
-        fontSize: getFontSizeByWindowWidth(11),
+        // fontWeight: 'bold',
+        fontSize: getFontSizeByWindowWidth(14),
+        // textAlign: 'right',
     },
     cross: {
         position: 'absolute',

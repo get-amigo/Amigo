@@ -50,6 +50,7 @@
         "expo-status-bar": "~1.12.1",
         "expo-web-browser": "~13.0.3",
         "i": "^0.3.7",
+        "immer": "^10.1.1",
         "libphonenumber-js": "^1.11.1",
         "npm": "^10.2.5",
         "prettier": "^3.0.3",

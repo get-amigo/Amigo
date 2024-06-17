@@ -30,6 +30,7 @@ import LoginScreen from '../pages/LoginScreen';
 import { ContactsProvider } from '../hooks/useContacts';
 import NetInfo from '@react-native-community/netinfo';
 import syncAllChat from '../utility/syncAllChat';
+import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
 const AppNavigator = () => {
     const { user } = useAuth();
     useEffect(() => {
@@ -172,7 +173,8 @@ const AppNavigator = () => {
 
                         <Stack.Screen
                             name={PAGES.GROUP}
-                            component={Group}
+                            // component={Group}
+                            component={ActivitiesFeedScreen}
                             options={{
                                 headerShown: false,
                             }}

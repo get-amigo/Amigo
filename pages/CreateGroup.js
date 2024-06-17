@@ -16,7 +16,6 @@ import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
 import { useAuth } from '../stores/auth';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CreateGroup = ({ navigation }) => {
     const { selectedContacts } = useContacts();
@@ -52,52 +51,46 @@ const CreateGroup = ({ navigation }) => {
         <>
             {isLoading && <Loader />}
             {!isLoading && (
-                <SafeAreaView style={styles.container}>
-                    <View style={{ marginHorizontal: calcWidth(5) }}>
-                        <Text style={styles.heading}>New group</Text>
-                        <Pressable style={styles.inputContainer} onPress={() => nameRef.current.focus()}>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={setGroupName}
-                                value={groupName}
-                                placeholder="Group Name"
-                                placeholderTextColor="gray"
-                                ref={nameRef}
-                            />
-                        </Pressable>
-                        <View>
-                            <Text style={styles.titleText}>Add members</Text>
-                        </View>
-                        <View style={styles.contactListContainer}>
-                            <ContactList />
-                        </View>
-
-                        <View style={styles.button}>
-                            <Button
-                                title="Create Group"
-                                onPress={
-                                    selectedContacts.length === 0 || groupName === ''
-                                        ? () =>
-                                              Toast.show('Select a contact', {
-                                                  duration: Toast.durations.LONG,
-                                              })
-                                        : createGroupAsync
-                                }
-                                styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
-                            />
-                        </View>
+                <View style={{ marginHorizontal: calcWidth(5) }}>
+                    <Text style={styles.heading}>New group</Text>
+                    <Pressable style={styles.inputContainer} onPress={() => nameRef.current.focus()}>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={setGroupName}
+                            value={groupName}
+                            placeholder="Group Name"
+                            placeholderTextColor="gray"
+                            ref={nameRef}
+                        />
+                    </Pressable>
+                    <View>
+                        <Text style={styles.titleText}>Add members</Text>
                     </View>
-                </SafeAreaView>
+                    <View style={styles.contactListContainer}>
+                        <ContactList />
+                    </View>
+
+                    <View style={styles.button}>
+                        <Button
+                            title="Create Group"
+                            onPress={
+                                selectedContacts.length === 0 || groupName === ''
+                                    ? () =>
+                                          Toast.show('Select a contact', {
+                                              duration: Toast.durations.LONG,
+                                          })
+                                    : createGroupAsync
+                            }
+                            styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
+                        />
+                    </View>
+                </View>
             )}
         </>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     heading: {
         color: COLOR.PRIMARY,
         marginVertical: calcHeight(2),

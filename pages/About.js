@@ -6,7 +6,6 @@ import COLOR from '../constants/Colors';
 import about from '../constants/about';
 import { calcHeight, calcWidth } from '../helper/res';
 import icon from '../assets/icon.png';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const About = () => {
     const renderLink = (iconName, text, onPress = () => {}) => (
@@ -17,27 +16,21 @@ const About = () => {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                <View style={styles.header}>
-                    <Image source={icon} style={styles.icon} />
-                    <Text style={styles.headerText}>What's Amigo</Text>
-                </View>
-                <Text style={styles.text}>{about}</Text>
-                <View style={styles.linksContainer}>
-                    {renderLink('info', 'Terms and conditions', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms'))}
-                    {renderLink('lock', 'Privacy Policy', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy'))}
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+            <View style={styles.header}>
+                <Image source={icon} style={styles.icon} />
+                <Text style={styles.headerText}>What's Amigo</Text>
+            </View>
+            <Text style={styles.text}>{about}</Text>
+            <View style={styles.linksContainer}>
+                {renderLink('info', 'Terms and conditions', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms'))}
+                {renderLink('lock', 'Privacy Policy', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy'))}
+            </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     scrollViewContent: {
         margin: calcHeight(2),
     },

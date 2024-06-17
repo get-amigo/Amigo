@@ -9,7 +9,6 @@ import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 function ExpenseScreen() {
     const { expense, resetParams, loading } = useExpense();
@@ -22,7 +21,7 @@ function ExpenseScreen() {
 
     if (loading)
         return (
-            <SafeAreaView style={styles.container}>
+            <>
                 <Text style={styles.header}>Expense Summary</Text>
                 <View
                     style={{
@@ -57,10 +56,10 @@ function ExpenseScreen() {
                     </View>
                 </View>
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
-            </SafeAreaView>
+            </>
         );
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <Text style={styles.header}>Expense Summary</Text>
             <View
                 style={{
@@ -96,17 +95,13 @@ function ExpenseScreen() {
                     style={styles.list}
                 />
             )}
-        </SafeAreaView>
+        </>
     );
 }
 
 export default ExpenseScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,

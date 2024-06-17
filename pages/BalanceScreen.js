@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, View, Text, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, FlatList, Pressable, Image } from 'react-native';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import FabIcon from '../components/FabIcon';
@@ -16,7 +16,6 @@ const headerIconSize = calcHeight(1);
 import NetInfo from '@react-native-community/netinfo';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 import { useBalance } from '../stores/balance';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
@@ -30,7 +29,7 @@ function BalanceScreen({ navigation }) {
 
     if (loading)
         return (
-            <SafeAreaView style={styles.container}>
+            <>
                 <View
                     style={{
                         flexDirection: 'row',
@@ -99,11 +98,11 @@ function BalanceScreen({ navigation }) {
                         marginTop: calcHeight(5),
                     }}
                 />
-            </SafeAreaView>
+            </>
         );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <View
                 style={{
                     flexDirection: 'row',
@@ -195,44 +194,8 @@ function BalanceScreen({ navigation }) {
                     }}
                 />
             )}
-        </SafeAreaView>
+        </>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
-    header: {
-        fontSize: getFontSizeByWindowWidth(19),
-        color: COLOR.TEXT,
-        fontWeight: 'bold',
-        alignContent: 'left',
-        padding: calcWidth(3),
-    },
-    groupName: {
-        fontSize: 16,
-        marginVertical: 5, // Add margin for better spacing
-    },
-    group: {
-        flexDirection: 'row',
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: calcWidth(5),
-        borderWidth: 1,
-        borderColor: COLOR.BUTTON,
-        borderRadius: 10,
-        margin: calcHeight(2),
-        marginBottom: calcHeight(5),
-    },
-    input: {
-        flex: 1,
-        marginLeft: 10,
-        color: 'white',
-    },
-});
 
 export default BalanceScreen;

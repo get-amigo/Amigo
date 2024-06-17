@@ -4,17 +4,17 @@ import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import { AntDesign } from '@expo/vector-icons';
 import COLOR from '../constants/Colors';
 import FabIcon from './FabIcon';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 function EmptyScreen({ onPress, image, title }) {
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Image source={image} style={styles.image} resizeMode="contain" />
 
             <Text style={styles.text}>{title}</Text>
             <Pressable onPress={onPress}>
                 <AntDesign name="pluscircle" size={calcHeight(5)} color={COLOR.BUTTON} />
             </Pressable>
-        </SafeAreaView>
+        </View>
     );
 }
 

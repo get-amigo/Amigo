@@ -8,7 +8,7 @@ import { useAuth } from '../stores/auth';
 import sliceText from '../helper/sliceText';
 import Cross from '../assets/icons/cross.png';
 import UserAvatar from '../components/UserAvatar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 function GroupBalanceScreen({ navigation, route }) {
     const { group } = route.params;
     const { user } = useAuth();
@@ -48,7 +48,7 @@ function GroupBalanceScreen({ navigation, route }) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <View style={styles.header}>
                 <Pressable onPress={() => navigation.goBack()}>
                     <Image style={styles.crossIcon} source={Cross} />
@@ -93,17 +93,14 @@ function GroupBalanceScreen({ navigation, route }) {
                 renderItem={renderListItem}
                 style={styles.list}
             />
-        </SafeAreaView>
+        </>
     );
 }
 
 // // StyleSheet
 const styles = StyleSheet.create({
     // ... existing styles
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
+
     balanceText: {
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(15),

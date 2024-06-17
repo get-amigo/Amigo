@@ -4,7 +4,6 @@ import COLOR from '../constants/Colors';
 import faqArray from '../constants/faq';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { MaterialIcons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const FAQ = () => {
     // This state will track which FAQ is expanded
@@ -16,35 +15,29 @@ const FAQ = () => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView
-                contentContainerStyle={{
-                    padding: calcWidth(10),
-                }}
-            >
-                {faqArray.map((faq, index) => (
-                    <TouchableOpacity key={index} style={styles.faqItem} onPress={() => toggleExpand(index)}>
-                        <View style={styles.questionContainer}>
-                            <Text style={styles.question}>{faq.question}</Text>
-                            <MaterialIcons
-                                name={expandedFAQ === index ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
-                                size={calcHeight(2)}
-                                color="rgba(255,255,255,0.75)"
-                            />
-                        </View>
-                        {expandedFAQ === index && <Text style={styles.answer}>{faq.answer}</Text>}
-                    </TouchableOpacity>
-                ))}
-            </ScrollView>
-        </SafeAreaView>
+        <ScrollView
+            contentContainerStyle={{
+                padding: calcWidth(10),
+            }}
+        >
+            {faqArray.map((faq, index) => (
+                <TouchableOpacity key={index} style={styles.faqItem} onPress={() => toggleExpand(index)}>
+                    <View style={styles.questionContainer}>
+                        <Text style={styles.question}>{faq.question}</Text>
+                        <MaterialIcons
+                            name={expandedFAQ === index ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                            size={calcHeight(2)}
+                            color="rgba(255,255,255,0.75)"
+                        />
+                    </View>
+                    {expandedFAQ === index && <Text style={styles.answer}>{faq.answer}</Text>}
+                </TouchableOpacity>
+            ))}
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     faqItem: {
         borderBottomWidth: 1,
         borderBottomColor: '#fff',

@@ -7,10 +7,10 @@ import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import Button from '../components/Button';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 const OnboardingScreen = ({ navigation }) => {
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.innerContainer}>
                 <Image source={OnboardingImage} style={styles.image} resizeMode="contain" />
                 <Text style={styles.title}>Group payments made easy</Text>
@@ -41,16 +41,15 @@ const OnboardingScreen = ({ navigation }) => {
                     </Text>
                 </Text>
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND, // Changed to the dark background color
         alignItems: 'center', // Centers content horizontally
         justifyContent: 'flex-end',
+        flex: 1,
     },
     innerContainer: {
         width: calcWidth(80), // 80% of the screen width

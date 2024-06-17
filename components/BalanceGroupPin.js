@@ -17,7 +17,7 @@ const BalanceGroupPin = ({ totalBalance, balances }) => {
     };
 
     return (
-        totalBalance && (
+        !!totalBalance && (
             <Pressable style={styles.container} onPress={handlePress}>
                 <View style={styles.arrowContainer}>
                     <View

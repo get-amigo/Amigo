@@ -5,7 +5,6 @@ import UPIApps from '../constants/UpiApps';
 import { useTransaction } from '../context/TransactionContext';
 import { getFontSizeByWindowWidth } from '../helper/res';
 import PAGES from '../constants/pages';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const UPIAppSelection = ({ navigation }) => {
     const { upiParams } = useTransaction();
@@ -27,22 +26,18 @@ const UPIAppSelection = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             {UPIApps.map((app, index) => (
                 <TouchableOpacity key={index} style={styles.button} onPress={() => handleSelectApp(app.name, app.generateDeeplink)}>
                     {app.icon}
                     <Text style={styles.text}>{app.name}</Text>
                 </TouchableOpacity>
             ))}
-        </SafeAreaView>
+        </>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     button: {
         flexDirection: 'row',
         alignItems: 'center',

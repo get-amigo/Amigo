@@ -10,7 +10,7 @@ import { useTransaction } from '../context/TransactionContext';
 import GroupIcon from '../components/GroupIcon';
 import { Octicons } from '@expo/vector-icons';
 import { useGroupList } from '../stores/groupList';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 function GroupListScreen({ navigation }) {
     const [search, setSearch] = useState('');
     const { setTransactionData } = useTransaction();
@@ -25,7 +25,7 @@ function GroupListScreen({ navigation }) {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <View
                 style={{
                     marginVertical: calcHeight(2),
@@ -68,14 +68,12 @@ function GroupListScreen({ navigation }) {
                     />
                 )}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
         alignItems: 'center',
     },
     header: {

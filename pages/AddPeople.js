@@ -8,7 +8,7 @@ import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import Loader from '../components/Loader';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 const AddPeople = ({ navigation }) => {
     const { selectedContacts } = useContacts();
     const { group, setGroup } = useGroup();
@@ -46,24 +46,15 @@ const AddPeople = ({ navigation }) => {
     }, [navigation, selectedContacts]);
     if (loading) return <Loader />;
     return (
-        <SafeAreaView style={styles.container}>
-            <View
-                style={{
-                    alignItems: 'center',
-                    margin: calcHeight(5),
-                }}
-            >
-                <ContactList eliminatedContacts={group.members} />
-            </View>
-        </SafeAreaView>
+        <View
+            style={{
+                alignItems: 'center',
+                margin: calcHeight(5),
+            }}
+        >
+            <ContactList eliminatedContacts={group.members} />
+        </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
-});
 
 export default AddPeople;

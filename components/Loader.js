@@ -1,13 +1,12 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import SplashImage from '../assets/splash.png';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 function Loader() {
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Image source={SplashImage} style={styles.image} />
-        </SafeAreaView>
+        </View>
     );
 }
 

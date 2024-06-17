@@ -8,7 +8,6 @@ import Loader from '../components/Loader';
 import OTPFilled from '../assets/OTPFilled.png';
 import { useOtp } from '../context/OtpContext';
 import * as Haptics from 'expo-haptics';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OTPScreen = ({
     navigation,
@@ -66,61 +65,55 @@ const OTPScreen = ({
     return loading ? (
         <Loader />
     ) : (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.innerContainer}>
-                <View style={styles.header}>
-                    <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
-                    <View style={styles.textContainer}>
-                        <Text style={styles.headerText}>OTP Verification</Text>
-                        <Text style={styles.promptText}>Enter the code sent to {phoneNumber}</Text>
-                    </View>
-                </View>
-                <View
-                    style={{
-                        alignItems: 'center',
-                    }}
-                >
-                    <View style={styles.otpContainer}>{otpBoxes}</View>
-
-                    <TextInput
-                        ref={inputRef}
-                        style={styles.hiddenInput}
-                        keyboardType="number-pad"
-                        value={otp}
-                        onChangeText={handleOTPChange}
-                        maxLength={6}
-                        autoFocus
-                    />
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.resendText}>Didn't receive the code? </Text>
-                        <TouchableOpacity onPress={() => loginWithPhoneNumber(phoneNumber)}>
-                            <Text
-                                style={{
-                                    fontWeight: 'bold',
-                                    ...styles.resendText,
-                                }}
-                            >
-                                Resend
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    {isAuthStateLoading ? (
-                        <ActivityIndicator size="medium" color={COLOR.PRIMARY} style={styles.indicator} />
-                    ) : (
-                        <Button title="Verify" onPress={handleVerifyOTP} />
-                    )}
+        <View style={styles.innerContainer}>
+            <View style={styles.header}>
+                <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
+                <View style={styles.textContainer}>
+                    <Text style={styles.headerText}>OTP Verification</Text>
+                    <Text style={styles.promptText}>Enter the code sent to {phoneNumber}</Text>
                 </View>
             </View>
-        </SafeAreaView>
+            <View
+                style={{
+                    alignItems: 'center',
+                }}
+            >
+                <View style={styles.otpContainer}>{otpBoxes}</View>
+
+                <TextInput
+                    ref={inputRef}
+                    style={styles.hiddenInput}
+                    keyboardType="number-pad"
+                    value={otp}
+                    onChangeText={handleOTPChange}
+                    maxLength={6}
+                    autoFocus
+                />
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.resendText}>Didn't receive the code? </Text>
+                    <TouchableOpacity onPress={() => loginWithPhoneNumber(phoneNumber)}>
+                        <Text
+                            style={{
+                                fontWeight: 'bold',
+                                ...styles.resendText,
+                            }}
+                        >
+                            Resend
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                {isAuthStateLoading ? (
+                    <ActivityIndicator size="medium" color={COLOR.PRIMARY} style={styles.indicator} />
+                ) : (
+                    <Button title="Verify" onPress={handleVerifyOTP} />
+                )}
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     innerContainer: {
         paddingHorizontal: calcWidth(5),
         marginTop: calcHeight(5),

@@ -9,7 +9,6 @@ import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } f
 import MenuOption from '../components/AccountPageOption';
 import PAGES from '../constants/pages';
 import { useBalance } from '../stores/balance';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 function ProfileScreen({ navigation }) {
     const { user, logout, editUser, deleteAccount } = useAuth();
@@ -128,7 +127,7 @@ function ProfileScreen({ navigation }) {
     }, [navigation, editMode]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <View style={styles.userInfo}>
                 <UserAvatar user={user} size={7} />
                 <View>
@@ -194,15 +193,11 @@ function ProfileScreen({ navigation }) {
                 onPress={deleteHandler}
                 color={COLOR.DELETION_COLOR}
             />
-        </SafeAreaView>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     characterCount: {
         fontWeight: 'bold',
         color: COLOR.BUTTON,

@@ -13,7 +13,7 @@ import NoGroupsImage from '../assets/NoGroups.png';
 import Search from '../components/Search';
 import { useGroupList } from '../stores/groupList';
 import { useAuth } from '../stores/auth';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
     const { user } = useAuth();
@@ -31,7 +31,7 @@ function GroupListScreen({ navigation }) {
     const filterGroups = () => (search === '' ? groups : groups.filter((group) => group.name.toLowerCase().includes(search.toLowerCase())));
     if (loading)
         return (
-            <SafeAreaView style={styles.container}>
+            <>
                 <Text style={styles.header}>Groups</Text>
                 <>
                     <View
@@ -59,11 +59,11 @@ function GroupListScreen({ navigation }) {
                     }}
                     loading
                 />
-            </SafeAreaView>
+            </>
         );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <Text style={styles.header}>Groups</Text>
             {groups && groups.length == 0 ? (
                 <EmptyScreen
@@ -103,15 +103,11 @@ function GroupListScreen({ navigation }) {
                     }}
                 />
             )}
-        </SafeAreaView>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,

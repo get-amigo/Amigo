@@ -5,35 +5,29 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import GroupSelectCard from '../components/GroupSelectCard';
 import { useTransaction } from '../context/TransactionContext';
 import UserAvatar from '../components/UserAvatar';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
 function GroupListScreen({ navigation }) {
     const { setTransactionData, transactionData } = useTransaction();
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView>
-                {transactionData.group.members.map((member) => (
-                    <GroupSelectCard
-                        name={member.name}
-                        onPress={() => {
-                            setTransactionData((prev) => ({
-                                ...prev,
-                                paidBy: member,
-                            }));
-                            navigation.goBack();
-                        }}
-                        image={<UserAvatar user={member} />}
-                    />
-                ))}
-            </ScrollView>
-        </SafeAreaView>
+        <ScrollView>
+            {transactionData.group.members.map((member) => (
+                <GroupSelectCard
+                    name={member.name}
+                    onPress={() => {
+                        setTransactionData((prev) => ({
+                            ...prev,
+                            paidBy: member,
+                        }));
+                        navigation.goBack();
+                    }}
+                    image={<UserAvatar user={member} />}
+                />
+            ))}
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,

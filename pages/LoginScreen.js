@@ -6,7 +6,6 @@ import PAGES from '../constants/pages';
 import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useOtp } from '../context/OtpContext';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const CountryCodeInput = ({ countryCode }) => (
     <View style={styles.countryCodeContainer}>
@@ -39,46 +38,40 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.innerContainer}>
-                <View style={styles.header}>
-                    <Image source={LoginImage} style={styles.image} resizeMode="contain" />
-                    <View style={styles.textContainer}>
-                        <Text style={styles.headerText}>Hi there!</Text>
-                        <Text style={styles.promptText}>Please enter your phone number</Text>
-                    </View>
-                </View>
-                <View style={styles.inputContainer}>
-                    <View style={styles.phoneNumberRow}>
-                        <CountryCodeInput countryCode={countryCode} />
-                        <TextInput
-                            style={{
-                                ...getTextInputStyle(isPhoneFocused),
-                                ...(error ? { borderBottomColor: COLOR.ERROR_BORDER } : {}),
-                            }}
-                            keyboardType="phone-pad"
-                            value={phoneNumber}
-                            onChangeText={(value) => {
-                                setPhoneNumber(value);
-                                setError(false);
-                            }}
-                            onFocus={() => setIsPhoneFocused(true)}
-                            onBlur={() => setIsPhoneFocused(false)}
-                            placeholderTextColor="#D3D3D3"
-                        />
-                    </View>
-                    <Button title="Send OTP" onPress={handleSendOTP} />
+        <View style={styles.innerContainer}>
+            <View style={styles.header}>
+                <Image source={LoginImage} style={styles.image} resizeMode="contain" />
+                <View style={styles.textContainer}>
+                    <Text style={styles.headerText}>Hi there!</Text>
+                    <Text style={styles.promptText}>Please enter your phone number</Text>
                 </View>
             </View>
-        </SafeAreaView>
+            <View style={styles.inputContainer}>
+                <View style={styles.phoneNumberRow}>
+                    <CountryCodeInput countryCode={countryCode} />
+                    <TextInput
+                        style={{
+                            ...getTextInputStyle(isPhoneFocused),
+                            ...(error ? { borderBottomColor: COLOR.ERROR_BORDER } : {}),
+                        }}
+                        keyboardType="phone-pad"
+                        value={phoneNumber}
+                        onChangeText={(value) => {
+                            setPhoneNumber(value);
+                            setError(false);
+                        }}
+                        onFocus={() => setIsPhoneFocused(true)}
+                        onBlur={() => setIsPhoneFocused(false)}
+                        placeholderTextColor="#D3D3D3"
+                    />
+                </View>
+                <Button title="Send OTP" onPress={handleSendOTP} />
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     innerContainer: {
         paddingHorizontal: calcWidth(5),
         marginTop: calcHeight(5),

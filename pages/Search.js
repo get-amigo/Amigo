@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, ScrollView, Alert, Button } from 'react-native'
 import Loader from '../components/Loader';
 import Search from '../components/Search';
 import apiHelper from '../helper/apiHelper';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SearchScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
@@ -54,7 +53,7 @@ const SearchScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <Search setSearch={setSearchString} search={searchString} />
             <ScrollView style={{ width: '100%' }}>
                 {searchResults.map((group, index) => (
@@ -69,7 +68,7 @@ const SearchScreen = ({ navigation }) => {
                 <Button title="Next" onPress={handleNextPage} />
             </View>
             {loading && <Loader />}
-        </SafeAreaView>
+        </>
     );
 };
 

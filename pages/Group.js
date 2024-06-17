@@ -40,7 +40,6 @@ import getMembersString from '../utility/getMembersString';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 import syncAllChat from '../utility/syncAllChat';
 import { useInfiniteQuery, useMutation, useQuery } from '@tanstack/react-query';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 function isNumber(text) {
     return !isNaN(+text);
@@ -164,7 +163,7 @@ function GroupScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <Pressable
                 style={styles.header}
                 onPress={() => {
@@ -295,15 +294,11 @@ function GroupScreen({ navigation }) {
                     width: calcWidth(100),
                 }}
             />
-        </SafeAreaView>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',

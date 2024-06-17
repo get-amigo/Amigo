@@ -3,7 +3,6 @@ import { StyleSheet, SafeAreaView, View, Text, Image, Pressable, TextInput, Touc
 import { useAuth } from '../stores/auth';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import SignUpImage from '../assets/SignUp.png';
 import UserAvatar from '../components/UserAvatar';
 import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import MenuOption from '../components/AccountPageOption';
@@ -14,12 +13,11 @@ function ProfileScreen({ navigation }) {
     const { user, logout, editUser, deleteAccount } = useAuth();
     const [editMode, setEditMode] = useState(false);
     const [name, setName] = useState(user.name);
+    const [originalName, setOriginalName] = useState(user.name);
     const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
     const { totalBalances } = useBalance();
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const remainingCharacters = 25 - name.length;
 
     function submitUserData() {
         setIsSubmitting(true);
@@ -89,6 +87,7 @@ function ProfileScreen({ navigation }) {
                 return;
             }
             editUser({ name });
+            setOriginalName(name);
             setEditMode(false);
             setIsSubmitting(false);
         }
@@ -111,9 +110,15 @@ function ProfileScreen({ navigation }) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
+            headerTitle: editMode ? '' : 'Account',
             headerLeft: () =>
                 editMode ? (
-                    <TouchableOpacity onPress={() => setEditMode(false)}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            setName(originalName);
+                            setEditMode(false);
+                        }}
+                    >
                         <Text style={[styles.bottomBarText, { fontWeight: 'bold' }]}>Cancel</Text>
                     </TouchableOpacity>
                 ) : undefined,
@@ -134,7 +139,6 @@ function ProfileScreen({ navigation }) {
                     {editMode ? (
                         <View style={styles.editContainer}>
                             <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus maxLength={25} multiline />
-                            <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
                         </View>
                     ) : (
                         <Text style={styles.userName}>{name}</Text>
@@ -146,7 +150,7 @@ function ProfileScreen({ navigation }) {
                         setEditMode((prev) => !prev);
                     }}
                 >
-                    <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} />
+                    <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} style={{ display: editMode ? 'none' : null }} />
                 </Pressable>
             </View>
 

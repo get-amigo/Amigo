@@ -2,13 +2,15 @@ import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 import generateRandomColor from '../helper/generateRandomColor';
+import { useAuth } from '../stores/auth';
+
 const ContactsContext = createContext();
 
-const filterUniqueContacts = (contactsData) => {
+const filterUniqueContacts = (contactsData, userPhoneNumber) => {
     const seenPhoneNumbers = new Set();
     return contactsData.filter((contact) => {
         const phoneNumber = contact.phoneNumbers?.[0].number.replace(/\D/g, '');
-        return phoneNumber && !seenPhoneNumbers.has(phoneNumber) && seenPhoneNumbers.add(phoneNumber);
+        return phoneNumber && phoneNumber !== userPhoneNumber && !seenPhoneNumbers.has(phoneNumber) && seenPhoneNumbers.add(phoneNumber);
     });
 };
 
@@ -73,6 +75,7 @@ export const ContactsProvider = ({ children }) => {
     const [selectedContacts, setSelectedContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [contactPermission, setContactPermission] = useState(false);
+    const { user } = useAuth();
 
     useEffect(() => {
         const loadContacts = async () => {
@@ -83,7 +86,7 @@ export const ContactsProvider = ({ children }) => {
                     const contactsData = await fetchContactsData();
 
                     if (contactsData.length > 0) {
-                        const uniqueContacts = filterUniqueContacts(contactsData);
+                        const uniqueContacts = filterUniqueContacts(contactsData, user.phoneNumber);
                         const simplifiedContacts = mapToSimplifiedContacts(uniqueContacts);
 
                         setAllContacts(simplifiedContacts);
@@ -111,7 +114,7 @@ export const ContactsProvider = ({ children }) => {
         };
 
         loadContacts();
-    }, []);
+    }, [user.phoneNumber]);
 
     useEffect(() => {
         // Update filtered contacts whenever search changes

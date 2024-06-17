@@ -33,16 +33,6 @@ const CreateGroup = ({ navigation }) => {
         }
         setIsLoading(true);
 
-        const userPhoneNumber = user.phoneNumber;
-        const hasUserNumber = selectedContacts.some(({ phoneNumber }) => phoneNumber === userPhoneNumber);
-
-        if (hasUserNumber) {
-            Alert.alert('Error', 'Your own contact number cannot be added to the group.', [
-                { text: 'OK', onPress: () => setIsLoading(false) },
-            ]);
-            return;
-        }
-
         const phoneNumbers = selectedContacts.map(({ phoneNumber }) => ({
             phoneNumber,
             countryCode: '+91',

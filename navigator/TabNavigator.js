@@ -9,6 +9,7 @@ import GroupListScreen from '../pages/GroupListScreen';
 import ExpenseScreen from '../pages/ExpenseScreen';
 
 import BalanceScreen from '../pages/BalanceScreen';
+import SplashScreen from '../pages/SplashScreen';
 const TabNavigator = () => {
     return (
         <Tab.Navigator
@@ -29,6 +30,7 @@ const TabNavigator = () => {
                         tabBarIcon: (tabBarProps) => <TabBarIcon tabBarProps={tabBarProps} screen={PAGES.BALANCE} />,
                     }}
                     component={BalanceScreen}
+                    // component={SplashScreen}
                 />
 
                 <Tab.Screen

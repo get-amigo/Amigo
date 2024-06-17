@@ -30,6 +30,7 @@ import LoginScreen from '../pages/LoginScreen';
 import { ContactsProvider } from '../hooks/useContacts';
 import NetInfo from '@react-native-community/netinfo';
 import syncAllChat from '../utility/syncAllChat';
+import BalanceScreen from '../pages/BalanceScreen';
 const AppNavigator = () => {
     const { user } = useAuth();
     useEffect(() => {
@@ -55,6 +56,7 @@ const AppNavigator = () => {
                                 tabBarIcon: (tabBarProps) => <TabBarIcon tabBarProps={tabBarProps} screen={PAGES.BALANCE} />,
                             }}
                             component={TabNavigator}
+                            // component={BalanceScreen}
                         />
                         <Stack.Screen
                             name={PAGES.SELECT_PAID_BY}

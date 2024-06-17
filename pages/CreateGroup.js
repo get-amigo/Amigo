@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import Button from '../components/Button';
@@ -32,9 +32,10 @@ const CreateGroup = ({ navigation }) => {
             return;
         }
         setIsLoading(true);
-        const phoneNumbers = selectedContacts.map(({ phoneNumber }) => ({
+
+        const phoneNumbers = selectedContacts.map(({ phoneNumber, countryCode }) => ({
             phoneNumber,
-            countryCode: '+91',
+            countryCode,
         }));
         const { data } = await apiHelper.post('/group', {
             name: groupName,

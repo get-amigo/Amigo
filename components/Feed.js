@@ -161,7 +161,17 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
 
 function PaymentActivity({ payment, contacts }) {
     const { user } = useAuth();
-    const [payer, receiver] = editNames([payment.payer, payment.receiver], user._id, contacts);
+    let [payer, receiver] = editNames([payment.payer, payment.receiver], user._id, contacts);
+
+    // Check if payer and receiver are not 'Unknown'
+    if(payer.name === 'Unknown') {
+        payer.name = user.name;
+    }
+
+    if(receiver.name === 'Unknown') {
+        receiver.name = user.name;
+    }
+
     return (
         <View
             style={{

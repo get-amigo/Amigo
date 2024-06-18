@@ -94,6 +94,7 @@ const AddMemberWithoutContact = () => {
                 backdropTransitionInTiming={300}
                 backdropTransitionOutTiming={350}
                 style={bottomSheetStyle.sheet}
+                statusBarTranslucent
             >
                 <View style={bottomSheetStyle.modalContent}>
                     <View style={bottomSheetStyle.center}>

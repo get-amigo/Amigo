@@ -1,17 +1,19 @@
-import { Dimensions, Modal, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
-import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import Modal from 'react-native-modal';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { AntDesign } from '@expo/vector-icons';
 import COLOR from '../constants/Colors';
-import parsePhoneNumber from 'libphonenumber-js';
+import { AntDesign } from '@expo/vector-icons';
 import { useContacts } from '../hooks/useContacts';
-import { Entypo } from '@expo/vector-icons';
-import BottomSheet, { BottomSheetBackdrop, BottomSheetModal, BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
+import { parsePhoneNumber } from 'libphonenumber-js';
 
 const AddMemberWithoutContact = () => {
-    const { search, contacts, selectedContacts, setSelectedContacts } = useContacts();
+    const { search, contacts, setSelectedContacts } = useContacts();
 
+    const [isBottomSheetVisible, setIsBottomSheetVisible] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState();
     const [isContactFound, setIsContactFound] = useState(true);
+    const [error, setError] = useState();
 
     const isContactAvailable = () => {
         if (contacts && contacts.length == 0) {
@@ -21,14 +23,12 @@ const AddMemberWithoutContact = () => {
         }
     };
 
-    useEffect(() => {
-        isContactAvailable();
-    }, [search]);
+    const toggleBottomSheet = () => {
+        setError();
+        setIsBottomSheetVisible(!isBottomSheetVisible);
+    };
 
     const handleOpenSheet = (number) => {
-        // open bottom sheet
-        bottomSheetRef.current.expand();
-
         // validate phone number - check only whether the number have digits only
         const isNumber = !isNaN(Number(number));
         if (isNumber) {
@@ -36,24 +36,9 @@ const AddMemberWithoutContact = () => {
         } else {
             setPhoneNumber();
         }
+        // open bottom sheet
+        toggleBottomSheet();
     };
-
-    // Bottom sheet
-    const bottomSheetRef = useRef(null);
-
-    const [error, setError] = useState();
-    const [phoneNumber, setPhoneNumber] = useState();
-
-    const renderBackdrop = useCallback((props) => <BottomSheetBackdrop appearsOnIndex={0} disappearsOnIndex={-1} {...props} />, []);
-    const snapPoints = useMemo(() => ['40%', '70%'], []);
-
-    const handleSheetChanges = useCallback((index) => {
-        console.log('handleSheetChanges', index);
-    }, []);
-
-    const handleClose = useCallback(() => {
-        setError();
-    }, []);
 
     const addToSelectedContacts = (phoneNumber) => {
         // validate phone number
@@ -62,8 +47,8 @@ const AddMemberWithoutContact = () => {
             const parsedNumber = parsePhoneNumber(phoneNumber, 'IN');
             if (parsedNumber && parsedNumber.isPossible() && phoneNumber.length == 10) {
                 // if phone number is valid
-                setSelectedContacts((prev) => [...prev, { phoneNumber }]);
-                bottomSheetRef.current.close();
+                setSelectedContacts((prev) => [...prev, { phoneNumber, countryCode: '+91' }]);
+                toggleBottomSheet();
                 setError();
             } else {
                 // if phone number is not valid
@@ -74,6 +59,10 @@ const AddMemberWithoutContact = () => {
             setError('Invalid Phone Number');
         }
     };
+
+    useEffect(() => {
+        isContactAvailable();
+    }, [search]);
 
     return (
         <>
@@ -92,35 +81,27 @@ const AddMemberWithoutContact = () => {
                 </View>
             </Pressable>
 
-            {/* Bottom sheet */}
-            <BottomSheet
-                ref={bottomSheetRef}
-                enablePanDownToClose
-                onChange={handleSheetChanges}
-                snapPoints={snapPoints}
-                index={-1}
-                backgroundStyle={{
-                    backgroundColor: COLOR.APP_BACKGROUND,
-                }}
-                handleIndicatorStyle={{
-                    backgroundColor: COLOR.PRIMARY,
-                }}
-                handleStyle={
-                    {
-                        // backgroundColor: 'red',
-                        // borderRadius: 30,
-                        // borderTopWidth: 1,
-                        // borderTopColor: COLOR.PRIMARY_1,
-                    }
-                }
-                backdropComponent={renderBackdrop}
-                onClose={handleClose}
-                style={bottomSheetStyle.bottomsheet}
+            <Modal
+                onBackdropPress={() => setIsBottomSheetVisible(false)}
+                onBackButtonPress={() => setIsBottomSheetVisible(false)}
+                isVisible={isBottomSheetVisible}
+                swipeDirection="down"
+                onSwipeComplete={toggleBottomSheet}
+                animationIn="slideInUp"
+                animationOut="slideOutDown"
+                animationInTiming={200}
+                animationOutTiming={250}
+                backdropTransitionInTiming={300}
+                backdropTransitionOutTiming={350}
+                style={bottomSheetStyle.sheet}
             >
-                <BottomSheetView style={bottomSheetStyle.contentContainer}>
-                    <View style={bottomSheetStyle.form}>
+                <View style={bottomSheetStyle.modalContent}>
+                    <View style={bottomSheetStyle.center}>
+                        <View style={bottomSheetStyle.barIcon} />
+                    </View>
+                    <View style={bottomSheetStyle.wrapper}>
                         <Text style={bottomSheetStyle.modalText}>Enter Phone Number</Text>
-                        <BottomSheetTextInput
+                        <TextInput
                             keyboardType="number-pad"
                             maxLength={10}
                             style={[bottomSheetStyle.textInput, error && { borderColor: COLOR.ERROR_BORDER }]}
@@ -137,8 +118,8 @@ const AddMemberWithoutContact = () => {
                             </Pressable>
                         </View>
                     </View>
-                </BottomSheetView>
-            </BottomSheet>
+                </View>
+            </Modal>
         </>
     );
 };
@@ -165,11 +146,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: calcWidth(4),
     },
-    profileImage: {
-        height: calcHeight(5),
-        width: calcHeight(5),
-        borderRadius: calcHeight(5),
-    },
     placeHolderView: {
         height: calcHeight(selectorSize),
         width: calcHeight(selectorSize),
@@ -183,48 +159,35 @@ const styles = StyleSheet.create({
 });
 
 const bottomSheetStyle = StyleSheet.create({
-    bottomsheet: {
-        // position: 'absolute',
-        // bottom: 0,
-        // width: '100%',
-        // height: Dimensions.get('window').height,
+    sheet: {
+        justifyContent: 'flex-end',
+        margin: 0,
     },
-    contentContainer: {
+    modalContent: {
+        backgroundColor: COLOR.APP_BACKGROUND,
+        paddingTop: 12,
+        paddingHorizontal: 12,
+        borderTopRightRadius: 20,
+        borderTopLeftRadius: 20,
+        minHeight: 400,
+        paddingBottom: 20,
+    },
+    center: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    barIcon: {
+        width: 60,
+        height: 5,
+        backgroundColor: '#bbb',
+        borderRadius: 3,
+        marginBottom: 5,
+    },
+    wrapper: {
         flex: 1,
         paddingHorizontal: calcWidth(5),
         paddingVertical: calcWidth(3),
-    },
-    input: {
-        marginTop: 8,
-        marginBottom: 10,
-        borderRadius: 10,
-        fontSize: 16,
-        lineHeight: 20,
-        padding: 8,
-        backgroundColor: 'rgba(151, 151, 151, 0.25)',
-    },
-    centeredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: COLOR.APP_BACKGROUND_TRANSLUCENT,
-        paddingBottom: calcHeight(20),
-    },
-    modalView: {
-        backgroundColor: COLOR.APP_BACKGROUND,
-        borderRadius: 20,
-        padding: 35,
-        paddingTop: calcHeight(10),
-        alignItems: 'center',
-        shadowColor: '#756a9c',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 4,
-        elevation: 5,
-        height: calcHeight(33),
     },
 
     textStyle: {
@@ -238,7 +201,6 @@ const bottomSheetStyle = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: getFontSizeByWindowWidth(17),
     },
-    form: {},
     textInput: {
         color: COLOR.PRIMARY,
         borderBottomWidth: 0.8,
@@ -266,10 +228,5 @@ const bottomSheetStyle = StyleSheet.create({
         // fontWeight: 'bold',
         fontSize: getFontSizeByWindowWidth(14),
         // textAlign: 'right',
-    },
-    cross: {
-        position: 'absolute',
-        right: calcWidth(4),
-        top: calcWidth(4),
     },
 });

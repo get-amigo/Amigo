@@ -6,7 +6,7 @@ import { Ionicons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
 
-function ContactCard({ selected, color, name, phoneNumber, imageURI }) {
+function ContactCard({ selected, color, name, phoneNumber, imageURI, countryCode }) {
     return (
         <View style={styles.container}>
             {imageURI ? (
@@ -18,7 +18,9 @@ function ContactCard({ selected, color, name, phoneNumber, imageURI }) {
             )}
             <View style={styles.textContainer}>
                 <Text style={styles.nameText}>{name}</Text>
-                <Text style={styles.phoneText}>{phoneNumber}</Text>
+                <Text style={styles.phoneText}>
+                    {countryCode} {phoneNumber}
+                </Text>
             </View>
             <View style={styles.selectorContainer}>
                 {selected ? (

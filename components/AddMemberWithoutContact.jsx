@@ -109,6 +109,7 @@ const AddMemberWithoutContact = () => {
                             onChangeText={setPhoneNumber}
                             value={phoneNumber}
                             textContentType="telephoneNumber"
+                            onSubmitEditing={() => addToSelectedContacts(phoneNumber)}
                         />
                         <View>
                             <Text style={bottomSheetStyle.errorText}>{error}</Text>
@@ -170,7 +171,7 @@ const bottomSheetStyle = StyleSheet.create({
         paddingHorizontal: 12,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
-        minHeight: 400,
+        minHeight: calcHeight(70),
         paddingBottom: 20,
     },
     center: {

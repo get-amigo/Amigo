@@ -3,9 +3,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, Pressable } from 'react-native';
 import Toast from 'react-native-root-toast';
 import { StackActions } from '@react-navigation/native';
-
 import AmountInput from '../components/AmountInput';
-import Button from '../components/Button';
 import Loader from '../components/Loader';
 import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
@@ -100,6 +98,11 @@ function TransactionFormScreen({ navigation }) {
             return;
         }
 
+        if (!transactionData.description) {
+            alert('Description Missing');
+            return;
+        }
+
         try {
             // Create a new object with modifications, leaving original transactionData unchanged
             const newTransaction = {
@@ -178,8 +181,13 @@ function TransactionFormScreen({ navigation }) {
     return loading ? (
         <Loader />
     ) : (
-        <ScrollView style={styles.container}>
-            <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
+        <ScrollView style={styles.container} keyboardDismissMode="none" keyboardShouldPersistTaps="always">
+            <AmountInput
+                amount={transactionData.amount}
+                handleInputChange={(text) => handleInputChange('amount', text)}
+                isTextInput
+                onSubmitEditing={() => descriptionRef.current.focus()}
+            />
 
             <View style={styles.rowCentered}>
                 <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
@@ -191,8 +199,10 @@ function TransactionFormScreen({ navigation }) {
                         placeholderTextColor="#ccc"
                         ref={descriptionRef}
                         textAlign="center"
-                        maxLength={100}
-                        multiline={true}
+                        maxLength={25}
+                        multiline={false}
+                        blurOnSubmit={false}
+                        onSubmitEditing={handleSubmit}
                     />
                 </Pressable>
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
@@ -314,20 +324,6 @@ function TransactionFormScreen({ navigation }) {
                     </Pressable>
                 </View>
             )}
-            <View
-                style={{
-                    alignItems: 'center',
-                }}
-            >
-                <Button
-                    styleOverwrite={{
-                        width: calcWidth(90),
-                        marginTop: calcHeight(2),
-                    }}
-                    onPress={handleSubmit}
-                    title="Submit"
-                />
-            </View>
         </ScrollView>
     );
 }

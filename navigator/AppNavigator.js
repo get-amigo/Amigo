@@ -51,7 +51,6 @@ const AppNavigator = () => {
             <Stack.Navigator
                 screenOptions={{
                     headerBackTitleVisible: false,
-                    animation: 'slide_from_bottom', 
                 }}
             >
                 {user.name ? (
@@ -61,6 +60,7 @@ const AppNavigator = () => {
                             options={{
                                 headerShown: false,
                                 tabBarIcon: (tabBarProps) => <TabBarIcon tabBarProps={tabBarProps} screen={PAGES.BALANCE} />,
+                                animation:"fade"
                             }}
                             component={TabNavigator}
                         />
@@ -71,6 +71,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"ios",
                                 title: null,
                                 headerTintColor: '#fff',
                             }}
@@ -82,6 +83,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"ios",
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -92,6 +94,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"fade",
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -99,6 +102,7 @@ const AppNavigator = () => {
                             name={PAGES.GROUP_BALANCE}
                             component={GroupBalance}
                             options={{
+                                animation:"ios",
                                 headerShown: false,
                             }}
                         />
@@ -108,6 +112,7 @@ const AppNavigator = () => {
                             options={
                                 {
                                     // headerShown: false,
+                                    animation:"fade"
                                 }
                             }
                         />
@@ -118,6 +123,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"fade",
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -128,6 +134,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"ios",
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -139,6 +146,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"ios",
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -173,6 +181,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"ios",
                                 headerTitleAlign: 'left', // Aligns the title to the left
                                 headerTintColor: '#fff', // Sets the title color to white
                             }}
@@ -183,6 +192,7 @@ const AppNavigator = () => {
                             component={Group}
                             options={{
                                 headerShown: false,
+                                animation:"ios"
                             }}
                         />
                         <Stack.Screen
@@ -192,6 +202,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"ios",
                                 title: null,
                                 headerTintColor: '#fff',
                             }}
@@ -210,6 +221,7 @@ const AppNavigator = () => {
                                     fontSize: getFontSizeByWindowWidth(20),
                                 },
                                 headerTintColor: '#fff',
+                                animation:"ios",
                             }}
                         />
 
@@ -220,6 +232,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"fade",
                                 title: null,
                                 headerTintColor: '#fff',
                             }}
@@ -244,6 +257,7 @@ const AppNavigator = () => {
                                 },
                                 title: null,
                                 headerTintColor: '#fff',
+                                animation:"ios"
                             }}
                         />
                         <Stack.Screen
@@ -260,6 +274,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation:"fade",
                                 title: null,
                                 headerTintColor: '#fff',
                             }}
@@ -270,6 +285,7 @@ const AppNavigator = () => {
                         name={PAGES.SIGN_UP}
                         options={{
                             headerShown: false,
+                            animation:"fade",
                         }}
                         component={SignUpScreen}
                     />

@@ -29,7 +29,7 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
         }
 
         if (phoneNumber && !isValidPhoneNumber(phoneNumber.number)) {
-            phoneNumber = null;
+            return null; // Return null for contacts with invalid phone numbers
         }
         // Returning simplified contacts
         return {
@@ -42,7 +42,7 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
         };
     });
     // Filter out invalid phone number contacts
-    return simplifiedContacts.filter(contact => contact.phoneNumber !== null);
+    return simplifiedContacts.filter((contact) => contact !== null);
 };
 
 const handleLoadContactsError = (error) => {};

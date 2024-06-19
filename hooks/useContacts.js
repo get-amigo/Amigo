@@ -4,7 +4,7 @@ import generateRandomColor from '../helper/generateRandomColor';
 import { useAuth } from '../stores/auth';
 import { parsePhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js';
 import getDefaultCountryCode from '../helper/getDefaultCountryCode';
-
+import { isValidPhoneNumber } from 'libphonenumber-js';
 const ContactsContext = createContext();
 
 const filterUniqueContacts = (contactsData, userPhoneNumber) => {
@@ -18,27 +18,32 @@ const filterUniqueContacts = (contactsData, userPhoneNumber) => {
 const mapToSimplifiedContacts = (uniqueContacts) => {
     const defaultCountryCode = getDefaultCountryCode();
 
+    // Maping each contact to simplified version
     const simplifiedContacts = uniqueContacts.map((contact) => {
         let phoneNumber = null;
+        // Parse phone number & validate it
         try {
             phoneNumber = contact.phoneNumbers ? parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode) : null;
         } catch (error) {
             console.warn(`Error parsing phone number: ${contact.phoneNumbers[0].number}`, error);
         }
 
+        if (phoneNumber && !isValidPhoneNumber(phoneNumber.number)) {
+            phoneNumber = null;
+        }
+        // Returning simplified contacts
         return {
             id: contact.id,
             name: contact.name || '',
-            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : 'Invalid number',
+            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : null,
             countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : '',
             imageURI: contact.imageAvailable ? contact.image.uri : '',
             color: generateRandomColor(),
         };
     });
-
-    return simplifiedContacts;
+    // Filter out invalid phone number contacts
+    return simplifiedContacts.filter(contact => contact.phoneNumber !== null);
 };
-
 
 const handleLoadContactsError = (error) => {};
 

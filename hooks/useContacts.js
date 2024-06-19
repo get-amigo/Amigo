@@ -18,18 +18,27 @@ const filterUniqueContacts = (contactsData, userPhoneNumber) => {
 const mapToSimplifiedContacts = (uniqueContacts) => {
     const defaultCountryCode = getDefaultCountryCode();
 
-    return uniqueContacts.map((contact) => {
-        const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
+    const simplifiedContacts = uniqueContacts.map((contact) => {
+        let phoneNumber = null;
+        try {
+            phoneNumber = contact.phoneNumbers ? parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode) : null;
+        } catch (error) {
+            console.warn(`Error parsing phone number: ${contact.phoneNumbers[0].number}`, error);
+        }
+
         return {
             id: contact.id,
             name: contact.name || '',
-            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : '',
-            countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : ' ',
+            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : 'Invalid number',
+            countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : '',
             imageURI: contact.imageAvailable ? contact.image.uri : '',
             color: generateRandomColor(),
         };
     });
+
+    return simplifiedContacts;
 };
+
 
 const handleLoadContactsError = (error) => {};
 

@@ -55,11 +55,11 @@ function ExpenseScreen() {
                         </Text>
                     </View>
                 </View>
-                <FlatList 
-                    data={[{}, {}, {}]} 
-                    renderItem={({ item }) => <ExpenseCard item={item} loading />} 
-                    style={styles.list} 
-                    scrollEnabled={loading}
+                <FlatList
+                    data={[{}, {}, {}]}
+                    renderItem={({ item }) => <ExpenseCard item={item} loading />}
+                    style={styles.list}
+                    scrollEnabled={!loading}
                 />
             </SafeAreaView>
         );
@@ -98,6 +98,7 @@ function ExpenseScreen() {
                     keyExtractor={(item, index) => item.id || index.toString()}
                     renderItem={({ item }) => <ExpenseCard item={item} />}
                     style={styles.list}
+                    scrollEnabled={!loading}
                 />
             )}
         </SafeAreaView>

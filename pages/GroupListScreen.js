@@ -48,6 +48,7 @@ function GroupListScreen({ navigation }) {
                         onScroll={() => {
                             Keyboard.dismiss();
                         }}
+                        scrollEnabled={!loading}
                     />
                 </>
                 <FabIcon
@@ -90,6 +91,7 @@ function GroupListScreen({ navigation }) {
                         onScroll={() => {
                             Keyboard.dismiss();
                         }}
+                        scrollEnabled={!loading}
                     />
                 </>
             )}

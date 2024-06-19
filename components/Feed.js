@@ -162,6 +162,21 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
 function PaymentActivity({ payment, contacts }) {
     const { user } = useAuth();
     const [payer, receiver] = editNames([payment.payer, payment.receiver], user._id, contacts);
+
+    // Function to find contact name by phone number
+    const getContactNameByPhoneNumber = (phoneNumber) => {
+        const contact = contacts.find((contact) => contact.phoneNumber === phoneNumber);
+        return contact ? contact.name : 'Unknown';
+    };
+
+    // If payer or receiver name is 'Unknown', look up contact name
+    if (payer.name === 'Unknown' && payer.phoneNumber) {
+        payer.name = getContactNameByPhoneNumber(payer.phoneNumber);
+    }
+    if (receiver.name === 'Unknown' && receiver.phoneNumber) {
+        receiver.name = getContactNameByPhoneNumber(receiver.phoneNumber);
+    }
+
     return (
         <View
             style={{

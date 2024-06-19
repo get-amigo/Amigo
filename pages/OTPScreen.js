@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native';
 import COLOR from '../constants/Colors';
 import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -87,80 +87,74 @@ const OTPScreen = ({
     return loading ? (
         <Loader />
     ) : (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.innerContainer}>
-                <View style={styles.header}>
-                    <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
-                    <View style={styles.textContainer}>
-                        <Text style={styles.headerText}>OTP Verification</Text>
-                        <Text style={styles.promptText}>Enter the code sent to {phoneNumber}</Text>
-                    </View>
-                </View>
-                <View
-                    style={{
-                        alignItems: 'center',
-                    }}
-                >
-                    <View style={styles.otpContainer}>{otpBoxes}</View>
-
-                    <TextInput
-                        ref={inputRef}
-                        style={styles.hiddenInput}
-                        keyboardType="number-pad"
-                        value={otp}
-                        onChangeText={handleOTPChange}
-                        maxLength={6}
-                        autoFocus
-                    />
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.resendText}>Didn't get the OTP? </Text>
-
-                        <Pressable
-                            disabled={seconds > 0}
-                            style={{
-                                color: seconds >= 0 ? '#808080' : 'red',
-                            }}
-                            onPress={() => seconds === 0 && resendOTP()}
-                        >
-                            {seconds > 0 ? (
-                                <Text
-                                    style={{
-                                        color: '#808080',
-                                        fontSize: getFontSizeByWindowWidth(10.5),
-                                        fontWeight: 'normal',
-                                        marginLeft: calcWidth(1),
-                                    }}
-                                >
-                                    Resend SMS in {seconds.toString().padStart(2, '0')}s
-                                </Text>
-                            ) : (
-                                <Text
-                                    style={{
-                                        color: '#FFFFFF',
-                                        fontSize: getFontSizeByWindowWidth(10.5),
-                                        fontWeight: 'bold',
-                                        marginLeft: calcWidth(1),
-                                    }}
-                                >
-                                    Resend
-                                </Text>
-                            )}
-                        </Pressable>
-                    </View>
-                    <View style={{}}>
-                        <Button title="Verify" onPress={handleVerifyOTP} />
-                    </View>
+        <View style={styles.innerContainer}>
+            <View style={styles.header}>
+                <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
+                <View style={styles.textContainer}>
+                    <Text style={styles.headerText}>OTP Verification</Text>
+                    <Text style={styles.promptText}>Enter the code sent to {phoneNumber}</Text>
                 </View>
             </View>
-        </SafeAreaView>
+            <View
+                style={{
+                    alignItems: 'center',
+                }}
+            >
+                <View style={styles.otpContainer}>{otpBoxes}</View>
+
+                <TextInput
+                    ref={inputRef}
+                    style={styles.hiddenInput}
+                    keyboardType="number-pad"
+                    value={otp}
+                    onChangeText={handleOTPChange}
+                    maxLength={6}
+                    autoFocus
+                />
+                <View style={{ flexDirection: 'row' }}>
+                    <Text style={styles.resendText}>Didn't get the OTP? </Text>
+
+                    <Pressable
+                        disabled={seconds > 0}
+                        style={{
+                            color: seconds >= 0 ? '#808080' : 'red',
+                        }}
+                        onPress={() => seconds === 0 && resendOTP()}
+                    >
+                        {seconds > 0 ? (
+                            <Text
+                                style={{
+                                    color: '#808080',
+                                    fontSize: getFontSizeByWindowWidth(10.5),
+                                    fontWeight: 'normal',
+                                    marginLeft: calcWidth(1),
+                                }}
+                            >
+                                Resend SMS in {seconds.toString().padStart(2, '0')}s
+                            </Text>
+                        ) : (
+                            <Text
+                                style={{
+                                    color: '#FFFFFF',
+                                    fontSize: getFontSizeByWindowWidth(10.5),
+                                    fontWeight: 'bold',
+                                    marginLeft: calcWidth(1),
+                                }}
+                            >
+                                Resend
+                            </Text>
+                        )}
+                    </Pressable>
+                </View>
+                <View style={{}}>
+                    <Button title="Verify" onPress={handleVerifyOTP} />
+                </View>
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     innerContainer: {
         paddingHorizontal: calcWidth(5),
         marginTop: calcHeight(5),

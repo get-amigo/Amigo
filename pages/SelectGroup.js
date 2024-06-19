@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList } from 'react-native';
 import PAGES from '../constants/pages';
 import { useFocusEffect } from '@react-navigation/native';
 import COLOR from '../constants/Colors';
@@ -10,6 +10,7 @@ import { useTransaction } from '../context/TransactionContext';
 import GroupIcon from '../components/GroupIcon';
 import { Octicons } from '@expo/vector-icons';
 import { useGroupList } from '../stores/groupList';
+
 function GroupListScreen({ navigation }) {
     const [search, setSearch] = useState('');
     const { setTransactionData } = useTransaction();
@@ -24,7 +25,7 @@ function GroupListScreen({ navigation }) {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <View
                 style={{
                     marginVertical: calcHeight(2),
@@ -67,14 +68,12 @@ function GroupListScreen({ navigation }) {
                     />
                 )}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
         alignItems: 'center',
     },
     header: {

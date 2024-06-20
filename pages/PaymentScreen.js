@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
@@ -64,59 +64,53 @@ function GroupScreen({
             enabled
             keyboardVerticalOffset={calcHeight(10)}
         >
-            <SafeAreaView style={styles.container}>
-                <View style={styles.header}>
-                    <View style={styles.headerItem}>
-                        <UserAvatar user={payment.from} />
-                        <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
-                            {sliceText(payment.from.name, 10)}
-                        </Text>
-                    </View>
-                    <View style={{ ...styles.headerItem, justifyContent: 'flex-end', marginTop: calcHeight(1.7) }}>
-                        <Text style={{ color: '#D9D9D9' }}>Paying To</Text>
-                        <AntDesign style={{ marginTop: calcHeight(3) }} name="arrowright" size={24} color="white" />
-                    </View>
-                    <View style={styles.headerItem}>
-                        <UserAvatar user={payment.to} />
-                        <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
-                            {sliceText(payment.to.name, 10)}
-                        </Text>
-                    </View>
+            <View style={styles.header}>
+                <View style={styles.headerItem}>
+                    <UserAvatar user={payment.from} />
+                    <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
+                        {sliceText(payment.from.name, 10)}
+                    </Text>
                 </View>
-                <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
-                <View style={styles.rowCentered}>
-                    <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
-                        <TextInput
-                            style={styles.description}
-                            onChangeText={(text) => {
-                                const remaining = 100 - text.length;
-                                setRemainingChars(remaining >= 0 ? remaining : 0);
-                                setDescription(text.slice(0, 100));
-                            }}
-                            value={description}
-                            placeholder="Description"
-                            placeholderTextColor="#ccc"
-                            ref={descriptionRef}
-                            textAlign="center"
-                            multiline={true}
-                            numberOfLines={4}
-                        />
-                    </Pressable>
-                    <Text style={styles.remainingCharacter}>{remainingChars} left</Text>
+                <View style={{ ...styles.headerItem, justifyContent: 'flex-end', marginTop: calcHeight(1.7) }}>
+                    <Text style={{ color: '#D9D9D9' }}>Paying To</Text>
+                    <AntDesign style={{ marginTop: calcHeight(3) }} name="arrowright" size={24} color="white" />
                 </View>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: calcHeight(2) }}>
-                    <Button onPress={submitPayment} title="Record as Cash Payment" />
+                <View style={styles.headerItem}>
+                    <UserAvatar user={payment.to} />
+                    <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
+                        {sliceText(payment.to.name, 10)}
+                    </Text>
                 </View>
-            </SafeAreaView>
+            </View>
+            <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
+            <View style={styles.rowCentered}>
+                <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
+                    <TextInput
+                        style={styles.description}
+                        onChangeText={(text) => {
+                            const remaining = 100 - text.length;
+                            setRemainingChars(remaining >= 0 ? remaining : 0);
+                            setDescription(text.slice(0, 100));
+                        }}
+                        value={description}
+                        placeholder="Description"
+                        placeholderTextColor="#ccc"
+                        ref={descriptionRef}
+                        textAlign="center"
+                        multiline={true}
+                        numberOfLines={4}
+                    />
+                </Pressable>
+                <Text style={styles.remainingCharacter}>{remainingChars} left</Text>
+            </View>
+            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: calcHeight(2) }}>
+                <Button onPress={submitPayment} title="Record as Cash Payment" />
+            </View>
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',

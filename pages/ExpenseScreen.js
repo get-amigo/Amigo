@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useAuth } from '../stores/auth';
 import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
 import ExpenseCard from '../components/ExpenseCard';
@@ -21,7 +21,7 @@ function ExpenseScreen() {
 
     if (loading)
         return (
-            <SafeAreaView style={styles.container}>
+            <>
                 <Text style={styles.header}>Expense Summary</Text>
                 <View
                     style={{
@@ -56,10 +56,10 @@ function ExpenseScreen() {
                     </View>
                 </View>
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
-            </SafeAreaView>
+            </>
         );
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <Text style={styles.header}>Expense Summary</Text>
             <View
                 style={{
@@ -95,22 +95,19 @@ function ExpenseScreen() {
                     style={styles.list}
                 />
             )}
-        </SafeAreaView>
+        </>
     );
 }
 
 export default ExpenseScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,
         fontWeight: 'bold',
-        margin: calcHeight(3),
+        marginHorizontal: calcHeight(3),
+        marginVertical: calcHeight(2),
     },
     selectorContainer: {
         flexDirection: 'row',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, SafeAreaView, View, Pressable, FlatList, Image } from 'react-native';
+import { Text, StyleSheet, View, Pressable, FlatList, Image } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import GroupIcon from '../components/GroupIcon';
 import COLOR from '../constants/Colors';
@@ -8,6 +8,7 @@ import { useAuth } from '../stores/auth';
 import sliceText from '../helper/sliceText';
 import Cross from '../assets/icons/cross.png';
 import UserAvatar from '../components/UserAvatar';
+
 function GroupBalanceScreen({ navigation, route }) {
     const { group } = route.params;
     const { user } = useAuth();
@@ -47,7 +48,7 @@ function GroupBalanceScreen({ navigation, route }) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <View style={styles.header}>
                 <Pressable onPress={() => navigation.goBack()}>
                     <Image style={styles.crossIcon} source={Cross} />
@@ -92,17 +93,14 @@ function GroupBalanceScreen({ navigation, route }) {
                 renderItem={renderListItem}
                 style={styles.list}
             />
-        </SafeAreaView>
+        </>
     );
 }
 
 // // StyleSheet
 const styles = StyleSheet.create({
     // ... existing styles
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
+
     balanceText: {
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(15),

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, SafeAreaView, TextInput, Pressable, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import Button from '../components/Button';
@@ -32,9 +32,10 @@ const CreateGroup = ({ navigation }) => {
             return;
         }
         setIsLoading(true);
-        const phoneNumbers = selectedContacts.map(({ phoneNumber }) => ({
+
+        const phoneNumbers = selectedContacts.map(({ phoneNumber, countryCode }) => ({
             phoneNumber,
-            countryCode: '+91',
+            countryCode,
         }));
         const { data } = await apiHelper.post('/group', {
             name: groupName,
@@ -69,45 +70,39 @@ const CreateGroup = ({ navigation }) => {
         <>
             {isLoading && <Loader />}
             {!isLoading && (
-                <SafeAreaView style={styles.container}>
-                    <View style={{ marginHorizontal: calcWidth(5) }}>
-                        <Text style={styles.heading}>New group</Text>
-                        <Pressable style={styles.inputContainer} onPress={() => nameRef.current.focus()}>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={setGroupName}
-                                value={groupName}
-                                placeholder="Group Name"
-                                placeholderTextColor="gray"
-                                ref={nameRef}
-                            />
-                        </Pressable>
-                        <View>
-                            <Text style={styles.titleText}>Add members</Text>
-                        </View>
-                        <View style={styles.contactListContainer}>
-                            <ContactList />
-                        </View>
-
-                        <View style={styles.button}>
-                            <Button
-                                title="Create Group"
-                                onPress={handleCreateGroup}
-                                styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
-                            />
-                        </View>
+                <View style={{ marginHorizontal: calcWidth(5) }}>
+                    <Text style={styles.heading}>New group</Text>
+                    <Pressable style={styles.inputContainer} onPress={() => nameRef.current.focus()}>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={setGroupName}
+                            value={groupName}
+                            placeholder="Group Name"
+                            placeholderTextColor="gray"
+                            ref={nameRef}
+                        />
+                    </Pressable>
+                    <View>
+                        <Text style={styles.titleText}>Add members</Text>
                     </View>
-                </SafeAreaView>
+                    <View style={styles.contactListContainer}>
+                        <ContactList />
+                    </View>
+
+                    <View style={styles.button}>
+                        <Button
+                            title="Create Group"
+                            onPress={handleCreateGroup}
+                            styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
+                        />
+                    </View>
+                </View>
             )}
         </>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     heading: {
         color: COLOR.PRIMARY,
         marginVertical: calcHeight(2),

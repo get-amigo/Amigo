@@ -24,30 +24,44 @@ import { useGroup } from '../context/GroupContext';
 import ScannerIcon from '../assets/icons/scanner.png';
 import apiHelper from '../helper/apiHelper';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import { useContacts } from '../hooks/useContacts';
+import Feed from '../components/Feed';
+import useActivities from '../hooks/useActivities';
 
 const ActivitiesFeedScreen = ({ navigation }) => {
+    console.log('mounted');
     const { group } = useGroup();
-    console.log(group._id);
+    const { contacts } = useContacts();
+
+    const { isLoading, hasNextPage, fetchNextPage } = useActivities();
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
     const activityOrder = useGroupActivitiesStore((state) => state.activities[group._id]?.activityOrder || []);
+    const hasHydrated = useGroupActivitiesStore((state) => state._hasHydrated);
 
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
 
-    const fetchActivities = async () => {
-        try {
-            const { data } = await apiHelper.get(`/activity-feed?groupId=${group._id}`);
-            addOldActivitiesToLocalDB(data);
-            console.log('added');
-        } catch (error) {
-            console.error(error);
+    // const fetchActivities = async () => {
+    //     try {
+    //         const { data } = await apiHelper.get(`/activity-feed?groupId=${group._id}`);
+    //         addOldActivitiesToLocalDB(data);
+    //         console.log('added');
+    //     } catch (error) {
+    //         console.error('fetchActivities : ', error);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     fetchActivities();
+    // }, []);
+
+    const onReachEnd = () => {
+        console.log('END');
+        if (hasNextPage && !isLoading) {
+            fetchNextPage();
         }
     };
-
-    useEffect(() => {
-        fetchActivities();
-    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -111,18 +125,13 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 {/* Flat List */}
                 <>
                     <FlatList
+                        inverted
                         data={activityOrder}
-                        renderItem={({ item, index }) => (
-                            <View
-                                key={index}
-                                style={{
-                                    height: 20,
-                                }}
-                            >
-                                <Text style={{ color: 'white', textAlign: 'center' }}>{item}</Text>
-                            </View>
-                        )}
+                        keyExtractor={(item) => item._id}
+                        renderItem={({ item }) => <Feed {...activities[item]} contacts={contacts} />}
                         style={styles.flatlist}
+                        onEndReached={onReachEnd}
+                        onEndReachedThreshold={0.5}
                     />
                 </>
 

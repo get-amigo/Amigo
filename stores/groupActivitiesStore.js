@@ -22,6 +22,17 @@ const groupActivitiesStore = (set, get) => ({
         }
         set((state) => {
             const groupId = acts[0].group;
+
+            const fetchedDate = new Date(acts[0].createdAt);
+            const storedDate = new Date(
+                state.activities[groupId]?.activitiesById[state.activities[groupId]?.activityOrder[0]]?.createdAt ??
+                    '2000-06-19T09:08:12.155Z',
+            );
+
+            console.log('Date ', fetchedDate, storedDate);
+            const isNewerThanStored = fetchedDate > storedDate ? true : false;
+            console.log('newwer? ', isNewerThanStored);
+
             const newActivitiesById = {
                 ...(state.activities[groupId]?.activitiesById || {}),
             };
@@ -29,8 +40,14 @@ const groupActivitiesStore = (set, get) => ({
             const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
 
             acts.forEach((act) => {
-                newActivityOrder.push(act._id);
-                newActivitiesById[act._id] = act;
+                if (!(act._id in newActivitiesById)) {
+                    if (isNewerThanStored) {
+                        newActivityOrder.unshift(act._id);
+                    } else {
+                        newActivityOrder.push(act._id);
+                    }
+                    newActivitiesById[act._id] = act;
+                }
             });
 
             return {
@@ -44,6 +61,10 @@ const groupActivitiesStore = (set, get) => ({
                 },
             };
         });
+    },
+
+    isActivityAvailable: (activityId, groupId) => {
+        return activityId in (get().activities[groupId]?.activitiesById || {});
     },
 });
 

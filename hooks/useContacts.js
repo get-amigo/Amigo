@@ -2,7 +2,7 @@ import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import generateRandomColor from '../helper/generateRandomColor';
 import { useAuth } from '../stores/auth';
-import { parsePhoneNumber, parsePhoneNumberFromString } from 'libphonenumber-js';
+import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
 import getDefaultCountryCode from '../helper/getDefaultCountryCode';
 
 const ContactsContext = createContext();
@@ -18,17 +18,20 @@ const filterUniqueContacts = (contactsData, userPhoneNumber) => {
 const mapToSimplifiedContacts = (uniqueContacts) => {
     const defaultCountryCode = getDefaultCountryCode();
 
-    return uniqueContacts.map((contact) => {
-        const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
-        return {
-            id: contact.id,
-            name: contact.name || '',
-            phoneNumber: phoneNumber ? phoneNumber.nationalNumber : '',
-            countryCode: phoneNumber ? `+${phoneNumber.countryCallingCode}` : ' ',
-            imageURI: contact.imageAvailable ? contact.image.uri : '',
-            color: generateRandomColor(),
-        };
-    });
+    return uniqueContacts
+        .filter((contact) => isValidPhoneNumber(contact.phoneNumbers[0].number))
+        .map((contact) => {
+            const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
+
+            return {
+                id: contact.id,
+                name: contact.name || '',
+                phoneNumber: phoneNumber.nationalNumber,
+                countryCode: `+${phoneNumber.countryCallingCode}`,
+                imageURI: contact.imageAvailable ? contact.image.uri : '',
+                color: generateRandomColor(),
+            };
+        });
 };
 
 const handleLoadContactsError = (error) => {};

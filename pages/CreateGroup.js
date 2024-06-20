@@ -48,6 +48,24 @@ const CreateGroup = ({ navigation }) => {
         else navigation.goBack();
     };
 
+    const handleCreateGroup = () => {
+        if (!groupName && selectedContacts.length === 0) {
+            Toast.show('Please Enter group name and select a contact', {
+                duration: Toast.durations.LONG,
+            });
+        } else if (!groupName) {
+            Toast.show(' Please enter group name', {
+                duration: Toast.durations.LONG,
+            });
+        } else if (selectedContacts.length === 0) {
+            Toast.show('Please select a contact', {
+                duration: Toast.durations.LONG,
+            });
+        } else {
+            createGroupAsync();
+        }
+    };
+
     return (
         <>
             {isLoading && <Loader />}
@@ -74,14 +92,7 @@ const CreateGroup = ({ navigation }) => {
                     <View style={styles.button}>
                         <Button
                             title="Create Group"
-                            onPress={
-                                selectedContacts.length === 0 || groupName === ''
-                                    ? () =>
-                                          Toast.show('Select a contact', {
-                                              duration: Toast.durations.LONG,
-                                          })
-                                    : createGroupAsync
-                            }
+                            onPress={handleCreateGroup}
                             styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
                         />
                     </View>

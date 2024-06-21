@@ -149,7 +149,9 @@ function GroupScreen({ navigation }) {
     });
 
     const fetchActivity = useCallback(async (activity) => {
-        if (activity.creator._id === user._id) return;
+        if (activity.creator._id === user._id) {
+            return;
+        }
         setActivities((prev) => [activity, ...prev]);
     }, []);
 

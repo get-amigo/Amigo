@@ -7,10 +7,10 @@ import {
     KeyboardAvoidingView,
     Platform,
     TextInput,
-    ScrollView,
     FlatList,
+    TouchableOpacity,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
@@ -18,7 +18,7 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import getMembersString from '../utility/getMembersString';
 import { Image } from 'react-native-svg';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
 import GroupIcon from '../components/GroupIcon';
 import { useGroup } from '../context/GroupContext';
 import ScannerIcon from '../assets/icons/scanner.png';
@@ -27,18 +27,26 @@ import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import { useContacts } from '../hooks/useContacts';
 import Feed from '../components/Feed';
 import useActivities from '../hooks/useActivities';
+import checkConnectivity from '../helper/getNetworkStateAsync';
+import useSocket from '../hooks/useSocket';
+import { useAuth } from '../stores/auth';
 
 const ActivitiesFeedScreen = ({ navigation }) => {
     console.log('mounted');
     const { group } = useGroup();
     const { contacts } = useContacts();
+    const { user } = useAuth();
 
     const { isLoading, hasNextPage, fetchNextPage } = useActivities();
+
+    const textRef = useRef();
+    const [amount, setAmount] = useState('');
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
     const activityOrder = useGroupActivitiesStore((state) => state.activities[group._id]?.activityOrder || []);
     const hasHydrated = useGroupActivitiesStore((state) => state._hasHydrated);
+    const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
 
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
 
@@ -62,6 +70,45 @@ const ActivitiesFeedScreen = ({ navigation }) => {
             fetchNextPage();
         }
     };
+
+    const handleInputChange = (text) => {
+        if (!isNaN(text)) {
+            // If it's a number, strip out non-digit characters
+            text = text.replace(/[^0-9]/g, '');
+        }
+        setAmount(text);
+    };
+
+    const handleActivitySend = async (message) => {
+        // only working for text messages
+        const isOnline = await checkConnectivity();
+        if (isOnline) {
+            await apiHelper
+                .post(`/group/${group._id}/chat`, {
+                    message: message,
+                })
+                .then(() => {
+                    console.log('sent');
+                    // addActivityToLocalDB(message, group._id, true);
+                    console.log('added to local db');
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        } else {
+            addActivityToLocalDB(message, group._id, false);
+        }
+    };
+
+    const fetchActivity = useCallback(async (activity) => {
+        console.log('fetchActivity----------------- ', activity);
+        // if (activity.creator._id === user._id) {
+        //     return;
+        // }
+        addActivityToLocalDB(activity, group._id, true);
+    }, []);
+
+    useSocket('activity created', fetchActivity);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -136,26 +183,65 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 </>
 
                 {/* Bottom */}
-                {/* <>
+                <>
                     <KeyboardAvoidingView
-                        style={styles.bottom}
-                        behavior={Platform.OS === 'ios' ? 'padding' : null}
+                        style={{
+                            flex: Platform.OS === 'ios' ? 1 : 0,
+                            flexDirection: 'row',
+                            margin: calcWidth(2),
+                            justifyContent: 'space-evenly',
+                        }}
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                         keyboardVerticalOffset={calcHeight(9)}
                     >
-                        <View style={styles.wrapper1}></View>
-                        <View style={styles.wrapper2}>
+                        <Pressable
+                            style={[
+                                styles.inputContainer,
+                                {
+                                    width: !isNaN(amount) ? calcWidth(60) : calcWidth(75),
+                                },
+                            ]}
+                            onPress={() => textRef.current.focus()}
+                        >
                             <TextInput
                                 style={styles.input}
                                 placeholderTextColor="#ccc"
-                                // ref={textRef}
-                                placeholder="Start Typing..."
-                                // textAlign="center"
-                                // value={amount}
-                                // onChangeText={handleInputChange}
+                                ref={textRef}
+                                placeholder="Enter the amount"
+                                textAlign="center"
+                                value={amount}
+                                onChangeText={handleInputChange}
                             />
-                        </View>
+                        </Pressable>
+                        {!isNaN(amount) ? (
+                            <TouchableOpacity
+                                style={styles.button}
+                                onPress={() => {
+                                    setAmount('');
+                                    // resetTransaction();
+                                    // setTransactionData((prev) => ({
+                                    //     ...prev,
+                                    //     group,
+                                    //     amount,
+                                    // }));
+                                    // navigation.navigate(PAGES.ADD_TRANSACTION);
+                                }}
+                            >
+                                <Text style={styles.buttonText}>+ Expense</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TouchableOpacity
+                                onPress={() => handleActivitySend(amount)}
+                                style={{
+                                    height: calcHeight(5),
+                                    justifyContent: 'center',
+                                }}
+                            >
+                                <AntDesign name="enter" size={calcHeight(4)} color={COLOR.BUTTON} />
+                            </TouchableOpacity>
+                        )}
                     </KeyboardAvoidingView>
-                </> */}
+                </>
             </ImageBackground>
         </SafeAreaView>
     );
@@ -212,5 +298,27 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         color: 'white',
         fontSize: getFontSizeByWindowWidth(12),
+    },
+
+    inputContainer: {
+        color: 'white',
+        width: calcWidth(60),
+        height: calcHeight(5),
+        borderRadius: calcWidth(2),
+        alignContent: 'center',
+    },
+    button: {
+        width: calcWidth(25),
+        height: calcHeight(5),
+        borderRadius: calcWidth(2),
+        backgroundColor: COLOR.BUTTON,
+        elevation: 3,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    buttonText: {
+        fontSize: getFontSizeByWindowWidth(12),
+        color: 'white',
+        alignItems: 'center',
     },
 });

@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, devtools, persist } from 'zustand/middleware';
+import generateUniqueId from '../helper/generateUniqueId';
 
 const groupActivitiesStore = (set, get) => ({
     _hasHydrated: false,
@@ -20,6 +21,7 @@ const groupActivitiesStore = (set, get) => ({
         if (!acts || acts.length === 0) {
             return;
         }
+
         set((state) => {
             const groupId = acts[0].group;
 
@@ -29,9 +31,7 @@ const groupActivitiesStore = (set, get) => ({
                     '2000-06-19T09:08:12.155Z',
             );
 
-            console.log('Date ', fetchedDate, storedDate);
             const isNewerThanStored = fetchedDate > storedDate ? true : false;
-            console.log('newwer? ', isNewerThanStored);
 
             const newActivitiesById = {
                 ...(state.activities[groupId]?.activitiesById || {}),
@@ -39,16 +39,33 @@ const groupActivitiesStore = (set, get) => ({
 
             const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
 
-            acts.forEach((act) => {
-                if (!(act._id in newActivitiesById)) {
-                    if (isNewerThanStored) {
+            if (isNewerThanStored) {
+                for (let n = acts.length - 1; n >= 0; n--) {
+                    const act = acts[n];
+                    if (!(act._id in newActivitiesById)) {
                         newActivityOrder.unshift(act._id);
-                    } else {
-                        newActivityOrder.push(act._id);
+                        newActivitiesById[act._id] = act;
                     }
-                    newActivitiesById[act._id] = act;
                 }
-            });
+            } else {
+                acts.forEach((act) => {
+                    if (!(act._id in newActivitiesById)) {
+                        newActivityOrder.push(act._id);
+                        newActivitiesById[act._id] = act;
+                    }
+                });
+            }
+
+            // acts.forEach((act) => {
+            //     if (!(act._id in newActivitiesById)) {
+            //         if (isNewerThanStored) {
+            //             newActivityOrder.unshift(act._id);
+            //         } else {
+            //             newActivityOrder.push(act._id);
+            //         }
+            //         newActivitiesById[act._id] = act;
+            //     }
+            // });
 
             return {
                 activities: {
@@ -65,6 +82,120 @@ const groupActivitiesStore = (set, get) => ({
 
     isActivityAvailable: (activityId, groupId) => {
         return activityId in (get().activities[groupId]?.activitiesById || {});
+    },
+
+    addActivityToLocalDB: (activity, groupId, isSynced = true) => {
+        // currently handling chats
+
+        /* 
+            {
+                __v: 0,
+                _id: "6669434742f4e0bb00be4877",
+                activityType: "chat",
+                createdAt: "2024-06-12T06:42:15.144Z",
+                creator: {
+                _id: "665d727f11d48ac43518d5a0",
+                name: "Shashwat Singh",
+                phoneNumber: "9140062947",
+                },
+                group: "666073fef4b7f27450c4c1ac",
+                onModel: "Chat",
+                relatedId: {
+                __v: 0,
+                _id: "6669434742f4e0bb00be4876",
+                createdAt: "2024-06-12T06:42:15.144Z",
+                message: "Y",
+                updatedAt: "2024-06-12T06:42:15.144Z",
+                },
+                updatedAt: "2024-06-12T06:42:15.144Z",
+            },
+        
+        */
+
+        console.log('isSynced: ', isSynced);
+        if (isSynced) {
+            // if the message is synced with the server
+            set((state) => {
+                const newActivitiesById = {
+                    ...(state.activities[groupId]?.activitiesById || {}),
+                };
+                const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
+                if (!(activity._id in newActivitiesById)) {
+                    newActivityOrder.unshift(activity._id);
+                }
+
+                newActivitiesById[activity._id] = activity;
+
+                return {
+                    activities: {
+                        ...state.activities,
+                        [groupId]: {
+                            ...state.activities[groupId],
+                            activitiesById: newActivitiesById,
+                            activityOrder: newActivityOrder,
+                        },
+                    },
+                };
+            });
+        } else {
+            // If not synced
+            const now = new Date().toISOString();
+            const msg = {
+                __v: 0,
+                _id: generateUniqueId(),
+                activityType: 'chat',
+                createdAt: now,
+                creator: {
+                    _id: '665d727f11d48ac43518d5a0',
+                    name: 'Shashwat Singh',
+                    phoneNumber: '9140062947',
+                },
+                group: groupId,
+                onModel: 'Chat',
+                relatedId: {
+                    __v: 0,
+                    _id: generateUniqueId(),
+                    createdAt: now,
+                    message: activity,
+                    updatedAt: now,
+                },
+                updatedAt: now,
+            };
+
+            set((state) => {
+                const newActivitiesById = {
+                    ...(state.activities[groupId]?.activitiesById || {}),
+                };
+                const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
+                if (!(msg._id in newActivitiesById)) {
+                    newActivityOrder.unshift(msg._id);
+                }
+
+                newActivitiesById[msg._id] = msg;
+
+                return {
+                    activities: {
+                        ...state.activities,
+                        [groupId]: {
+                            ...state.activities[groupId],
+                            activitiesById: newActivitiesById,
+                            activityOrder: newActivityOrder,
+                        },
+                    },
+                };
+            });
+
+            set((state) => {
+                return {
+                    pendingActivities: {
+                        ...state.pendingActivities,
+                        [msg._id]: msg,
+                    },
+                };
+            });
+        }
+
+        console.log(activity);
     },
 });
 

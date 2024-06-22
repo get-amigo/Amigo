@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect, useRef } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, ScrollView, TextInput, Image, Share, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, TextInput, Image, Share, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { DEEP_LINK_URL } from '@env';
 import GroupIcon from '../components/GroupIcon';
@@ -161,58 +161,52 @@ const GroupScreen = ({
     return loading ? (
         <Loader />
     ) : (
-        <SafeAreaView style={styles.container}>
-            <ScrollView>
-                <TouchableOpacity style={styles.centeredView}>
-                    <GroupIcon size={10} groupId={group._id} />
+        <ScrollView>
+            <TouchableOpacity style={styles.centeredView}>
+                <GroupIcon size={10} groupId={group._id} />
+            </TouchableOpacity>
+            <View style={styles.header}>
+                <View style={styles.groupInfo}>
+                    <View style={styles.spacing}>
+                        {isEditing ? (
+                            <TextInput
+                                onChangeText={(text) => {
+                                    setGroupName(text);
+                                    groupRef.current = text;
+                                }}
+                                value={groupName}
+                                autoFocus
+                                style={styles.groupName}
+                            />
+                        ) : (
+                            <Text style={styles.groupName}>{groupName}</Text>
+                        )}
+
+                        <Text style={styles.groupCreatedAt}>Created on 25 Dec 2023, 10:32 PM</Text>
+                    </View>
+                </View>
+                <TouchableOpacity onPress={() => setIsEditing((prev) => !prev)}>
+                    <Octicons name="pencil" size={calcHeight(3)} color="white" />
                 </TouchableOpacity>
-                <View style={styles.header}>
-                    <View style={styles.groupInfo}>
-                        <View style={styles.spacing}>
-                            {isEditing ? (
-                                <TextInput
-                                    onChangeText={(text) => {
-                                        setGroupName(text);
-                                        groupRef.current = text;
-                                    }}
-                                    value={groupName}
-                                    autoFocus
-                                    style={styles.groupName}
-                                />
-                            ) : (
-                                <Text style={styles.groupName}>{groupName}</Text>
-                            )}
+            </View>
 
-                            <Text style={styles.groupCreatedAt}>Created on 25 Dec 2023, 10:32 PM</Text>
-                        </View>
-                    </View>
-                    <TouchableOpacity onPress={() => setIsEditing((prev) => !prev)}>
-                        <Octicons name="pencil" size={calcHeight(3)} color="white" />
-                    </TouchableOpacity>
+            <View style={styles.memberListContainer}>
+                <View style={styles.listHeader}>
+                    <Text style={styles.totalMembersTitle}>Total Members</Text>
                 </View>
-
-                <View style={styles.memberListContainer}>
-                    <View style={styles.listHeader}>
-                        <Text style={styles.totalMembersTitle}>Total Members</Text>
-                    </View>
-                    <FlatList
-                        data={groupMembers}
-                        keyExtractor={(item, index) => index.toString()}
-                        renderItem={renderMemberItem}
-                        ListHeaderComponent={renderListHeader}
-                        ListFooterComponent={renderListFooter}
-                    />
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+                <FlatList
+                    data={groupMembers}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={renderMemberItem}
+                    ListHeaderComponent={renderListHeader}
+                    ListFooterComponent={renderListFooter}
+                />
+            </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',

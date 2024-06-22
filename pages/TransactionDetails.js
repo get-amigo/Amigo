@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
 import { AntDesign, Entypo } from '@expo/vector-icons';
 import COLOR from '../constants/Colors';
 import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
@@ -77,157 +77,151 @@ const TransactionDetail = ({
     // }, [navigation]);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView>
-                <View
+        <ScrollView>
+            <View
+                style={{
+                    alignItems: 'center',
+                    marginTop: calcHeight(5),
+                }}
+            >
+                <AmountInput amount={transaction.amount} isTextInput={false} />
+                <Text
                     style={{
-                        alignItems: 'center',
-                        marginTop: calcHeight(5),
+                        fontSize: getFontSizeByWindowWidth(14),
+                        color: COLOR.TEXT,
                     }}
                 >
-                    <AmountInput amount={transaction.amount} isTextInput={false} />
-                    <Text
-                        style={{
-                            fontSize: getFontSizeByWindowWidth(14),
-                            color: COLOR.TEXT,
-                        }}
-                    >
-                        {sliceText(transaction.description, 40)}
-                    </Text>
-                    <Text
-                        style={{
-                            color: 'grey',
-                            marginVertical: calcHeight(3),
-                            fontSize: getFontSizeByWindowWidth(12),
-                        }}
-                    >
-                        Create By {transaction.creator.name}
-                    </Text>
+                    {sliceText(transaction.description, 40)}
+                </Text>
+                <Text
+                    style={{
+                        color: 'grey',
+                        marginVertical: calcHeight(3),
+                        fontSize: getFontSizeByWindowWidth(12),
+                    }}
+                >
+                    Create By {transaction.creator.name}
+                </Text>
+                <View
+                    style={{
+                        width: '50%',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        gap: calcWidth(5),
+                        marginBottom: calcHeight(4),
+                    }}
+                >
                     <View
                         style={{
-                            width: '50%',
+                            backgroundColor: '#4D426C',
                             flexDirection: 'row',
-                            justifyContent: 'center',
-                            gap: calcWidth(5),
-                            marginBottom: calcHeight(4),
+                            borderRadius: 10,
+                            paddingVertical: calcWidth(1),
+                            paddingHorizontal: calcWidth(4),
+                            gap: calcWidth(1),
+                            alignItems: 'center',
                         }}
                     >
-                        <View
+                        <Image
                             style={{
-                                backgroundColor: '#4D426C',
-                                flexDirection: 'row',
-                                borderRadius: 10,
-                                paddingVertical: calcWidth(1),
-                                paddingHorizontal: calcWidth(4),
-                                gap: calcWidth(1),
-                                alignItems: 'center',
+                                width: calcWidth(3),
+                                height: calcWidth(3),
+                            }}
+                            source={CalendarIcon}
+                        />
+                        <Text
+                            style={{
+                                fontSize: getFontSizeByWindowWidth(10),
+                                color: 'white',
                             }}
                         >
-                            <Image
-                                style={{
-                                    width: calcWidth(3),
-                                    height: calcWidth(3),
-                                }}
-                                source={CalendarIcon}
-                            />
-                            <Text
-                                style={{
-                                    fontSize: getFontSizeByWindowWidth(10),
-                                    color: 'white',
-                                }}
-                            >
-                                {formatDateToDDMMYYYY(date)}
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                backgroundColor: '#4D426C',
-                                flexDirection: 'row',
-                                borderRadius: 10,
-                                paddingVertical: calcWidth(2),
-                                paddingHorizontal: calcWidth(4),
-                                gap: calcWidth(1),
-                                alignItems: 'center',
-                            }}
-                        >
-                            {getCategoryIcon(transaction.type)}
-                            <Text
-                                style={{
-                                    fontSize: getFontSizeByWindowWidth(10),
-                                    color: 'white',
-                                }}
-                            >
-                                {transaction.type}
-                            </Text>
-                        </View>
+                            {formatDateToDDMMYYYY(date)}
+                        </Text>
                     </View>
-                </View>
-                <View style={styles.boxContainer}>
                     <View
                         style={{
-                            borderTopLeftRadius: calcWidth(5),
-                            borderTopRightRadius: calcWidth(5),
-                            backgroundColor: COLOR.BUTTON,
+                            backgroundColor: '#4D426C',
+                            flexDirection: 'row',
+                            borderRadius: 10,
+                            paddingVertical: calcWidth(2),
+                            paddingHorizontal: calcWidth(4),
+                            gap: calcWidth(1),
+                            alignItems: 'center',
                         }}
                     >
-                        <Text style={styles.headerLabel}>Paid by</Text>
+                        {getCategoryIcon(transaction.type)}
+                        <Text
+                            style={{
+                                fontSize: getFontSizeByWindowWidth(10),
+                                color: 'white',
+                            }}
+                        >
+                            {transaction.type}
+                        </Text>
                     </View>
-                    <View style={styles.headerContainer}>
-                        <View style={styles.userDetail}>
-                            <View
-                                style={[
-                                    styles.circle,
-                                    {
-                                        backgroundColor: generateColor(transaction.paidBy._id),
-                                    },
-                                ]}
-                            />
-                            <Text style={styles.userName}>{transaction.paidBy.name}</Text>
-                            <Text style={styles.userAmount}>₹ {transaction.amount}</Text>
-                        </View>
-                    </View>
-                    <SharedList
-                        transaction={transaction}
-                        generateColor={generateColor}
-                        expandNames={expandNames}
-                        setExpandNames={setExpandNames}
-                    />
                 </View>
+            </View>
+            <View style={styles.boxContainer}>
                 <View
                     style={{
-                        alignItems: 'center',
+                        borderTopLeftRadius: calcWidth(5),
+                        borderTopRightRadius: calcWidth(5),
+                        backgroundColor: COLOR.BUTTON,
                     }}
                 >
-                    {transaction.splitAmong.length > TransactionNumberOfVisibleNames && (
-                        <TransactionDetailsButton
-                            onPress={() => {
-                                setExpandNames((prev) => !prev);
-                            }}
-                            title={
-                                <>
-                                    {expandNames ? (
-                                        <Text>Show Less</Text>
-                                    ) : (
-                                        <Text>
-                                            {transaction.splitAmong.length - TransactionNumberOfVisibleNames} more participants{'\t'}
-                                        </Text>
-                                    )}
-                                    <Entypo name={expandNames ? 'chevron-up' : 'chevron-down'} size={calcHeight(2.1)} color="white" />
-                                </>
-                            }
-                        />
-                    )}
+                    <Text style={styles.headerLabel}>Paid by</Text>
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+                <View style={styles.headerContainer}>
+                    <View style={styles.userDetail}>
+                        <View
+                            style={[
+                                styles.circle,
+                                {
+                                    backgroundColor: generateColor(transaction.paidBy._id),
+                                },
+                            ]}
+                        />
+                        <Text style={styles.userName}>{transaction.paidBy.name}</Text>
+                        <Text style={styles.userAmount}>₹ {transaction.amount}</Text>
+                    </View>
+                </View>
+                <SharedList
+                    transaction={transaction}
+                    generateColor={generateColor}
+                    expandNames={expandNames}
+                    setExpandNames={setExpandNames}
+                />
+            </View>
+            <View
+                style={{
+                    alignItems: 'center',
+                }}
+            >
+                {transaction.splitAmong.length > TransactionNumberOfVisibleNames && (
+                    <TransactionDetailsButton
+                        onPress={() => {
+                            setExpandNames((prev) => !prev);
+                        }}
+                        title={
+                            <>
+                                {expandNames ? (
+                                    <Text>Show Less</Text>
+                                ) : (
+                                    <Text>
+                                        {transaction.splitAmong.length - TransactionNumberOfVisibleNames} more participants{'\t'}
+                                    </Text>
+                                )}
+                                <Entypo name={expandNames ? 'chevron-up' : 'chevron-down'} size={calcHeight(2.1)} color="white" />
+                            </>
+                        }
+                    />
+                )}
+            </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     boxContainer: {
         backgroundColor: COLOR.PAYMENT_BACKGROUND,
         margin: calcWidth(5),

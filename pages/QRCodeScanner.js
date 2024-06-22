@@ -109,26 +109,27 @@ const QRCodeScanner = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {!hasPermission ? (
-                <View style={{ flexDirection: 'column', gap: calcHeight((224 / 844) * 100), alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
                     <View style={styles.top}>
                         <Image source={SignUpImage} style={styles.permitImage} />
                         <Text style={{ fontWeight: '600', color: '#FFF', fontSize: getFontSizeByWindowWidth(16), textAlign: 'center' }}>
                             Allow Access to Camera
                         </Text>
-                        <Text style={{ fontWeight: '400', color: '#FFF', fontSize: getFontSizeByWindowWidth(10), textAlign: 'center' }}>
-                            To scan QR codes, we need access to your camera.
-                        </Text>
-                        <Text style={{ fontWeight: '400', color: '#FFF', fontSize: getFontSizeByWindowWidth(10), textAlign: 'center' }}>
-                            Please allow camera access to continue.
+                        <Text
+                            style={{
+                                fontWeight: '400',
+                                color: '#FFF',
+                                fontSize: getFontSizeByWindowWidth(12),
+                                textAlign: 'center',
+                                marginTop: calcHeight(1),
+                                opacity: 0.6,
+                            }}
+                        >
+                            To scan QR codes, we need access to your camera.{`\n`}
+                            Please allow camera access to proceed.
                         </Text>
                     </View>
-                    <View>
-                        <Text style={{ fontWeight: '500', color: '#FFF', fontSize: getFontSizeByWindowWidth(14), textAlign: 'center' }}>
-                            You're always in control
-                        </Text>
-                        <Text style={{ fontWeight: '400', color: '#FFF', fontSize: getFontSizeByWindowWidth(10), textAlign: 'center' }}>
-                            You can change this anytime in your device settings
-                        </Text>
+                    <View style={styles.bottom}>
                         <Pressable style={styles.btn} onPress={openSettings}>
                             <Text
                                 style={{ color: '#FFFFFF', fontSize: getFontSizeByWindowWidth(15), fontWeight: '400', textAlign: 'center' }}
@@ -156,7 +157,7 @@ const styles = StyleSheet.create({
         marginTop: calcHeight((8 / 844) * 100),
         paddingHorizontal: calcWidth(5),
         paddingVertical: calcHeight(2),
-        width: calcWidth((310 / 390) * 100),
+        width: calcWidth(90),
         borderRadius: 10,
         alignSelf: 'center',
     },
@@ -165,6 +166,16 @@ const styles = StyleSheet.create({
         height: calcHeight((180 / 844) * 100),
         alignSelf: 'center',
         marginBottom: calcHeight((12 / 844) * 100),
+    },
+    top: {
+        flex: 1,
+        marginTop: -calcHeight((180 / 844) * 100) / 2.5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    bottom: {
+        marginBottom: calcHeight(4),
+        marginTop: 'auto',
     },
 });
 

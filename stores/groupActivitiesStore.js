@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, devtools, persist } from 'zustand/middleware';
 import generateUniqueId from '../helper/generateUniqueId';
+import apiHelper from '../helper/apiHelper';
 
 const groupActivitiesStore = (set, get) => ({
     _hasHydrated: false,
@@ -196,6 +197,42 @@ const groupActivitiesStore = (set, get) => ({
         }
 
         console.log(activity);
+    },
+
+    syncAllPendingActivities: () => {
+        const activities = get().pendingActivities;
+
+        // console.log('pendingActivities', activities);
+
+        const activityKeys = Object.keys(activities);
+
+        activityKeys.forEach(async (id) => {
+            const activity = activities[id];
+
+            await apiHelper
+                .post(`/group/${activity.group}/chat`, {
+                    message: activity.relatedId.message,
+                    activityId: activity._id,
+                })
+                .then(() => {
+                    console.log('synced ---  ', activity);
+                    // remove from pendingMessages
+                    set((state) => {
+                        const newPendingActivities = { ...state.pendingActivities };
+                        delete newPendingActivities[id];
+                        return { pendingActivities: newPendingActivities };
+                    });
+                })
+                .catch((err) => {
+                    console.error(err);
+                });
+        });
+    },
+
+    clearPendingActivities: () => {
+        set((state) => {
+            return { pendingActivities: {} };
+        });
     },
 });
 

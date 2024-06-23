@@ -30,6 +30,7 @@ import useActivities from '../hooks/useActivities';
 import checkConnectivity from '../helper/getNetworkStateAsync';
 import useSocket from '../hooks/useSocket';
 import { useAuth } from '../stores/auth';
+import generateUniqueId from '../helper/generateUniqueId';
 
 const ActivitiesFeedScreen = ({ navigation }) => {
     console.log('mounted');
@@ -47,6 +48,8 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const activityOrder = useGroupActivitiesStore((state) => state.activities[group._id]?.activityOrder || []);
     const hasHydrated = useGroupActivitiesStore((state) => state._hasHydrated);
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
+    const syncAllPendingActivities = useGroupActivitiesStore((state) => state.syncAllPendingActivities);
+    const clearPendingActivities = useGroupActivitiesStore((state) => state.clearPendingActivities);
 
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
 
@@ -79,13 +82,15 @@ const ActivitiesFeedScreen = ({ navigation }) => {
         setAmount(text);
     };
 
-    const handleActivitySend = async (message) => {
+    const handleActivitySend = async (message, activityId) => {
         // only working for text messages
-        const isOnline = await checkConnectivity();
+        // const isOnline = await checkConnectivity();
+        const isOnline = false;
         if (isOnline) {
             await apiHelper
                 .post(`/group/${group._id}/chat`, {
                     message: message,
+                    activityId: activityId,
                 })
                 .then(() => {
                     console.log('sent');
@@ -109,6 +114,19 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     }, []);
 
     useSocket('activity created', fetchActivity);
+
+    // useEffect(() => {
+    //     async function f() {
+    //         const isOnline = await checkConnectivity();
+    //         if (isOnline) {
+    //             // sync here
+    //             syncAllPendingActivities();
+    //         }
+    //     }
+    //     f();
+    // }, []);
+
+    // clearPendingActivities();
 
     return (
         <SafeAreaView style={styles.container}>
@@ -218,6 +236,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                                 style={styles.button}
                                 onPress={() => {
                                     setAmount('');
+                                    syncAllPendingActivities();
                                     // resetTransaction();
                                     // setTransactionData((prev) => ({
                                     //     ...prev,
@@ -231,7 +250,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity
-                                onPress={() => handleActivitySend(amount)}
+                                onPress={() => handleActivitySend(amount, generateUniqueId())}
                                 style={{
                                     height: calcHeight(5),
                                     justifyContent: 'center',

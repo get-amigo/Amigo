@@ -27,17 +27,7 @@ const groupActivitiesStore = (set, get) => ({
         set((state) => {
             const groupId = acts[0].group;
 
-            const fetchedDate = new Date(acts[0].createdAt);
-            const storedDate = new Date(
-                state.activities[groupId]?.activitiesById[state.activities[groupId]?.activityOrder[0]]?.createdAt ??
-                    '2000-06-19T09:08:12.155Z',
-            );
-
-            console.log(fetchedDate, storedDate);
-
-            const isNewerThanStored = fetchedDate > storedDate ? true : false;
-
-            console.log('isNewerThanStored ', isNewerThanStored);
+            // ----------------------------
 
             const newActivitiesById = {
                 ...(state.activities[groupId]?.activitiesById || {}),
@@ -45,33 +35,35 @@ const groupActivitiesStore = (set, get) => ({
 
             const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
 
-            if (isNewerThanStored) {
-                for (let n = acts.length - 1; n >= 0; n--) {
-                    const act = acts[n];
-                    if (!(act._id in newActivitiesById)) {
-                        newActivityOrder.unshift(act._id);
-                        newActivitiesById[act._id] = act;
-                    }
+            const fetchedDate = new Date(acts[0].createdAt);
+            let low = 0;
+            let high = newActivityOrder.length - 1;
+
+            while (low <= high) {
+                let mid = Math.floor(low + (high - low) / 2);
+                let midDate = new Date(
+                    state.activities[groupId]?.activitiesById[state.activities[groupId]?.activityOrder[mid]]?.createdAt ??
+                        '2000-06-19T09:08:12.155Z',
+                );
+
+                if (midDate < fetchedDate) {
+                    high = mid - 1;
+                } else {
+                    low = mid + 1;
                 }
-            } else {
-                acts.forEach((act) => {
-                    if (!(act._id in newActivitiesById)) {
-                        newActivityOrder.push(act._id);
-                        newActivitiesById[act._id] = act;
-                    }
-                });
             }
 
-            // acts.forEach((act) => {
-            //     if (!(act._id in newActivitiesById)) {
-            //         if (isNewerThanStored) {
-            //             newActivityOrder.unshift(act._id);
-            //         } else {
-            //             newActivityOrder.push(act._id);
-            //         }
-            //         newActivitiesById[act._id] = act;
-            //     }
-            // });
+            const unstoredIds = [];
+            acts.forEach((act) => {
+                if (!(act._id in newActivitiesById)) {
+                    unstoredIds.push(act._id);
+                    newActivitiesById[act._id] = act;
+                }
+            });
+
+            // "low" variable stores the correct position where the new activity should be stored
+
+            newActivityOrder.splice(low, 0, ...unstoredIds);
 
             return {
                 activities: {

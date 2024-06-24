@@ -39,7 +39,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const { contacts } = useContacts();
     const { user } = useAuth();
 
-    const { isLoading, hasNextPage, fetchNextPage } = useActivities();
+    const { isLoading, hasNextPage, fetchNextPage, handleItemLayout, shouldFetch } = useActivities();
 
     const textRef = useRef();
     const [amount, setAmount] = useState('');
@@ -56,12 +56,22 @@ const ActivitiesFeedScreen = ({ navigation }) => {
 
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
 
-    const onReachEnd = () => {
-        console.log('END');
-        if (hasNextPage && !isLoading) {
+    // const onReachEnd = () => {
+    //     console.log('END');
+    //     if (hasNextPage && !isLoading) {
+    //         fetchNextPage();
+    //     }
+    // };
+
+    const handleFetch = () => {
+        if (shouldFetch && hasNextPage && !isLoading) {
             fetchNextPage();
         }
     };
+
+    useEffect(() => {
+        handleFetch();
+    }, [shouldFetch, hasNextPage, isLoading]);
 
     const handleInputChange = (text) => {
         if (!isNaN(text)) {
@@ -92,6 +102,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
         } else {
             addActivityToLocalDB({ activityType: 'chat', relatedId: { message: message } }, group._id, user, false);
         }
+        setAmount('');
     };
 
     const fetchActivity = useCallback(async (activity) => {
@@ -181,10 +192,14 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     <FlatList
                         inverted
                         data={activityOrder}
-                        keyExtractor={(item) => item._id}
-                        renderItem={({ item }) => <Feed {...activities[item]} contacts={contacts} />}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item }) => (
+                            <View onLayout={() => handleItemLayout(item)}>
+                                <Feed {...activities[item]} contacts={contacts} />
+                            </View>
+                        )}
                         style={styles.flatlist}
-                        onEndReached={onReachEnd}
+                        // onEndReached={onReachEnd}
                         onEndReachedThreshold={0.5}
                     />
                 </>

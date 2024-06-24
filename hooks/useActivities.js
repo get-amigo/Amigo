@@ -3,20 +3,43 @@ import apiHelper from '../helper/apiHelper';
 import { useGroup } from '../context/GroupContext';
 
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const useActivities = () => {
     const { group } = useGroup();
 
     const fetchSize = 11;
 
+    const viewedItemCountRef = useRef(0);
+    const viewedItems = useRef(new Set());
+    const [shouldFetch, setShouldFetch] = useState(false);
+
     const isActivityAvailable = useGroupActivitiesStore((state) => state.isActivityAvailable);
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
+
+    const handleItemLayout = useCallback(
+        (itemKey) => {
+            // console.log('viewedItemCountRef---------------- ', viewedItemCountRef);
+            if (!viewedItems.current.has(itemKey)) {
+                viewedItems.current.add(itemKey);
+                viewedItemCountRef.current += 1;
+
+                if (viewedItemCountRef.current === fetchSize - 1) {
+                    console.log(`User has viewed ${fetchSize - 1} items!`);
+                    setShouldFetch(true);
+                    viewedItemCountRef.current = 0;
+                    viewedItems.current.clear();
+                }
+            }
+        },
+        [viewedItems],
+    );
 
     const fetchActivities = async ({ pageParam = null }) => {
         console.log('in fetch offset', pageParam);
 
         let data;
-
+        setShouldFetch(false);
         if (!pageParam) {
             const res = await apiHelper(`/activity-feed?groupId=${group._id}&size=${fetchSize}`);
             data = res.data;
@@ -34,7 +57,7 @@ const useActivities = () => {
         return data;
     };
 
-    return useInfiniteQuery({
+    const { fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery({
         queryKey: [group._id],
         queryFn: fetchActivities,
         getNextPageParam: (lastPage, allPages) => {
@@ -52,6 +75,14 @@ const useActivities = () => {
             return secondLastMessage.createdAt;
         },
     });
+
+    return {
+        fetchNextPage,
+        hasNextPage,
+        isLoading,
+        handleItemLayout,
+        shouldFetch,
+    };
 };
 
 export default useActivities;

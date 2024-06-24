@@ -57,6 +57,10 @@ function GroupScreen({ navigation }) {
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
 
+    setTimeout(() => {
+        console.log('activities: ', activities[0]);
+    }, 5000);
+
     const { fetchNextPage, hasNextPage } = useInfiniteQuery({
         queryKey: ['group', group._id],
         queryFn: async ({ pageParam = null }) => {

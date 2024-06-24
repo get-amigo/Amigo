@@ -17,8 +17,7 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroup } from '../context/GroupContext';
-// import useGroupActivities, { useGroupActivitiesStore } from '../stores/groupActivities';
-import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import useGroupActivities, { useGroupActivitiesStore } from '../stores/groupActivities';
 
 function TransactionFormScreen({ navigation }) {
     const [loading, setIsLoading] = useState(false);
@@ -27,9 +26,7 @@ function TransactionFormScreen({ navigation }) {
     const { user } = useAuth();
     const { setGroup } = useGroup();
 
-    // const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
-    // const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
-    const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
+    const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
 
     useEffect(() => {
         const { group } = transactionData;
@@ -132,35 +129,27 @@ function TransactionFormScreen({ navigation }) {
                 activityType: 'transaction',
             };
 
-            // const activities = Array.from(getActivities(newTransaction.group));
-            // setActivitiesHash(newTransaction.group, [newActivity, ...activities]);
+            const activities = Array.from(getActivities(newTransaction.group));
+            setActivitiesHash(newTransaction.group, [newActivity, ...activities]);
 
-            // const isOnline = await checkConnectivity();
-            const isOnline = false;
-            // console.log('newActivity', newActivity);
+            const isOnline = await checkConnectivity();
 
             if (isOnline) {
                 apiHelper
                     .post('/transaction', newTransaction)
                     .then((res) => {
-                        // addActivityToLocalDB(newTransaction, newTransaction.group, user, true);
-                        // console.log('transaction added to local db with sync true');
-                        // setActivitiesHash(newTransaction.group, [
-                        //     {
-                        //         ...newActivity,
-                        //         synced: true,
-                        //     },
-                        //     ...activities,
-                        // ]);
+                        setActivitiesHash(newTransaction.group, [
+                            {
+                                ...newActivity,
+                                synced: true,
+                            },
+                            ...activities,
+                        ]);
                     })
                     .catch((err) => {
-                        console.log('error in api post', err);
+                        console.log('error', err);
                         Alert.alert('Error', JSON.stringify(err));
                     });
-            } else {
-                // if offline
-                addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false);
-                console.log('transaction added to local db with sync false');
             }
 
             if (upiParams.receiverId) {

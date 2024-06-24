@@ -17,7 +17,7 @@ import PAGES from '../constants/pages';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import getMembersString from '../utility/getMembersString';
-import { Image } from 'react-native-svg';
+import { Image } from 'react-native';
 import { Ionicons, AntDesign } from '@expo/vector-icons';
 import GroupIcon from '../components/GroupIcon';
 import { useGroup } from '../context/GroupContext';
@@ -31,6 +31,7 @@ import checkConnectivity from '../helper/getNetworkStateAsync';
 import useSocket from '../hooks/useSocket';
 import { useAuth } from '../stores/auth';
 import generateUniqueId from '../helper/generateUniqueId';
+import { useTransaction } from '../context/TransactionContext';
 
 const ActivitiesFeedScreen = ({ navigation }) => {
     console.log('mounted');
@@ -43,6 +44,8 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const textRef = useRef();
     const [amount, setAmount] = useState('');
 
+    const { setTransactionData, resetTransaction } = useTransaction();
+
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
     const activityOrder = useGroupActivitiesStore((state) => state.activities[group._id]?.activityOrder || []);
@@ -52,20 +55,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const clearPendingActivities = useGroupActivitiesStore((state) => state.clearPendingActivities);
 
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
-
-    // const fetchActivities = async () => {
-    //     try {
-    //         const { data } = await apiHelper.get(`/activity-feed?groupId=${group._id}`);
-    //         addOldActivitiesToLocalDB(data);
-    //         console.log('added');
-    //     } catch (error) {
-    //         console.error('fetchActivities : ', error);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     fetchActivities();
-    // }, []);
 
     const onReachEnd = () => {
         console.log('END');
@@ -83,9 +72,9 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     };
 
     const handleActivitySend = async (message, activityId) => {
-        // only working for text messages
+        // hendle chats
         // const isOnline = await checkConnectivity();
-        const isOnline = false;
+        const isOnline = true;
         if (isOnline) {
             await apiHelper
                 .post(`/group/${group._id}/chat`, {
@@ -94,14 +83,14 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 })
                 .then(() => {
                     console.log('sent');
-                    // addActivityToLocalDB(message, group._id, true);
+                    // addActivityToLocalDB(message, group._id, true); not in use
                     console.log('added to local db');
                 })
                 .catch((err) => {
                     console.error(err);
                 });
         } else {
-            addActivityToLocalDB(message, group._id, false);
+            addActivityToLocalDB({ activityType: 'chat', relatedId: { message: message } }, group._id, user, false);
         }
     };
 
@@ -110,7 +99,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
         // if (activity.creator._id === user._id) {
         //     return;
         // }
-        addActivityToLocalDB(activity, group._id, true);
+        addActivityToLocalDB(activity, group._id, user, true);
     }, []);
 
     useSocket('activity created', fetchActivity);
@@ -144,7 +133,8 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         style={styles.header}
                         onPress={() => {
                             navigation.navigate(PAGES.GROUP_SETTINGS, {
-                                balance: totalBalance != 0,
+                                // balance: totalBalance != 0,
+                                balance: true,
                             });
                         }}
                     >
@@ -160,7 +150,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                                 <Ionicons name="chevron-back" size={calcHeight(3)} color="white" />
                             </Pressable>
                             <GroupIcon groupId={group._id} />
-                            {/* <GroupIcon groupId={'78234jhvsdf87324'} /> */}
                             <View style={styles.groupNameContainer}>
                                 <Text style={styles.groupName}>{sliceText(group.name, 25)}</Text>
                                 <Text style={styles.groupMembers}>{getMembersString(group.members, 20)}</Text>
@@ -168,10 +157,10 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         </View>
                         <Pressable
                             onPress={() => {
-                                // setTransactionData((prev) => ({
-                                //     ...prev,
-                                //     group,
-                                // }));
+                                setTransactionData((prev) => ({
+                                    ...prev,
+                                    group,
+                                }));
                                 navigation.navigate(PAGES.SCANNER);
                             }}
                         >
@@ -235,15 +224,16 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                             <TouchableOpacity
                                 style={styles.button}
                                 onPress={() => {
+                                    // syncAllPendingActivities();
+
                                     setAmount('');
-                                    syncAllPendingActivities();
-                                    // resetTransaction();
-                                    // setTransactionData((prev) => ({
-                                    //     ...prev,
-                                    //     group,
-                                    //     amount,
-                                    // }));
-                                    // navigation.navigate(PAGES.ADD_TRANSACTION);
+                                    resetTransaction();
+                                    setTransactionData((prev) => ({
+                                        ...prev,
+                                        group,
+                                        amount,
+                                    }));
+                                    navigation.navigate(PAGES.ADD_TRANSACTION);
                                 }}
                             >
                                 <Text style={styles.buttonText}>+ Expense</Text>

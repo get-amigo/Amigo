@@ -9,6 +9,7 @@ import {
     TextInput,
     FlatList,
     TouchableOpacity,
+    StatusBar,
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,6 +35,14 @@ import generateUniqueId from '../helper/generateUniqueId';
 import { useTransaction } from '../context/TransactionContext';
 
 const ActivitiesFeedScreen = ({ navigation }) => {
+    // return (
+    //     <View style={{ flex: 1 }}>
+    //         <View style={{ flex: 1, backgroundColor: 'red' }}></View>
+    //         <View style={{ flex: 1, backgroundColor: 'yellow' }}>
+    //             <TextInput style={{ padding: 20 }} />
+    //         </View>
+    //     </View>
+    // );
     console.log('mounted');
     const { group } = useGroup();
     const { contacts } = useContacts();
@@ -148,138 +157,124 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 style={{
                     width: calcWidth(100),
                     height: calcHeight(100),
+                    marginTop: StatusBar.currentHeight,
+                    position: 'absolute',
+                    flex: 1,
                     backgroundColor: '#1B1727',
                 }}
-            >
-                {/* Top header */}
-                <>
-                    <Pressable
-                        style={styles.header}
-                        onPress={() => {
-                            navigation.navigate(PAGES.GROUP_SETTINGS, {
-                                // balance: totalBalance != 0,
-                                balance: true,
-                            });
+            />
+
+            {/* Top header */}
+            <>
+                <Pressable
+                    style={styles.header}
+                    onPress={() => {
+                        navigation.navigate(PAGES.GROUP_SETTINGS, {
+                            // balance: totalBalance != 0,
+                            balance: true,
+                        });
+                    }}
+                >
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            gap: calcWidth(5),
                         }}
                     >
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: calcWidth(5),
-                            }}
-                        >
-                            <Pressable onPress={() => navigation.goBack()} style={{ marginLeft: 4 }}>
-                                <Ionicons name="chevron-back" size={calcHeight(3)} color="white" />
-                            </Pressable>
-                            <GroupIcon groupId={group._id} />
-                            <View style={styles.groupNameContainer}>
-                                <Text style={styles.groupName}>{sliceText(group.name, 25)}</Text>
-                                <Text style={styles.groupMembers}>{getMembersString(group.members, 20)}</Text>
-                            </View>
+                        <Pressable onPress={() => navigation.goBack()} style={{ marginLeft: 4 }}>
+                            <Ionicons name="chevron-back" size={calcHeight(3)} color="white" />
+                        </Pressable>
+                        <GroupIcon groupId={group._id} />
+                        <View style={styles.groupNameContainer}>
+                            <Text style={styles.groupName}>{sliceText(group.name, 25)}</Text>
+                            <Text style={styles.groupMembers}>{getMembersString(group.members, 20)}</Text>
                         </View>
-                        <Pressable
+                    </View>
+                    <Pressable
+                        onPress={() => {
+                            setTransactionData((prev) => ({
+                                ...prev,
+                                group,
+                            }));
+                            navigation.navigate(PAGES.SCANNER);
+                        }}
+                    >
+                        <Image
+                            source={ScannerIcon}
+                            style={{
+                                width: calcHeight(3),
+                                height: calcHeight(3),
+                                marginRight: calcWidth(5),
+                            }}
+                        />
+                    </Pressable>
+                </Pressable>
+            </>
+
+            {/* Flat List */}
+            <>
+                <FlatList
+                    inverted
+                    data={activityOrder}
+                    keyExtractor={(item) => item}
+                    renderItem={({ item }) => (
+                        <View onLayout={() => handleItemLayout(item)}>
+                            <Feed {...activities[item]} contacts={contacts} />
+                        </View>
+                    )}
+                    style={styles.flatlist}
+                    // onEndReached={onReachEnd}
+                    onEndReachedThreshold={0.5}
+                />
+            </>
+
+            {/* Bottom */}
+            <>
+                <View style={styles.bottom}>
+                    <Pressable style={[styles.inputContainer]} onPress={() => textRef.current.focus()}>
+                        <TextInput
+                            style={styles.input}
+                            placeholderTextColor="#ccc"
+                            ref={textRef}
+                            placeholder="Enter the amount"
+                            textAlign="center"
+                            value={amount}
+                            onChangeText={handleInputChange}
+                        />
+                    </Pressable>
+                    {!isNaN(amount) ? (
+                        <TouchableOpacity
+                            style={styles.button}
                             onPress={() => {
+                                // syncAllPendingActivities();
+
+                                setAmount('');
+                                resetTransaction();
                                 setTransactionData((prev) => ({
                                     ...prev,
                                     group,
+                                    amount,
                                 }));
-                                navigation.navigate(PAGES.SCANNER);
+                                navigation.navigate(PAGES.ADD_TRANSACTION);
                             }}
                         >
-                            <Image
-                                source={ScannerIcon}
-                                style={{
-                                    width: calcHeight(3),
-                                    height: calcHeight(3),
-                                    marginRight: calcWidth(5),
-                                }}
-                            />
-                        </Pressable>
-                    </Pressable>
-                </>
-
-                {/* Flat List */}
-                <>
-                    <FlatList
-                        inverted
-                        data={activityOrder}
-                        keyExtractor={(item) => item}
-                        renderItem={({ item }) => (
-                            <View onLayout={() => handleItemLayout(item)}>
-                                <Feed {...activities[item]} contacts={contacts} />
-                            </View>
-                        )}
-                        style={styles.flatlist}
-                        // onEndReached={onReachEnd}
-                        onEndReachedThreshold={0.5}
-                    />
-                </>
-
-                {/* Bottom */}
-                <>
-                    <KeyboardAvoidingView
-                        style={{
-                            flex: Platform.OS === 'ios' ? 1 : 0,
-                            flexDirection: 'row',
-                            margin: calcWidth(2),
-                            justifyContent: 'space-evenly',
-                        }}
-                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                        keyboardVerticalOffset={calcHeight(9)}
-                    >
-                        <Pressable
-                            style={[
-                                styles.inputContainer,
-                                {
-                                    width: !isNaN(amount) ? calcWidth(60) : calcWidth(75),
-                                },
-                            ]}
-                            onPress={() => textRef.current.focus()}
+                            <Text style={styles.buttonText}>+ Expense</Text>
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity
+                            onPress={() => handleActivitySend(amount)}
+                            style={{
+                                height: calcHeight(5),
+                                justifyContent: 'center',
+                            }}
                         >
-                            <TextInput
-                                style={styles.input}
-                                placeholderTextColor="#ccc"
-                                ref={textRef}
-                                placeholder="Enter the amount"
-                                textAlign="center"
-                                value={amount}
-                                onChangeText={handleInputChange}
-                            />
-                        </Pressable>
-                        {!isNaN(amount) ? (
-                            <TouchableOpacity
-                                style={styles.button}
-                                onPress={() => {
-                                    // syncAllPendingActivities();
-
-                                    setAmount('');
-                                    resetTransaction();
-                                    setTransactionData((prev) => ({
-                                        ...prev,
-                                        group,
-                                        amount,
-                                    }));
-                                    navigation.navigate(PAGES.ADD_TRANSACTION);
-                                }}
-                            >
-                                <Text style={styles.buttonText}>+ Expense</Text>
-                            </TouchableOpacity>
-                        ) : (
-                            <TouchableOpacity
-                                onPress={() => handleActivitySend(amount)}
-                                style={{
-                                    height: calcHeight(5),
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <AntDesign name="enter" size={calcHeight(4)} color={COLOR.BUTTON} />
-                            </TouchableOpacity>
-                        )}
-                    </KeyboardAvoidingView>
-                </>
-            </ImageBackground>
+                            <AntDesign name="enter" size={calcHeight(4)} color={COLOR.BUTTON} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </>
         </SafeAreaView>
     );
 };
@@ -320,9 +315,14 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
     },
     bottom: {
-        // flex: Platform.OS === 'ios' ? 1 : 0,
         flex: 0.1,
-        backgroundColor: 'green',
+        // backgroundColor: 'green',
+        flexDirection: 'row',
+        margin: calcWidth(2),
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        gap: calcWidth(4),
+        paddingHorizontal: calcWidth(2),
     },
 
     wrapper1: { flex: 1 },
@@ -339,10 +339,10 @@ const styles = StyleSheet.create({
 
     inputContainer: {
         color: 'white',
-        width: calcWidth(60),
-        height: calcHeight(5),
         borderRadius: calcWidth(2),
         alignContent: 'center',
+        justifyContent: 'center',
+        flex: 1,
     },
     button: {
         width: calcWidth(25),

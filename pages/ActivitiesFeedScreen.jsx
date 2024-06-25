@@ -53,6 +53,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const syncAllPendingActivities = useGroupActivitiesStore((state) => state.syncAllPendingActivities);
     const clearPendingActivities = useGroupActivitiesStore((state) => state.clearPendingActivities);
+    const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
 
@@ -81,11 +82,19 @@ const ActivitiesFeedScreen = ({ navigation }) => {
         setAmount(text);
     };
 
-    const handleActivitySend = async (message, activityId) => {
+    const handleActivitySend = async (message) => {
         // hendle chats
         // const isOnline = await checkConnectivity();
-        const isOnline = true;
+
+        const isOnline = false;
         if (isOnline) {
+            const activityId = addActivityToLocalDB(
+                { activityType: 'chat', relatedId: { message: message } },
+                group._id,
+                user,
+                false,
+                false,
+            );
             await apiHelper
                 .post(`/group/${group._id}/chat`, {
                     message: message,
@@ -93,24 +102,28 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 })
                 .then(() => {
                     console.log('sent');
-                    // addActivityToLocalDB(message, group._id, true); not in use
+                    updateIsSynced({
+                        _id: activityId,
+                        group: group._id,
+                    });
                     console.log('added to local db');
                 })
                 .catch((err) => {
                     console.error(err);
                 });
         } else {
-            addActivityToLocalDB({ activityType: 'chat', relatedId: { message: message } }, group._id, user, false);
+            addActivityToLocalDB({ activityType: 'chat', relatedId: { message: message } }, group._id, user, false, true);
         }
         setAmount('');
     };
 
     const fetchActivity = useCallback(async (activity) => {
         console.log('fetchActivity----------------- ', activity);
-        // if (activity.creator._id === user._id) {
-        //     return;
-        // }
-        addActivityToLocalDB(activity, group._id, user, true);
+        if (activity.creator._id === user._id) {
+            // updateIsSynced(activity); we can keey here but not necessary
+        } else {
+            addActivityToLocalDB(activity, group._id, user, true);
+        }
     }, []);
 
     useSocket('activity created', fetchActivity);
@@ -255,7 +268,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                             </TouchableOpacity>
                         ) : (
                             <TouchableOpacity
-                                onPress={() => handleActivitySend(amount, generateUniqueId())}
+                                onPress={() => handleActivitySend(amount)}
                                 style={{
                                     height: calcHeight(5),
                                     justifyContent: 'center',

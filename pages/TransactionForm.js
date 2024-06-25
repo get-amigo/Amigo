@@ -30,6 +30,7 @@ function TransactionFormScreen({ navigation }) {
     // const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
     // const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
+    const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
     useEffect(() => {
         const { group } = transactionData;
@@ -136,13 +137,20 @@ function TransactionFormScreen({ navigation }) {
             // setActivitiesHash(newTransaction.group, [newActivity, ...activities]);
 
             // const isOnline = await checkConnectivity();
-            const isOnline = false;
+            const isOnline = true;
             // console.log('newActivity', newActivity);
 
             if (isOnline) {
+                const activityId = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
+                const newTransactionWithId = { ...newTransaction, activityId: activityId };
+                console.log('newTransactionWithId ', newTransactionWithId);
                 apiHelper
-                    .post('/transaction', newTransaction)
+                    .post('/transaction', newTransactionWithId)
                     .then((res) => {
+                        updateIsSynced({
+                            _id: activityId,
+                            group: newActivity.relatedId.group._id,
+                        });
                         // addActivityToLocalDB(newTransaction, newTransaction.group, user, true);
                         // console.log('transaction added to local db with sync true');
                         // setActivitiesHash(newTransaction.group, [
@@ -158,9 +166,7 @@ function TransactionFormScreen({ navigation }) {
                         Alert.alert('Error', JSON.stringify(err));
                     });
             } else {
-                // if offline
-                addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false);
-                console.log('transaction added to local db with sync false');
+                const activityId = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
             }
 
             if (upiParams.receiverId) {

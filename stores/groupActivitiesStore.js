@@ -82,7 +82,7 @@ const groupActivitiesStore = (set, get) => ({
         return activityId in (get().activities[groupId]?.activitiesById || {});
     },
 
-    addActivityToLocalDB: (activity, groupId, user, isSynced = true) => {
+    addActivityToLocalDB: (activity, groupId, user, isSynced = false, addToPending = false) => {
         // ------ This is how data is stored ------------
 
         // const chat = {
@@ -184,6 +184,7 @@ const groupActivitiesStore = (set, get) => ({
             console.log('activityType', activityType);
             let generatedActivity = null;
 
+            const activityId = generateUniqueId();
             switch (activityType) {
                 case 'transaction':
                     // const activityRes = {
@@ -211,7 +212,7 @@ const groupActivitiesStore = (set, get) => ({
 
                     generatedActivity = {
                         __v: 0,
-                        _id: generateUniqueId(),
+                        _id: activityId,
                         activityType: 'transaction',
                         createdAt: now,
                         creator: { _id: user._id, name: user.name, phoneNumber: user.phoneNumber },
@@ -242,6 +243,7 @@ const groupActivitiesStore = (set, get) => ({
                             updatedAt: now,
                         },
                         updatedAt: now,
+                        isSynced: false,
                     };
                     break;
                 case 'payment':
@@ -249,7 +251,7 @@ const groupActivitiesStore = (set, get) => ({
                 case 'chat':
                     generatedActivity = {
                         __v: 0,
-                        _id: generateUniqueId(),
+                        _id: activityId,
                         activityType: 'chat',
                         createdAt: now,
                         creator: {
@@ -267,6 +269,7 @@ const groupActivitiesStore = (set, get) => ({
                             updatedAt: now,
                         },
                         updatedAt: now,
+                        isSynced: false,
                     };
                     break;
             }
@@ -296,14 +299,17 @@ const groupActivitiesStore = (set, get) => ({
                 };
             });
 
-            set((state) => {
-                return {
-                    pendingActivities: {
-                        ...state.pendingActivities,
-                        [generatedActivity._id]: generatedActivity,
-                    },
-                };
-            });
+            if (addToPending) {
+                set((state) => {
+                    return {
+                        pendingActivities: {
+                            ...state.pendingActivities,
+                            [generatedActivity._id]: generatedActivity,
+                        },
+                    };
+                });
+            }
+            return activityId;
         }
     },
 
@@ -316,7 +322,6 @@ const groupActivitiesStore = (set, get) => ({
 
         activityKeys.forEach(async (id) => {
             const activity = activities[id];
-            console.log('.relatedId.splitAmong ', activity.relatedId.splitAmong);
 
             const activityType = activity.activityType;
 
@@ -385,6 +390,7 @@ const groupActivitiesStore = (set, get) => ({
                         })
                         .then(() => {
                             console.log('synced ---  ', activity);
+                            get().updateIsSynced(activity);
                             // remove from pendingActivities
                             set((state) => {
                                 const newPendingActivities = { ...state.pendingActivities };
@@ -407,6 +413,7 @@ const groupActivitiesStore = (set, get) => ({
                         .then(() => {
                             console.log('synced ---  ', activity);
                             // remove from pendingMessages
+                            get().updateIsSynced(activity);
                             set((state) => {
                                 const newPendingActivities = { ...state.pendingActivities };
                                 delete newPendingActivities[id];
@@ -424,6 +431,33 @@ const groupActivitiesStore = (set, get) => ({
     clearPendingActivities: () => {
         set((state) => {
             return { pendingActivities: {} };
+        });
+    },
+
+    updateIsSynced: (activity) => {
+        const id = activity._id;
+        const groupId = activity.group;
+        set((state) => {
+            const newActivitiesById = {
+                ...(state.activities[groupId]?.activitiesById || {}),
+            };
+
+            const updatedActivity = {
+                ...newActivitiesById[id],
+                isSynced: true,
+            };
+
+            newActivitiesById[id] = updatedActivity;
+
+            return {
+                activities: {
+                    ...state.activities,
+                    [groupId]: {
+                        ...state.activities[groupId],
+                        activitiesById: newActivitiesById,
+                    },
+                },
+            };
         });
     },
 });

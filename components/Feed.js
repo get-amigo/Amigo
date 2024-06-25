@@ -303,7 +303,7 @@ const ActivityStrategyFactory = (activityType) => {
     switch (activityType) {
         case 'transaction':
             return {
-                renderActivity: ({ relatedId: transaction, createdAt, contacts, synced, creator }) => (
+                renderActivity: ({ relatedId: transaction, createdAt, contacts, isSynced: synced, creator }) => (
                     <TransactionActivity
                         transaction={transaction}
                         createdAt={createdAt}
@@ -319,7 +319,7 @@ const ActivityStrategyFactory = (activityType) => {
             };
         case 'chat':
             return {
-                renderActivity: ({ creator, relatedId, createdAt, synced }) => (
+                renderActivity: ({ creator, relatedId, createdAt, isSynced: synced }) => (
                     <ChatActivity
                         chat={{
                             creator,

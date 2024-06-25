@@ -4,7 +4,6 @@ import {
     Text,
     View,
     ImageBackground,
-    KeyboardAvoidingView,
     Platform,
     TextInput,
     FlatList,
@@ -28,25 +27,24 @@ import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import { useContacts } from '../hooks/useContacts';
 import Feed from '../components/Feed';
 import useActivities from '../hooks/useActivities';
-import checkConnectivity from '../helper/getNetworkStateAsync';
 import useSocket from '../hooks/useSocket';
 import { useAuth } from '../stores/auth';
 import generateUniqueId from '../helper/generateUniqueId';
 import { useTransaction } from '../context/TransactionContext';
+import useNetwork from '../hooks/useNetwork';
+import BalanceGroupPin from '../components/BalanceGroupPin';
+import { APP_START_WARM } from '@sentry/react-native/dist/js/measurements';
+import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
 const ActivitiesFeedScreen = ({ navigation }) => {
-    // return (
-    //     <View style={{ flex: 1 }}>
-    //         <View style={{ flex: 1, backgroundColor: 'red' }}></View>
-    //         <View style={{ flex: 1, backgroundColor: 'yellow' }}>
-    //             <TextInput style={{ padding: 20 }} />
-    //         </View>
-    //     </View>
-    // );
     console.log('mounted');
     const { group } = useGroup();
     const { contacts } = useContacts();
     const { user } = useAuth();
+    const isConnected = useNetwork();
+
+    const [totalBalance, setTotalBalance] = useState();
+    const [balances, setBalances] = useState();
 
     const { isLoading, hasNextPage, fetchNextPage, handleItemLayout, shouldFetch } = useActivities();
 
@@ -64,40 +62,49 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const clearPendingActivities = useGroupActivitiesStore((state) => state.clearPendingActivities);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
-    const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
+    useEffect(() => {
+        async function fetchBalance() {
+            try {
+                const { data } = await apiHelper(`/balance/${group._id}`);
+                if (data.length === 0) {
+                    setTotalBalance(0);
+                    return;
+                }
 
-    // const onReachEnd = () => {
-    //     console.log('END');
-    //     if (hasNextPage && !isLoading) {
-    //         fetchNextPage();
-    //     }
-    // };
+                const { groups } = await groupBalancesAndCalculateTotal(data, user._id);
+                setTotalBalance(groups[0].totalBalance);
+                setBalances(groups[0]);
+            } catch (error) {
+                console.error(error);
+            }
+        }
 
-    const handleFetch = () => {
+        if (group._id) {
+            fetchBalance();
+        }
+    }, [activities]);
+
+    useEffect(() => {
+        // handle fetch
         if (shouldFetch && hasNextPage && !isLoading) {
             fetchNextPage();
         }
-    };
-
-    useEffect(() => {
-        handleFetch();
     }, [shouldFetch, hasNextPage, isLoading]);
 
-    const handleInputChange = (text) => {
+    const handleInputChange = useCallback((text) => {
         if (!isNaN(text)) {
             // If it's a number, strip out non-digit characters
             text = text.replace(/[^0-9]/g, '');
         }
         setAmount(text);
-    };
+    }, []);
 
     const handleActivitySend = async (message) => {
         // hendle chats
-        // const isOnline = await checkConnectivity();
-
-        const isOnline = false;
-        if (isOnline) {
-            const activityId = addActivityToLocalDB(
+        console.log('isConnected ====================;;;;;;;;;;;;;------------', isConnected);
+        setAmount('');
+        if (isConnected) {
+            const { activityId, otherId } = addActivityToLocalDB(
                 { activityType: 'chat', relatedId: { message: message } },
                 group._id,
                 user,
@@ -108,6 +115,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 .post(`/group/${group._id}/chat`, {
                     message: message,
                     activityId: activityId,
+                    chatId: otherId,
                 })
                 .then(() => {
                     console.log('sent');
@@ -123,30 +131,29 @@ const ActivitiesFeedScreen = ({ navigation }) => {
         } else {
             addActivityToLocalDB({ activityType: 'chat', relatedId: { message: message } }, group._id, user, false, true);
         }
-        setAmount('');
     };
 
     const fetchActivity = useCallback(async (activity) => {
-        console.log('fetchActivity----------------- ', activity);
+        console.log('fetchActivity---------------- ', activity);
         if (activity.creator._id === user._id) {
             // updateIsSynced(activity); we can keey here but not necessary
         } else {
-            addActivityToLocalDB(activity, group._id, user, true);
+            console.log(' [[[[[[[[[[[[[[[[[[[[[[ caling else ]]]]]]]]]]]]]]]]]]]]]]]]]');
+            addActivityToLocalDB(activity, activity.group, user, true);
         }
     }, []);
 
     useSocket('activity created', fetchActivity);
 
-    // useEffect(() => {
-    //     async function f() {
-    //         const isOnline = await checkConnectivity();
-    //         if (isOnline) {
-    //             // sync here
-    //             syncAllPendingActivities();
-    //         }
-    //     }
-    //     f();
-    // }, []);
+    useEffect(() => {
+        async function f() {
+            if (isConnected) {
+                // sync here
+                syncAllPendingActivities();
+            }
+        }
+        f();
+    }, [isConnected]);
 
     // clearPendingActivities();
 
@@ -170,8 +177,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     style={styles.header}
                     onPress={() => {
                         navigation.navigate(PAGES.GROUP_SETTINGS, {
-                            // balance: totalBalance != 0,
-                            balance: true,
+                            balance: totalBalance != 0,
                         });
                     }}
                 >
@@ -211,6 +217,9 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         />
                     </Pressable>
                 </Pressable>
+            </>
+            <>
+                <BalanceGroupPin totalBalance={totalBalance} balances={balances} />
             </>
 
             {/* Flat List */}
@@ -315,7 +324,7 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
     },
     bottom: {
-        flex: 0.1,
+        // flex: 0.1,
         // backgroundColor: 'green',
         flexDirection: 'row',
         margin: calcWidth(2),
@@ -323,6 +332,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: calcWidth(4),
         paddingHorizontal: calcWidth(2),
+        marginBottom: calcHeight(1),
     },
 
     wrapper1: { flex: 1 },

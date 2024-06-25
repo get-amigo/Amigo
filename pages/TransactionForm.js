@@ -12,13 +12,13 @@ import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
-import checkConnectivity from '../helper/getNetworkStateAsync';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroup } from '../context/GroupContext';
 // import useGroupActivities, { useGroupActivitiesStore } from '../stores/groupActivities';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import useNetwork from '../hooks/useNetwork';
 
 function TransactionFormScreen({ navigation }) {
     const [loading, setIsLoading] = useState(false);
@@ -26,6 +26,7 @@ function TransactionFormScreen({ navigation }) {
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
+    const isConnected = useNetwork();
 
     // const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
     // const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
@@ -136,13 +137,12 @@ function TransactionFormScreen({ navigation }) {
             // const activities = Array.from(getActivities(newTransaction.group));
             // setActivitiesHash(newTransaction.group, [newActivity, ...activities]);
 
-            // const isOnline = await checkConnectivity();
-            const isOnline = true;
             // console.log('newActivity', newActivity);
 
-            if (isOnline) {
-                const activityId = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
-                const newTransactionWithId = { ...newTransaction, activityId: activityId };
+            console.log('isConnected =====================;;;;;;;;;;;;;------------', isConnected);
+            if (isConnected) {
+                const { activityId, otherId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
+                const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: otherId };
                 console.log('newTransactionWithId ', newTransactionWithId);
                 apiHelper
                     .post('/transaction', newTransactionWithId)
@@ -166,7 +166,7 @@ function TransactionFormScreen({ navigation }) {
                         Alert.alert('Error', JSON.stringify(err));
                     });
             } else {
-                const activityId = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
+                addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
             }
 
             if (upiParams.receiverId) {

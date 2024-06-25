@@ -88,7 +88,7 @@ const BalanceGroupPin = ({ totalBalance, balances }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // flex: 1,
         flexDirection: 'row',
         backgroundColor: COLOR.BALANCE_PIN,
         paddingVertical: calcHeight(2),

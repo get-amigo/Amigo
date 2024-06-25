@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { createJSONStorage, devtools, persist } from 'zustand/middleware';
 import generateUniqueId from '../helper/generateUniqueId';
 import apiHelper from '../helper/apiHelper';
-import { useAuth } from './auth';
 
 const groupActivitiesStore = (set, get) => ({
     _hasHydrated: false,
@@ -161,7 +160,27 @@ const groupActivitiesStore = (set, get) => ({
                 };
                 const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
                 if (!(activity._id in newActivitiesById)) {
-                    newActivityOrder.unshift(activity._id);
+                    console.log('===================================== adding activity ================');
+                    // find correct index
+                    const fetchedDate = new Date(activity.createdAt);
+                    let low = 0;
+                    let high = newActivityOrder.length - 1;
+
+                    while (low <= high) {
+                        let mid = Math.floor(low + (high - low) / 2);
+                        let midDate = new Date(
+                            state.activities[groupId]?.activitiesById[state.activities[groupId]?.activityOrder[mid]]?.createdAt ??
+                                '2000-06-19T09:08:12.155Z',
+                        );
+
+                        if (midDate < fetchedDate) {
+                            high = mid - 1;
+                        } else {
+                            low = mid + 1;
+                        }
+                    }
+
+                    newActivityOrder.splice(low, 0, activity._id);
                 }
 
                 newActivitiesById[activity._id] = activity;
@@ -185,6 +204,7 @@ const groupActivitiesStore = (set, get) => ({
             let generatedActivity = null;
 
             const activityId = generateUniqueId();
+            const otherId = generateUniqueId();
             switch (activityType) {
                 case 'transaction':
                     // const activityRes = {
@@ -208,7 +228,6 @@ const groupActivitiesStore = (set, get) => ({
                     //     },
                     //     synced: false,
                     // };
-                    console.log('splitAmong: activity.relatedId.splitAmong ', activity.relatedId.splitAmong);
 
                     generatedActivity = {
                         __v: 0,
@@ -220,7 +239,7 @@ const groupActivitiesStore = (set, get) => ({
                         onModel: 'Transaction',
                         relatedId: {
                             __v: 0,
-                            _id: generateUniqueId(),
+                            _id: otherId,
                             amount: activity.relatedId.amount,
                             createdAt: now,
                             creator: {
@@ -247,7 +266,7 @@ const groupActivitiesStore = (set, get) => ({
                     };
                     break;
                 case 'payment':
-                    break;
+                    return;
                 case 'chat':
                     generatedActivity = {
                         __v: 0,
@@ -263,7 +282,7 @@ const groupActivitiesStore = (set, get) => ({
                         onModel: 'Chat',
                         relatedId: {
                             __v: 0,
-                            _id: generateUniqueId(),
+                            _id: otherId,
                             createdAt: now,
                             message: activity.relatedId.message,
                             updatedAt: now,
@@ -309,7 +328,7 @@ const groupActivitiesStore = (set, get) => ({
                     };
                 });
             }
-            return activityId;
+            return { activityId, otherId };
         }
     },
 
@@ -387,6 +406,7 @@ const groupActivitiesStore = (set, get) => ({
                             splitAmong: splitAmong,
                             type: activity.relatedId.type,
                             activityId: activity._id,
+                            transactionId: activity.relatedId._id,
                         })
                         .then(() => {
                             console.log('synced ---  ', activity);
@@ -403,12 +423,13 @@ const groupActivitiesStore = (set, get) => ({
                         });
                     break;
                 case 'payment':
-                    break;
+                    return;
                 case 'chat':
                     await apiHelper
                         .post(`/group/${activity.group}/chat`, {
                             message: activity.relatedId.message,
                             activityId: activity._id,
+                            chatId: activity.relatedId._id,
                         })
                         .then(() => {
                             console.log('synced ---  ', activity);

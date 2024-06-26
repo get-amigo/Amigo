@@ -1,22 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    Image,
-    Pressable,
-    ScrollView,
-    ActivityIndicator,
-} from "react-native";
-import COLOR from "../constants/Colors";
-import Button from "../components/Button";
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from "../helper/res";
-import OTPImage from "../assets/OTPImage.png";
-import Loader from "../components/Loader";
-import OTPFilled from "../assets/OTPFilled.png";
-import { useOtp } from "../context/OtpContext";
-import * as Haptics from "expo-haptics";
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, StyleSheet, Image, Pressable, ScrollView, ActivityIndicator, Keyboard } from 'react-native';
+import COLOR from '../constants/Colors';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import OTPImage from '../assets/OTPImage.png';
+import Loader from '../components/Loader';
+import OTPFilled from '../assets/OTPFilled.png';
+import { useOtp } from '../context/OtpContext';
+import * as Haptics from 'expo-haptics';
 
 const OTPScreen = ({
     navigation,
@@ -24,16 +14,12 @@ const OTPScreen = ({
         params: { phoneNumber },
     },
 }) => {
-    const [otp, setOtp] = useState("");
+    const [otp, setOtp] = useState('');
     const inputRef = useRef();
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
     const [seconds, setSeconds] = useState(30);
-    const {
-        verifyOtp,
-        loginWithPhoneNumber,
-        loading: isAuthStateLoading,
-    } = useOtp();
+    const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -49,6 +35,12 @@ const OTPScreen = ({
             clearInterval(interval);
         };
     }, [seconds]);
+
+    useEffect(() => {
+        if (isAuthStateLoading) {
+            Keyboard.dismiss();
+        }
+    }, [isAuthStateLoading]);
 
     const resendOTP = () => {
         setSeconds(30);
@@ -71,16 +63,15 @@ const OTPScreen = ({
                 setLoading(false);
             })
             .catch(() => {
-                Haptics.notificationAsync(
-                    Haptics.NotificationFeedbackType.Error
-                );
+                inputRef.current.focus();
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 setLoading(false);
                 setError(true);
             });
     };
 
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
-        const digit = otp[index] || "";
+        const digit = otp[index] || '';
         const isFocused = index === otp.length;
         const boxStyle = isFocused ? styles.highlightedBox : styles.otpInput;
 
@@ -101,28 +92,18 @@ const OTPScreen = ({
     return loading ? (
         <Loader />
     ) : (
-        <ScrollView
-            style={{ flex: 1 }}
-            keyboardDismissMode="none"
-            keyboardShouldPersistTaps="always"
-        >
+        <ScrollView style={{ flex: 1 }} keyboardDismissMode="none" keyboardShouldPersistTaps="always">
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
-                    <Image
-                        source={otp.length != 6 ? OTPImage : OTPFilled}
-                        style={styles.image}
-                        resizeMode="contain"
-                    />
+                    <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
                     <View style={styles.textContainer}>
                         <Text style={styles.headerText}>OTP Verification</Text>
-                        <Text style={styles.promptText}>
-                            Enter the code sent to {phoneNumber}
-                        </Text>
+                        <Text style={styles.promptText}>Enter the code sent to {phoneNumber}</Text>
                     </View>
                 </View>
                 <View
                     style={{
-                        alignItems: "center",
+                        alignItems: 'center',
                     }}
                 >
                     <View style={styles.otpContainer}>{otpBoxes}</View>
@@ -138,40 +119,33 @@ const OTPScreen = ({
                         blurOnSubmit={false}
                         onSubmitEditing={handleVerifyOTP}
                     />
-                    <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.resendText}>
-                            Didn't get the OTP?{" "}
-                        </Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.resendText}>Didn't get the OTP? </Text>
 
                         <Pressable
                             disabled={seconds > 0}
                             style={{
-                                color: seconds >= 0 ? "#808080" : "red",
+                                color: seconds >= 0 ? '#808080' : 'red',
                             }}
                             onPress={() => seconds === 0 && resendOTP()}
                         >
                             {seconds > 0 ? (
                                 <Text
                                     style={{
-                                        color: "#808080",
-                                        fontSize: getFontSizeByWindowWidth(
-                                            10.5
-                                        ),
-                                        fontWeight: "normal",
+                                        color: '#808080',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'normal',
                                         marginLeft: calcWidth(1),
                                     }}
                                 >
-                                    Resend SMS in{" "}
-                                    {seconds.toString().padStart(2, "0")}s
+                                    Resend SMS in {seconds.toString().padStart(2, '0')}s
                                 </Text>
                             ) : (
                                 <Text
                                     style={{
-                                        color: "#FFFFFF",
-                                        fontSize: getFontSizeByWindowWidth(
-                                            10.5
-                                        ),
-                                        fontWeight: "bold",
+                                        color: '#FFFFFF',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'bold',
                                         marginLeft: calcWidth(1),
                                     }}
                                 >
@@ -180,13 +154,7 @@ const OTPScreen = ({
                             )}
                         </Pressable>
                     </View>
-                    {isAuthStateLoading && (
-                        <ActivityIndicator
-                            size="medium"
-                            color={COLOR.PRIMARY}
-                            style={styles.indicator}
-                        />
-                    )}
+                    {isAuthStateLoading && <ActivityIndicator size="medium" color={COLOR.PRIMARY} style={styles.indicator} />}
                 </View>
             </View>
         </ScrollView>
@@ -199,7 +167,7 @@ const styles = StyleSheet.create({
         marginTop: calcHeight(5),
     },
     header: {
-        flexDirection: "row",
+        flexDirection: 'row',
         marginHorizontal: calcWidth(5),
         marginBottom: calcHeight(5),
     },
@@ -210,11 +178,11 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         flex: 1,
-        justifyContent: "flex-end",
+        justifyContent: 'flex-end',
     },
     headerText: {
         fontSize: getFontSizeByWindowWidth(18),
-        fontWeight: "bold",
+        fontWeight: 'bold',
         color: COLOR.TEXT,
         paddingBottom: calcHeight(2),
     },
@@ -223,19 +191,19 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
     },
     otpContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         paddingBottom: calcHeight(4),
-        width: "80%",
+        width: '80%',
     },
     otpInput: {
         width: calcWidth(11),
         borderBottomWidth: 1,
-        textAlign: "center",
+        textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(10),
         color: COLOR.TEXT,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         height: calcHeight(7),
     },
     indicator: {
@@ -246,11 +214,11 @@ const styles = StyleSheet.create({
         width: calcWidth(11),
         borderBottomWidth: 2,
         borderColor: COLOR.PRIMARY,
-        textAlign: "center",
+        textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(15),
         color: COLOR.TEXT,
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent: 'center',
+        alignItems: 'center',
         height: calcHeight(7),
     },
     otpText: {
@@ -258,7 +226,7 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
     },
     hiddenInput: {
-        position: "absolute",
+        position: 'absolute',
         width: 1,
         height: 1,
         opacity: 0,

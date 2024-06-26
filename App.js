@@ -2,7 +2,7 @@ import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import RootNavigator from './navigator/RootNavigator';
-import { KeyboardAvoidingView, Platform } from 'react-native';
+import { KeyboardAvoidingView, Platform, StatusBar as NativeStatusBar } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import * as Sentry from '@sentry/react-native';
 import COLOR from './constants/Colors';
@@ -20,10 +20,13 @@ function App() {
     return (
         <>
             <SafeAreaView
-                style={{
-                    flex: 1,
-                    backgroundColor: COLOR.APP_BACKGROUND,
-                }}
+                style={[
+                    {
+                        flex: 1,
+                        backgroundColor: COLOR.APP_BACKGROUND,
+                    },
+                    Platform.OS === 'ios' && { paddingTop: NativeStatusBar.currentHeight },
+                ]}
             >
                 <StatusBar style="auto" />
                 <KeyboardAvoidingView

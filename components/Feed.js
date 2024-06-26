@@ -111,6 +111,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
     const navigation = useNavigation();
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
 
     const transactionId = transaction._id;
 
@@ -148,10 +149,9 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
                     <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                         <View style={styles.modalOverlay}>
-                            {/* <BlurView style={[StyleSheet.absoluteFillObject,{backgroundColor:"rgba(10,10,10,0.85)"}]} tint='dark' intensity={100} /> */}
-                            <BlurView style={styles.absolute} blurType="regular" blurAmount={12} reducedTransparencyFallbackColor="white" />
+                            <BlurView style={styles.absolute} blurType="regular" blurAmount={10} reducedTransparencyFallbackColor="white" />
                             <TouchableWithoutFeedback>
-                                <View style={styles.modalContainer}>
+                                <View style={[styles.modalContainer, { top: modalPosition.y - 160, left: calcWidth(20) }]}>
                                     {selectedTransaction && (
                                         <>
                                             <View style={styles.selectedTransactionCard}>
@@ -224,8 +224,9 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
 
     return (
         <Pressable
-            onLongPress={() => {
+            onLongPress={(event) => {
                 setSelectedTransaction(transaction);
+                setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
                 setModalVisible(true);
             }}
             onPress={() => {
@@ -518,13 +519,14 @@ const styles = StyleSheet.create({
         paddingRight: calcWidth(6),
     },
     modalContainer: {
-        width: '80%',
-        backgroundColor: COLOR.APP_BACKGROUND,
+        position: 'absolute',
+        width: calcWidth(128),
+        backgroundColor: '#663CAB',
         borderWidth: 1,
-        borderRadius: 10,
+        borderRadius: 20,
         paddingHorizontal: calcWidth(4),
         paddingVertical: calcHeight(4),
-        alignItems: 'center',
+        // alignItems: 'center',
     },
     modalTitle: {
         fontSize: getFontSizeByWindowWidth(16),
@@ -551,7 +553,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderWidth: 1,
         borderColor: 'rgba(44, 44, 46, 1)',
-        backgroundColor: 'rgba(28, 28, 30, 0.8)',
+        backgroundColor: 'rgba(28, 28, 30, 0.9)',
         alignItems: 'center',
     },
     modalButtonText: {

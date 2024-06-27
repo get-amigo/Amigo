@@ -33,7 +33,6 @@ import generateUniqueId from '../helper/generateUniqueId';
 import { useTransaction } from '../context/TransactionContext';
 import useNetwork from '../hooks/useNetwork';
 import BalanceGroupPin from '../components/BalanceGroupPin';
-import { APP_START_WARM } from '@sentry/react-native/dist/js/measurements';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
 const ActivitiesFeedScreen = ({ navigation }) => {

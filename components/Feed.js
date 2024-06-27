@@ -347,7 +347,7 @@ function Feed(props) {
     const { creator, activityType, createdAt, onDelete } = props;
 
     const renderActivity = () => {
-        const activityStrategy = ActivityStrategyFactory(activityType);
+        const activityStrategy = ActivityStrategyFactory(activityType, onDelete);
         if (activityStrategy) {
             return activityStrategy.renderActivity(props);
         }
@@ -420,7 +420,7 @@ function Feed(props) {
     );
 }
 
-const ActivityStrategyFactory = (activityType) => {
+const ActivityStrategyFactory = (activityType, onDelete) => {
     switch (activityType) {
         case 'transaction':
             return {
@@ -431,7 +431,7 @@ const ActivityStrategyFactory = (activityType) => {
                         contacts={contacts}
                         synced={synced}
                         creator={creator}
-                        onDelete={transaction}
+                        onDelete={onDelete}
                     />
                 ),
             };

@@ -30,24 +30,14 @@ const MemberItem = ({ name, phone, _id }) => (
     </View>
 );
 
-const formatDate = (dateString) => {
-    const d = new Date(dateString);
-    const date = d.getDate();
-    const month = d.getMonth();
-    const year = d.getFullYear();
-    let hours = d.getHours();
-    let minutes = d.getMinutes();
-
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12;
-    hours = hours ? hours : 12; // the hour '0' should be '12'
-    minutes = minutes < 10 ? '0' + minutes : minutes;
-
-    // 25 Dec 2023, 10:32 PM
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-    return `${date} ${months[month]} ${year}, ${hours}:${minutes} ${ampm}`;
-};
+function convertToCustomFormat(dateString) {
+    const date = new Date(dateString);
+    const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    const formattedDate = date.toLocaleDateString('en-IN', dateOptions);
+    const formattedTime = date.toLocaleTimeString('en-IN', timeOptions);
+    return formattedDate + ', ' + formattedTime;
+}
 
 const GroupScreen = ({
     navigation,
@@ -181,7 +171,7 @@ const GroupScreen = ({
                         </View>
                     )}
                     {/* <Text style={styles.groupCreatedAt}>Created on 25 Dec 2023, 10:32 PM</Text> */}
-                    <Text style={styles.groupCreatedAt}>Created on {formatDate(group.createdAt)}</Text>
+                    <Text style={styles.groupCreatedAt}>Created on {convertToCustomFormat(group.createdAt)}</Text>
                 </View>
                 <TouchableOpacity
                     onPress={() => {

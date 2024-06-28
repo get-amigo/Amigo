@@ -24,13 +24,11 @@ function convertToCustomTimeFormat(dateString) {
     return formattedTime;
 }
 
-function convertToCustomFormat(dateString) {
+function convertToCustomFormatDate(dateString) {
     const date = new Date(dateString);
-    const dateOptions = { day: 'numeric', month: 'long', year: 'numeric' };
-    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
     const formattedDate = date.toLocaleDateString('en-IN', dateOptions);
-    const formattedTime = date.toLocaleTimeString('en-IN', timeOptions);
-    return formattedDate + ' ' + formattedTime;
+    return formattedDate;
 }
 
 function getDateAndMonth(dateString) {
@@ -263,7 +261,7 @@ function ChatActivity({ chat, synced }) {
 
 function Feed(props) {
     const { user } = useAuth();
-    const { creator, activityType, createdAt, showCreator } = props;
+    const { creator, activityType, createdAt, showCreator, showDate } = props;
 
     const renderActivity = () => {
         const activityStrategy = ActivityStrategyFactory(activityType);
@@ -274,70 +272,96 @@ function Feed(props) {
     };
 
     return (
-        <View
-            style={[
-                styles.activityContainer,
-                {
-                    justifyContent: user._id === creator?._id ? 'flex-end' : 'flex-start',
-                    marginTop: showCreator ? calcWidth(4) : 0,
-                },
-            ]}
-        >
-            {user._id !== creator?._id && (
+        <>
+            {showDate && (
                 <View
                     style={{
-                        height: calcHeight(SELECTOR_SIZE),
-                        width: calcHeight(SELECTOR_SIZE),
+                        alignItems: 'center',
+                        marginTop: calcWidth(5),
+                        marginBottom: calcWidth(5),
                     }}
                 >
-                    {showCreator && <UserAvatar user={creator} size={SELECTOR_SIZE} />}
+                    <Text
+                        style={{
+                            color: 'white',
+                            borderWidth: 1,
+                            paddingHorizontal: calcWidth(3),
+                            paddingVertical: calcWidth(2),
+                            borderColor: 'white',
+                            borderRadius: calcWidth(4),
+                            fontSize: getFontSizeByWindowWidth(10),
+                            fontWeight: '500',
+                        }}
+                    >
+                        {convertToCustomFormatDate(createdAt)}
+                    </Text>
                 </View>
             )}
             <View
-                style={{
-                    marginLeft: user._id === creator?._id ? 0 : calcWidth(2),
-                }}
+                style={[
+                    styles.activityContainer,
+                    {
+                        justifyContent: user._id === creator?._id ? 'flex-end' : 'flex-start',
+                        marginTop: showCreator ? calcWidth(4) : 0,
+                    },
+                ]}
             >
-                {user._id !== creator?._id && showCreator && (
+                {user._id !== creator?._id && (
                     <View
                         style={{
-                            alignItems: 'center',
-                            flexDirection: 'row',
+                            height: calcHeight(SELECTOR_SIZE),
+                            width: calcHeight(SELECTOR_SIZE),
                         }}
                     >
-                        <Text
-                            style={{
-                                color: COLOR.BUTTON,
-                                fontSize: getFontSizeByWindowWidth(12),
-                                fontWeight: '700',
-                            }}
-                        >
-                            {' '}
-                            {creator.name}
-                        </Text>
+                        {showCreator && <UserAvatar user={creator} size={SELECTOR_SIZE} />}
                     </View>
                 )}
                 <View
-                    style={[
-                        styles.activityCard,
-                        {
-                            backgroundColor: user._id === creator?._id ? '#663CAB' : '#342F4F',
-                            ...(user._id === creator?._id
-                                ? {
-                                      borderTopLeftRadius: calcWidth(5),
-                                      borderBottomRightRadius: calcWidth(5),
-                                  }
-                                : {
-                                      borderTopRightRadius: calcWidth(5),
-                                      borderBottomLeftRadius: calcWidth(5),
-                                  }),
-                        },
-                    ]}
+                    style={{
+                        marginLeft: user._id === creator?._id ? 0 : calcWidth(2),
+                    }}
                 >
-                    {renderActivity()}
+                    {user._id !== creator?._id && showCreator && (
+                        <View
+                            style={{
+                                alignItems: 'center',
+                                flexDirection: 'row',
+                            }}
+                        >
+                            <Text
+                                style={{
+                                    color: COLOR.BUTTON,
+                                    fontSize: getFontSizeByWindowWidth(12),
+                                    fontWeight: '700',
+                                }}
+                            >
+                                {' '}
+                                {creator.name}
+                            </Text>
+                        </View>
+                    )}
+                    <View
+                        style={[
+                            styles.activityCard,
+                            {
+                                backgroundColor: user._id === creator?._id ? '#663CAB' : '#342F4F',
+                                ...(user._id === creator?._id
+                                    ? {
+                                          borderTopLeftRadius: calcWidth(5),
+                                          borderBottomRightRadius: calcWidth(5),
+                                      }
+                                    : {
+                                          borderTopRightRadius: calcWidth(5),
+                                          borderBottomLeftRadius: calcWidth(5),
+                                      }),
+                            },
+                        ]}
+                    >
+                        {renderActivity()}
+                    </View>
                 </View>
             </View>
-        </View>
+        </>
     );
 }
 

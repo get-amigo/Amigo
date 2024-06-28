@@ -24,6 +24,18 @@ import useNetwork from '../hooks/useNetwork';
 import BalanceGroupPin from '../components/BalanceGroupPin';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
+function areDatesEqual(date1, date2) {
+    const date1Day = date1.getDate();
+    const date1Month = date1.getMonth();
+    const date1Year = date1.getFullYear();
+
+    const date2Day = date2.getDate();
+    const date2Month = date2.getMonth();
+    const date2Year = date2.getFullYear();
+
+    return date1Day === date2Day && date1Month === date2Month && date1Year === date2Year;
+}
+
 const ActivitiesFeedScreen = ({ navigation }) => {
     console.log('mounted');
     const { group } = useGroup();
@@ -219,9 +231,14 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
                         const showCreator = !previousCreator || currentCreator._id !== previousCreator._id;
 
+                        const currentDate = new Date(activities[item].createdAt);
+                        const previousDate =
+                            index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
+
+                        const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
                         return (
                             <View onLayout={() => handleItemLayout(item)}>
-                                <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} />
+                                <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} showDate={showDate} />
                             </View>
                         );
                     }}

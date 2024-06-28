@@ -1,15 +1,4 @@
-import {
-    Pressable,
-    StyleSheet,
-    Text,
-    View,
-    ImageBackground,
-    Platform,
-    TextInput,
-    FlatList,
-    TouchableOpacity,
-    StatusBar,
-} from 'react-native';
+import { Pressable, StyleSheet, Text, View, ImageBackground, Platform, TextInput, FlatList, StatusBar } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLOR from '../constants/Colors';
@@ -18,7 +7,7 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import getMembersString from '../utility/getMembersString';
 import { Image } from 'react-native';
-import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import GroupIcon from '../components/GroupIcon';
 import { useGroup } from '../context/GroupContext';
 import ScannerIcon from '../assets/icons/scanner.png';
@@ -58,7 +47,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const hasHydrated = useGroupActivitiesStore((state) => state._hasHydrated);
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const syncAllPendingActivities = useGroupActivitiesStore((state) => state.syncAllPendingActivities);
-    const clearPendingActivities = useGroupActivitiesStore((state) => state.clearPendingActivities);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
     useEffect(() => {
@@ -159,14 +147,13 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     return (
         <SafeAreaView style={styles.container}>
             <ImageBackground
-                source={require('../assets/chatBackground.png')}
+                source={require('../assets/chatBackground_new.png')}
                 style={{
                     width: calcWidth(100),
                     height: calcHeight(100),
                     marginTop: StatusBar.currentHeight,
                     position: 'absolute',
                     flex: 1,
-                    backgroundColor: '#1B1727',
                 }}
             />
 
@@ -227,62 +214,82 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     inverted
                     data={activityOrder}
                     keyExtractor={(item) => item}
-                    renderItem={({ item }) => (
-                        <View onLayout={() => handleItemLayout(item)}>
-                            <Feed {...activities[item]} contacts={contacts} />
-                        </View>
-                    )}
+                    renderItem={({ item, index }) => {
+                        const currentCreator = activities[item].creator;
+                        const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
+                        const showCreator = !previousCreator || currentCreator._id !== previousCreator._id;
+
+                        return (
+                            <View onLayout={() => handleItemLayout(item)}>
+                                <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} />
+                            </View>
+                        );
+                    }}
                     style={styles.flatlist}
-                    // onEndReached={onReachEnd}
                     onEndReachedThreshold={0.5}
                 />
             </>
 
             {/* Bottom */}
-            <>
-                <View style={styles.bottom}>
-                    <Pressable style={[styles.inputContainer]} onPress={() => textRef.current.focus()}>
+
+            <View
+                style={{
+                    marginTop: calcWidth(2),
+                }}
+            >
+                {/* <View style={styles.payContainer}>
+                    will be required when we add "Pay to XYZ rs. 500 feature"
+                    <Pressable style={styles.payBtn}>
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontSize: getFontSizeByWindowWidth(11),
+                                fontWeight: '500',
+                            }}
+                        >
+                            Pay Binny ₹100
+                        </Text>
+                    </Pressable>
+                </View> */}
+                <View style={styles.bottomContainer}>
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => {
+                            setAmount('');
+                            resetTransaction();
+                            setTransactionData((prev) => ({
+                                ...prev,
+                                group,
+                                amount,
+                            }));
+                            navigation.navigate(PAGES.ADD_TRANSACTION);
+                        }}
+                    >
+                        <Text
+                            style={{
+                                fontSize: getFontSizeByWindowWidth(21),
+                                color: 'white',
+                                marginRight: 4,
+                            }}
+                        >
+                            +
+                        </Text>
+                        <Text style={styles.buttonText}> Expense</Text>
+                    </Pressable>
+                    <View style={styles.textInputContainer}>
                         <TextInput
                             style={styles.input}
                             placeholderTextColor="#ccc"
-                            ref={textRef}
-                            placeholder="Enter the amount"
-                            textAlign="center"
+                            placeholder="Message..."
                             value={amount}
                             onChangeText={handleInputChange}
                         />
-                    </Pressable>
-                    {!isNaN(amount) ? (
-                        <TouchableOpacity
-                            style={styles.button}
-                            onPress={() => {
-                                // syncAllPendingActivities();
-
-                                setAmount('');
-                                resetTransaction();
-                                setTransactionData((prev) => ({
-                                    ...prev,
-                                    group,
-                                    amount,
-                                }));
-                                navigation.navigate(PAGES.ADD_TRANSACTION);
-                            }}
-                        >
-                            <Text style={styles.buttonText}>+ Expense</Text>
-                        </TouchableOpacity>
-                    ) : (
-                        <TouchableOpacity
-                            onPress={() => handleActivitySend(amount)}
-                            style={{
-                                height: calcHeight(5),
-                                justifyContent: 'center',
-                            }}
-                        >
-                            <AntDesign name="enter" size={calcHeight(4)} color={COLOR.BUTTON} />
-                        </TouchableOpacity>
-                    )}
+                        <Pressable style={styles.sendBtn} onPress={() => handleActivitySend(amount)}>
+                            <Ionicons name="send" size={24} color="#663CAB" />
+                        </Pressable>
+                    </View>
                 </View>
-            </>
+            </View>
         </SafeAreaView>
     );
 };
@@ -320,51 +327,66 @@ const styles = StyleSheet.create({
 
     flatlist: {
         flex: 1,
-        // backgroundColor: 'red',
-    },
-    bottom: {
-        // flex: 0.1,
-        // backgroundColor: 'green',
-        flexDirection: 'row',
-        margin: calcWidth(2),
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        gap: calcWidth(4),
-        paddingHorizontal: calcWidth(2),
-        marginBottom: calcHeight(1),
     },
 
-    wrapper1: { flex: 1 },
-    wrapper2: { flex: 1 },
+    textInputContainer: {
+        flex: 1,
+        // backgroundColor: 'green',
+        borderWidth: 1,
+        borderRadius: calcWidth(3),
+        borderColor: 'white',
+        paddingHorizontal: calcWidth(2),
+        flexDirection: 'row',
+    },
 
     input: {
-        backgroundColor: 'black',
-        borderRadius: calcWidth(2),
-        borderColor: 'gray',
-        borderWidth: 1,
         color: 'white',
         fontSize: getFontSizeByWindowWidth(12),
+        flex: 1,
+        margin: 'auto',
     },
 
-    inputContainer: {
+    bottomContainer: {
+        borderTopLeftRadius: calcWidth(3),
+        borderTopRightRadius: calcWidth(3),
         color: 'white',
-        borderRadius: calcWidth(2),
         alignContent: 'center',
-        justifyContent: 'center',
-        flex: 1,
+        justifyContent: 'space-between',
+        padding: calcWidth(5),
+        flexDirection: 'row',
+        gap: calcWidth(3),
+        backgroundColor: '#272239',
     },
     button: {
-        width: calcWidth(25),
-        height: calcHeight(5),
-        borderRadius: calcWidth(2),
-        backgroundColor: COLOR.BUTTON,
+        borderRadius: calcWidth(3),
+        backgroundColor: '#663CAB',
         elevation: 3,
         justifyContent: 'center',
         alignItems: 'center',
+        paddingHorizontal: calcWidth(4),
+        paddingVertical: calcWidth(1.2),
+        flexDirection: 'row',
     },
     buttonText: {
         fontSize: getFontSizeByWindowWidth(12),
         color: 'white',
         alignItems: 'center',
+    },
+    sendBtn: {
+        marginLeft: calcWidth(1),
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    payContainer: {
+        paddingVertical: calcWidth(5),
+        justifyContent: 'center',
+    },
+    payBtn: {
+        margin: 'auto',
+        paddingVertical: calcWidth(3),
+        paddingHorizontal: calcWidth(4),
+        borderWidth: 1,
+        borderColor: 'white',
+        borderRadius: calcWidth(6),
     },
 });

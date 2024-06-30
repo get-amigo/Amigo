@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, Pressable, ScrollView, ActivityIndicator, Keyboard } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, Pressable, ScrollView, Keyboard } from 'react-native';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import OTPImage from '../assets/OTPImage.png';
-import Loader from '../components/Loader';
 import OTPFilled from '../assets/OTPFilled.png';
 import { useOtp } from '../context/OtpContext';
+import Button from '../components/Button';
 import * as Haptics from 'expo-haptics';
 
 const OTPScreen = ({
@@ -89,9 +89,7 @@ const OTPScreen = ({
         );
     });
 
-    return loading ? (
-        <Loader />
-    ) : (
+    return (
         <ScrollView style={{ flex: 1 }} keyboardDismissMode="none" keyboardShouldPersistTaps="always">
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
@@ -154,7 +152,7 @@ const OTPScreen = ({
                             )}
                         </Pressable>
                     </View>
-                    {isAuthStateLoading && <ActivityIndicator size="medium" color={COLOR.PRIMARY} style={styles.indicator} />}
+                    <Button loading={loading || isAuthStateLoading} title="Verify OTP" onPress={handleVerifyOTP} />
                 </View>
             </View>
         </ScrollView>

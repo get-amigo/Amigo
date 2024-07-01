@@ -26,6 +26,14 @@ function convertToCustomTimeFormat(dateString) {
 
 function convertToCustomFormatDate(dateString) {
     const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (areDatesEqual(today, date)) {
+        return 'Today';
+    } else if (areDatesEqual(yesterday, date)) {
+        return 'Yesterday';
+    }
     const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
     const formattedDate = date.toLocaleDateString('en-IN', dateOptions);
     return formattedDate;
@@ -54,6 +62,18 @@ function getDateAndMonth(dateString) {
     const day = date.getDate();
     const month = months[date.getMonth()];
     return day + ' ' + month;
+}
+
+function areDatesEqual(date1, date2) {
+    const date1Day = date1.getDate();
+    const date1Month = date1.getMonth();
+    const date1Year = date1.getFullYear();
+
+    const date2Day = date2.getDate();
+    const date2Month = date2.getMonth();
+    const date2Year = date2.getFullYear();
+
+    return date1Day === date2Day && date1Month === date2Month && date1Year === date2Year;
 }
 
 function ActivityHeader({ icon, iconName, size, text }) {

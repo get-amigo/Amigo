@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View, ImageBackground, Platform, TextInput, FlatList, StatusBar } from 'react-native';
+import { Pressable, StyleSheet, Text, View, ImageBackground, Platform, TextInput, FlatList, StatusBar, Keyboard } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLOR from '../constants/Colors';
@@ -23,6 +23,7 @@ import { useTransaction } from '../context/TransactionContext';
 import useNetwork from '../hooks/useNetwork';
 import BalanceGroupPin from '../components/BalanceGroupPin';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
+import { FontAwesome } from '@expo/vector-icons';
 
 function areDatesEqual(date1, date2) {
     const date1Day = date1.getDate();
@@ -45,6 +46,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
 
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
+    const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
 
     const { isLoading, hasNextPage, fetchNextPage, handleItemLayout, shouldFetch } = useActivities();
 
@@ -91,9 +93,12 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     }, [shouldFetch, hasNextPage, isLoading]);
 
     const handleInputChange = useCallback((text) => {
-        if (!isNaN(text)) {
-            // If it's a number, strip out non-digit characters
-            text = text.replace(/[^0-9]/g, '');
+        if (text.length === 0) {
+            setIsExpenseBtnVisible(false);
+        } else if (!isNaN(text) && Number(text) > 0) {
+            setIsExpenseBtnVisible(true);
+        } else {
+            setIsExpenseBtnVisible(false);
         }
         setAmount(text);
     }, []);
@@ -102,6 +107,9 @@ const ActivitiesFeedScreen = ({ navigation }) => {
         // hendle chats
         console.log('isConnected ====================;;;;;;;;;;;;;------------', isConnected);
         setAmount('');
+        if (message.replace(/^\s+|\s+$/g, '') == '') {
+            return;
+        }
         if (isConnected) {
             const { activityId, otherId } = addActivityToLocalDB(
                 { activityType: 'chat', relatedId: { message: message } },
@@ -162,13 +170,11 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 source={require('../assets/chatBackground_new.png')}
                 style={{
                     width: calcWidth(100),
-                    height: calcHeight(100),
+                    height: '100%',
                     marginTop: StatusBar.currentHeight,
                     position: 'absolute',
-                    flex: 1,
                 }}
             />
-
             {/* Top header */}
             <>
                 <Pressable
@@ -243,7 +249,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         );
                     }}
                     style={styles.flatlist}
-                    onEndReachedThreshold={0.5}
                 />
             </>
 
@@ -270,14 +275,31 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 </View> */}
                 <View style={styles.bottomContainer}>
                     <Pressable
-                        style={styles.button}
+                        style={{
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            paddingHorizontal: calcWidth(2),
+                            display: !isExpenseBtnVisible ? 'flex' : 'none',
+                        }}
+                        onPress={() => setIsExpenseBtnVisible(true)}
+                    >
+                        <FontAwesome name="angle-right" size={getFontSizeByWindowWidth(27)} color="white" />
+                    </Pressable>
+                    <Pressable
+                        style={[styles.button, { display: isExpenseBtnVisible ? 'flex' : 'none' }]}
                         onPress={() => {
                             setAmount('');
                             resetTransaction();
+                            // If it's a number, strip out non-digit characters
+                            let amt = parseInt(amount);
+                            if (amt <= 0) {
+                                amt = '';
+                            }
+                            console.log('amt,', amt);
                             setTransactionData((prev) => ({
                                 ...prev,
                                 group,
-                                amount,
+                                amount: amt ? '' + amt : '',
                             }));
                             navigation.navigate(PAGES.ADD_TRANSACTION);
                         }}
@@ -300,6 +322,12 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                             placeholder="Message..."
                             value={amount}
                             onChangeText={handleInputChange}
+                            onFocus={() => setIsExpenseBtnVisible(false)}
+                            onBlur={() => {
+                                if (amount === '') {
+                                    setIsExpenseBtnVisible(true);
+                                }
+                            }}
                         />
                         <Pressable style={styles.sendBtn} onPress={() => handleActivitySend(amount)}>
                             <Ionicons name="send" size={24} color="#663CAB" />
@@ -348,7 +376,6 @@ const styles = StyleSheet.create({
 
     textInputContainer: {
         flex: 1,
-        // backgroundColor: 'green',
         borderWidth: 1,
         borderRadius: calcWidth(3),
         borderColor: 'white',
@@ -373,6 +400,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         gap: calcWidth(3),
         backgroundColor: '#272239',
+        minHeight: calcWidth(21),
     },
     button: {
         borderRadius: calcWidth(3),

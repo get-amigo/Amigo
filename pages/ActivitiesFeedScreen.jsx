@@ -35,6 +35,7 @@ import useNetwork from '../hooks/useNetwork';
 import BalanceGroupPin from '../components/BalanceGroupPin';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 function areDatesEqual(date1, date2) {
     const date1Day = date1.getDate();
@@ -65,6 +66,18 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const [amount, setAmount] = useState('');
 
     const { setTransactionData, resetTransaction } = useTransaction();
+
+    const flatListRef = useRef(null);
+    const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
+    const handleScroll = useCallback((event) => {
+        const yOffset = event.nativeEvent.contentOffset.y;
+        setShowScrollToBottom(yOffset > 100);
+    }, []);
+
+    const scrollToBottom = useCallback(() => {
+        flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+    }, []);
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
@@ -246,28 +259,38 @@ const ActivitiesFeedScreen = ({ navigation }) => {
 
                 {/* Flat List */}
                 <>
-                    <FlatList
-                        inverted
-                        data={activityOrder}
-                        keyExtractor={(item) => item}
-                        renderItem={({ item, index }) => {
-                            const currentCreator = activities[item].creator;
-                            const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
-                            const showCreator = !previousCreator || currentCreator._id !== previousCreator._id;
+                    <View style={{ flex: 1 }}>
+                        <FlatList
+                            ref={flatListRef}
+                            inverted
+                            data={activityOrder}
+                            keyExtractor={(item) => item}
+                            renderItem={({ item, index }) => {
+                                const currentCreator = activities[item].creator;
+                                const previousCreator =
+                                    index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
+                                const showCreator = !previousCreator || currentCreator._id !== previousCreator._id;
 
-                            const currentDate = new Date(activities[item].createdAt);
-                            const previousDate =
-                                index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
+                                const currentDate = new Date(activities[item].createdAt);
+                                const previousDate =
+                                    index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
 
-                            const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
-                            return (
-                                <View onLayout={() => handleItemLayout(item)}>
-                                    <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} showDate={showDate} />
-                                </View>
-                            );
-                        }}
-                        style={styles.flatlist}
-                    />
+                                const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
+                                return (
+                                    <View onLayout={() => handleItemLayout(item)}>
+                                        <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} showDate={showDate} />
+                                    </View>
+                                );
+                            }}
+                            style={{ flex: 1 }}
+                            onScroll={handleScroll}
+                        />
+                        {showScrollToBottom && (
+                            <Pressable style={styles.scrollToBottomButton} onPress={scrollToBottom}>
+                                <FontAwesome6 name="angles-down" size={calcWidth(5)} color="white" />
+                            </Pressable>
+                        )}
+                    </View>
                 </>
 
                 {/* Bottom */}
@@ -389,10 +412,6 @@ const styles = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(11),
     },
 
-    flatlist: {
-        flex: 1,
-    },
-
     textInputContainer: {
         flex: 1,
         borderWidth: 1,
@@ -452,5 +471,14 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'white',
         borderRadius: calcWidth(6),
+    },
+    scrollToBottomButton: {
+        position: 'absolute',
+        right: calcWidth(4),
+        bottom: calcWidth(4),
+        backgroundColor: '#272239',
+        borderRadius: calcWidth(6),
+        padding: calcWidth(2.4),
+        zIndex: 100,
     },
 });

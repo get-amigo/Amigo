@@ -20,10 +20,13 @@ function App() {
     return (
         <>
             <SafeAreaView
-                style={{
-                    flex: 1,
-                    backgroundColor: COLOR.APP_BACKGROUND,
-                }}
+                style={[
+                    {
+                        flex: 1,
+                        backgroundColor: COLOR.APP_BACKGROUND,
+                        paddingTop: Platform.OS === 'ios' ? Constants.statusBarHeight : 0,
+                    },
+                ]}
             >
                 <StatusBar style="auto" />
                 <KeyboardAvoidingView

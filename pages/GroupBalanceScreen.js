@@ -80,7 +80,7 @@ function GroupBalanceScreen({ navigation, route }) {
                             },
                         ]}
                     >
-                        <Feather name={group.totalBalance > 0 ? 'arrow-up-right' : 'arrow-down-left'} size={calcWidth(2)} color="white" />
+                        <Feather name={group.totalBalance > 0 ? 'arrow-up-right' : 'arrow-down-left'} size={calcWidth(4)} color="white" />
                     </View>
                 </View>
             </View>

@@ -366,17 +366,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     description: {
-        flex: 1,
         color: 'white',
     },
     descriptionContainer: {
-        flexDirection: 'row',
         alignSelf: 'center',
-        padding: calcWidth(3),
+        padding: calcWidth(2.2),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        width: calcWidth(30),
+        maxWidth: calcWidth(80),
+        maxHeight: calcWidth(20),
+        marginTop: calcWidth(2),
     },
     remainingCharacters: {
         color: COLOR.BUTTON,

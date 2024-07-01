@@ -203,7 +203,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     flex: 1,
                 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={25}
+                keyboardVerticalOffset={40}
             >
                 {/* Top header */}
                 <>

@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
+import { StyleSheet, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
 import { useAuth } from '../stores/auth';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -132,7 +132,7 @@ function ProfileScreen({ navigation }) {
     }, [navigation, editMode]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <View style={styles.userInfo}>
                 <UserAvatar user={user} size={7} />
                 <View style={styles.userDetails}>
@@ -197,15 +197,11 @@ function ProfileScreen({ navigation }) {
                 onPress={deleteHandler}
                 color={COLOR.DELETION_COLOR}
             />
-        </SafeAreaView>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     characterCount: {
         fontWeight: 'bold',
         color: COLOR.BUTTON,

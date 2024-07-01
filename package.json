@@ -80,9 +80,11 @@
         "@babel/core": "^7.24.5",
         "@tanstack/eslint-plugin-query": "^5.35.6",
         "@types/jest": "^29.5.12",
+        "expo-dev-client": "~4.0.15",
         "@types/react": "~18.3.2",
         "@types/react-native": "^0.73.0",
         "@types/react-test-renderer": "^18.3.0",
+        "expo-updates": "~0.25.16",
         "husky": "^9.0.11",
         "typescript": "^5.4.5"
     },

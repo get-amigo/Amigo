@@ -4,7 +4,6 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
     Text,
     StyleSheet,
-    SafeAreaView,
     View,
     Pressable,
     FlatList,
@@ -170,7 +169,7 @@ function GroupScreen({ navigation }) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <Pressable
                 style={styles.header}
                 onPress={() => {
@@ -185,6 +184,7 @@ function GroupScreen({ navigation }) {
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         gap: calcWidth(5),
+                        paddingHorizontal: calcWidth(1),
                     }}
                 >
                     <Pressable onPress={() => navigation.goBack()}>
@@ -300,15 +300,11 @@ function GroupScreen({ navigation }) {
                     width: calcWidth(100),
                 }}
             />
-        </SafeAreaView>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',

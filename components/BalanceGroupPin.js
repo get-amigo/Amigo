@@ -69,7 +69,7 @@ const BalanceGroupPin = ({ totalBalance, balances }) => {
                             paddingHorizontal: calcWidth(2.2),
                             paddingVertical: calcWidth(1),
                             textAlign: 'center',
-                            borderRadius: calcWidth(5),
+                            borderRadius: calcWidth(8),
                             textAlignVertical: 'center',
                         }}
                     >

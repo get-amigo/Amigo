@@ -7,6 +7,7 @@ import { useAuth } from '../stores/auth';
 import linking from '../helper/linking';
 import { TransactionProvider } from '../context/TransactionContext';
 import { GroupProvider } from '../context/GroupContext';
+import COLOR from '../constants/Colors';
 
 const queryClient = new QueryClient();
 
@@ -17,7 +18,16 @@ function RootNavigator() {
         <QueryClientProvider client={queryClient}>
             <GroupProvider>
                 <TransactionProvider>
-                    <NavigationContainer linking={linking}>{user ? <AppNavigator /> : AuthNavigator}</NavigationContainer>
+                    <NavigationContainer
+                        linking={linking}
+                        theme={{
+                            colors: {
+                                background: COLOR.APP_BACKGROUND,
+                            },
+                        }}
+                    >
+                        {user ? <AppNavigator /> : AuthNavigator}
+                    </NavigationContainer>
                 </TransactionProvider>
             </GroupProvider>
         </QueryClientProvider>

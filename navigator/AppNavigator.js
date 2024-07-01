@@ -238,6 +238,7 @@ const AppNavigator = () => {
                                 },
                                 headerTintColor: '#fff',
                                 title: null,
+                                headerTintColor: '#fff',
                             }}
                         />
                         <Stack.Screen

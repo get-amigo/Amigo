@@ -11,7 +11,6 @@ import {
     KeyboardAvoidingView,
 } from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -189,7 +188,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     // clearPendingActivities();
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <ImageBackground
                 source={require('../assets/chatBackground_new.png')}
                 style={{
@@ -377,7 +376,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     </View>
                 </View>
             </KeyboardAvoidingView>
-        </SafeAreaView>
+        </>
     );
 };
 
@@ -386,7 +385,6 @@ export default ActivitiesFeedScreen;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
     },
     header: {
         flexDirection: 'row',

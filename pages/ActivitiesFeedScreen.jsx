@@ -1,4 +1,15 @@
-import { Pressable, StyleSheet, Text, View, ImageBackground, Platform, TextInput, FlatList, StatusBar, Keyboard } from 'react-native';
+import {
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+    ImageBackground,
+    Platform,
+    TextInput,
+    FlatList,
+    StatusBar,
+    KeyboardAvoidingView,
+} from 'react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import COLOR from '../constants/Colors';
@@ -175,91 +186,98 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     position: 'absolute',
                 }}
             />
-            {/* Top header */}
-            <>
-                <Pressable
-                    style={styles.header}
-                    onPress={() => {
-                        navigation.navigate(PAGES.GROUP_SETTINGS, {
-                            balance: totalBalance != 0,
-                        });
+            <KeyboardAvoidingView
+                style={{
+                    flex: 1,
+                }}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                keyboardVerticalOffset={25}
+            >
+                {/* Top header */}
+                <>
+                    <Pressable
+                        style={styles.header}
+                        onPress={() => {
+                            navigation.navigate(PAGES.GROUP_SETTINGS, {
+                                balance: totalBalance != 0,
+                            });
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                gap: calcWidth(5),
+                            }}
+                        >
+                            <Pressable onPress={() => navigation.goBack()} style={{ marginLeft: 4 }}>
+                                <Ionicons name="chevron-back" size={calcHeight(3)} color="white" />
+                            </Pressable>
+                            <GroupIcon groupId={group._id} />
+                            <View style={styles.groupNameContainer}>
+                                <Text style={styles.groupName}>{sliceText(group.name, 25)}</Text>
+                                <Text style={styles.groupMembers}>{getMembersString(group.members, 20)}</Text>
+                            </View>
+                        </View>
+                        <Pressable
+                            onPress={() => {
+                                setTransactionData((prev) => ({
+                                    ...prev,
+                                    group,
+                                }));
+                                navigation.navigate(PAGES.SCANNER);
+                            }}
+                        >
+                            <Image
+                                source={ScannerIcon}
+                                style={{
+                                    width: calcHeight(3),
+                                    height: calcHeight(3),
+                                    marginRight: calcWidth(5),
+                                }}
+                            />
+                        </Pressable>
+                    </Pressable>
+                </>
+                <>
+                    <BalanceGroupPin totalBalance={totalBalance} balances={balances} />
+                </>
+
+                {/* Flat List */}
+                <>
+                    <FlatList
+                        inverted
+                        data={activityOrder}
+                        keyExtractor={(item) => item}
+                        renderItem={({ item, index }) => {
+                            const currentCreator = activities[item].creator;
+                            const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
+                            const showCreator = !previousCreator || currentCreator._id !== previousCreator._id;
+
+                            const currentDate = new Date(activities[item].createdAt);
+                            const previousDate =
+                                index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
+
+                            const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
+                            return (
+                                <View onLayout={() => handleItemLayout(item)}>
+                                    <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} showDate={showDate} />
+                                </View>
+                            );
+                        }}
+                        style={styles.flatlist}
+                    />
+                </>
+
+                {/* Bottom */}
+
+                <View
+                    style={{
+                        marginTop: calcWidth(2),
                     }}
                 >
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            gap: calcWidth(5),
-                        }}
-                    >
-                        <Pressable onPress={() => navigation.goBack()} style={{ marginLeft: 4 }}>
-                            <Ionicons name="chevron-back" size={calcHeight(3)} color="white" />
-                        </Pressable>
-                        <GroupIcon groupId={group._id} />
-                        <View style={styles.groupNameContainer}>
-                            <Text style={styles.groupName}>{sliceText(group.name, 25)}</Text>
-                            <Text style={styles.groupMembers}>{getMembersString(group.members, 20)}</Text>
-                        </View>
-                    </View>
-                    <Pressable
-                        onPress={() => {
-                            setTransactionData((prev) => ({
-                                ...prev,
-                                group,
-                            }));
-                            navigation.navigate(PAGES.SCANNER);
-                        }}
-                    >
-                        <Image
-                            source={ScannerIcon}
-                            style={{
-                                width: calcHeight(3),
-                                height: calcHeight(3),
-                                marginRight: calcWidth(5),
-                            }}
-                        />
-                    </Pressable>
-                </Pressable>
-            </>
-            <>
-                <BalanceGroupPin totalBalance={totalBalance} balances={balances} />
-            </>
-
-            {/* Flat List */}
-            <>
-                <FlatList
-                    inverted
-                    data={activityOrder}
-                    keyExtractor={(item) => item}
-                    renderItem={({ item, index }) => {
-                        const currentCreator = activities[item].creator;
-                        const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
-                        const showCreator = !previousCreator || currentCreator._id !== previousCreator._id;
-
-                        const currentDate = new Date(activities[item].createdAt);
-                        const previousDate =
-                            index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
-
-                        const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
-                        return (
-                            <View onLayout={() => handleItemLayout(item)}>
-                                <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} showDate={showDate} />
-                            </View>
-                        );
-                    }}
-                    style={styles.flatlist}
-                />
-            </>
-
-            {/* Bottom */}
-
-            <View
-                style={{
-                    marginTop: calcWidth(2),
-                }}
-            >
-                {/* <View style={styles.payContainer}>
+                    {/* <View style={styles.payContainer}>
                     will be required when we add "Pay to XYZ rs. 500 feature"
                     <Pressable style={styles.payBtn}>
                         <Text
@@ -273,68 +291,69 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         </Text>
                     </Pressable>
                 </View> */}
-                <View style={styles.bottomContainer}>
-                    <Pressable
-                        style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            paddingHorizontal: calcWidth(2),
-                            display: !isExpenseBtnVisible ? 'flex' : 'none',
-                        }}
-                        onPress={() => setIsExpenseBtnVisible(true)}
-                    >
-                        <FontAwesome name="angle-right" size={getFontSizeByWindowWidth(27)} color="white" />
-                    </Pressable>
-                    <Pressable
-                        style={[styles.button, { display: isExpenseBtnVisible ? 'flex' : 'none' }]}
-                        onPress={() => {
-                            setAmount('');
-                            resetTransaction();
-                            // If it's a number, strip out non-digit characters
-                            let amt = parseInt(amount);
-                            if (amt <= 0) {
-                                amt = '';
-                            }
-                            console.log('amt,', amt);
-                            setTransactionData((prev) => ({
-                                ...prev,
-                                group,
-                                amount: amt ? '' + amt : '',
-                            }));
-                            navigation.navigate(PAGES.ADD_TRANSACTION);
-                        }}
-                    >
-                        <Text
+                    <View style={styles.bottomContainer}>
+                        <Pressable
                             style={{
-                                fontSize: getFontSizeByWindowWidth(21),
-                                color: 'white',
-                                marginRight: 4,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                paddingHorizontal: calcWidth(2),
+                                display: !isExpenseBtnVisible ? 'flex' : 'none',
+                            }}
+                            onPress={() => setIsExpenseBtnVisible(true)}
+                        >
+                            <FontAwesome name="angle-right" size={getFontSizeByWindowWidth(27)} color="white" />
+                        </Pressable>
+                        <Pressable
+                            style={[styles.button, { display: isExpenseBtnVisible ? 'flex' : 'none' }]}
+                            onPress={() => {
+                                setAmount('');
+                                resetTransaction();
+                                // If it's a number, strip out non-digit characters
+                                let amt = parseInt(amount);
+                                if (amt <= 0) {
+                                    amt = '';
+                                }
+                                console.log('amt,', amt);
+                                setTransactionData((prev) => ({
+                                    ...prev,
+                                    group,
+                                    amount: amt ? '' + amt : '',
+                                }));
+                                navigation.navigate(PAGES.ADD_TRANSACTION);
                             }}
                         >
-                            +
-                        </Text>
-                        <Text style={styles.buttonText}> Expense</Text>
-                    </Pressable>
-                    <View style={styles.textInputContainer}>
-                        <TextInput
-                            style={styles.input}
-                            placeholderTextColor="#ccc"
-                            placeholder="Message..."
-                            value={amount}
-                            onChangeText={handleInputChange}
-                            onFocus={() => setIsExpenseBtnVisible(false)}
-                            onBlur={() => {
-                                if (amount === '') {
-                                    setIsExpenseBtnVisible(true);
-                                }
-                            }}
-                        />
-                        <Pressable style={styles.sendBtn} onPress={() => handleActivitySend(amount)}>
-                            <Ionicons name="send" size={24} color="#663CAB" />
+                            <Text
+                                style={{
+                                    fontSize: getFontSizeByWindowWidth(21),
+                                    color: 'white',
+                                    marginRight: 4,
+                                }}
+                            >
+                                +
+                            </Text>
+                            <Text style={styles.buttonText}> Expense</Text>
                         </Pressable>
+                        <View style={styles.textInputContainer}>
+                            <TextInput
+                                style={styles.input}
+                                placeholderTextColor="#ccc"
+                                placeholder="Message..."
+                                value={amount}
+                                onChangeText={handleInputChange}
+                                onFocus={() => setIsExpenseBtnVisible(false)}
+                                onBlur={() => {
+                                    if (amount === '') {
+                                        setIsExpenseBtnVisible(true);
+                                    }
+                                }}
+                            />
+                            <Pressable style={styles.sendBtn} onPress={() => handleActivitySend(amount)}>
+                                <Ionicons name="send" size={24} color="#663CAB" />
+                            </Pressable>
+                        </View>
                     </View>
                 </View>
-            </View>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 };

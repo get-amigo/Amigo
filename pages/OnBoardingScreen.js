@@ -24,19 +24,11 @@ const OnboardingScreen = ({ navigation }) => {
                     }}
                 >
                     By Pressing on "Continue with Phone Number" you agree to our{' '}
-                    <Text
-                        style={{ color: 'white' }}
-                        onPress={() => WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/')}
-                    >
+                    <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy')}>
                         Privacy Policy
                     </Text>{' '}
                     and{' '}
-                    <Text
-                        style={{ color: 'white' }}
-                        onPress={() =>
-                            WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/terms-and-conditions')
-                        }
-                    >
+                    <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms')}>
                         Terms and Conditions
                     </Text>
                 </Text>

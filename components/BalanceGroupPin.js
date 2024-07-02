@@ -63,8 +63,8 @@ const BalanceGroupPin = ({ totalBalance, balances }) => {
                         style={{
                             color: COLOR.BUTTON,
                             fontSize: getFontSizeByWindowWidth(11),
-                            fontWeight: 'bold',
-                            borderWidth: 1.5,
+                            fontWeight: '600',
+                            borderWidth: 0.7,
                             borderColor: 'white',
                             paddingHorizontal: calcWidth(2.2),
                             paddingVertical: calcWidth(1),
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         backgroundColor: COLOR.BALANCE_PIN,
-        paddingVertical: calcWidth(4),
+        paddingVertical: calcWidth(2),
         marginBottom: 2,
     },
     arrowContainer: {
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     balanceText: {
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(11),
-        fontWeight: 'bold',
+        fontWeight: '500',
     },
 });
 

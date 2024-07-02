@@ -28,7 +28,6 @@ import Feed from '../components/Feed';
 import useActivities from '../hooks/useActivities';
 import useSocket from '../hooks/useSocket';
 import { useAuth } from '../stores/auth';
-import generateUniqueId from '../helper/generateUniqueId';
 import { useTransaction } from '../context/TransactionContext';
 import useNetwork from '../hooks/useNetwork';
 import BalanceGroupPin from '../components/BalanceGroupPin';
@@ -48,6 +47,55 @@ function areDatesEqual(date1, date2) {
     return date1Day === date2Day && date1Month === date2Month && date1Year === date2Year;
 }
 
+function convertToCustomFormatDate(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (areDatesEqual(today, date)) {
+        return 'Today';
+    } else if (areDatesEqual(yesterday, date)) {
+        return 'Yesterday';
+    }
+    const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+    const formattedDate = date.toLocaleDateString('en-IN', dateOptions);
+    return formattedDate;
+}
+
+const StickyDate = ({ isStickyDateVisible }) => {
+    return (
+        isStickyDateVisible && (
+            <View
+                style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    backgroundColor: 'transparent',
+                    padding: 2,
+                    zIndex: 100,
+                    alignItems: 'center',
+                }}
+            >
+                <Text
+                    style={{
+                        color: 'white',
+                        paddingHorizontal: calcWidth(2.4),
+                        paddingVertical: calcWidth(1.2),
+                        borderRadius: calcWidth(3.6),
+                        fontSize: getFontSizeByWindowWidth(10.7),
+                        fontWeight: '400',
+                        backgroundColor: '#272239',
+                    }}
+                >
+                    {/* {convertToCustomFormatDate(createdAt)} */}
+                    27 May 2024
+                </Text>
+            </View>
+        )
+    );
+};
+
 const ActivitiesFeedScreen = ({ navigation }) => {
     console.log('mounted');
     const { group } = useGroup();
@@ -58,6 +106,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
     const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
+    const [isStickyDateVisible, setIsStickyDateVisible] = useState(false);
 
     const { isLoading, hasNextPage, fetchNextPage, handleItemLayout, shouldFetch } = useActivities();
 
@@ -72,6 +121,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const handleScroll = useCallback((event) => {
         const yOffset = event.nativeEvent.contentOffset.y;
         setShowScrollToBottom(yOffset > 100);
+        setIsStickyDateVisible(yOffset > 50);
     }, []);
 
     const scrollToBottom = useCallback(() => {
@@ -259,6 +309,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 {/* Flat List */}
                 <>
                     <View style={{ flex: 1 }}>
+                        <StickyDate isStickyDateVisible={isStickyDateVisible} />
                         <FlatList
                             ref={flatListRef}
                             inverted
@@ -286,7 +337,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         />
                         {showScrollToBottom && (
                             <Pressable style={styles.scrollToBottomButton} onPress={scrollToBottom}>
-                                <FontAwesome6 name="angles-down" size={calcWidth(5)} color="white" />
+                                <FontAwesome6 name="angles-down" size={calcWidth(3.5)} color="white" />
                             </Pressable>
                         )}
                     </View>
@@ -300,19 +351,19 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     }}
                 >
                     {/* <View style={styles.payContainer}>
-                    will be required when we add "Pay to XYZ rs. 500 feature"
-                    <Pressable style={styles.payBtn}>
-                        <Text
-                            style={{
-                                color: 'white',
-                                fontSize: getFontSizeByWindowWidth(11),
-                                fontWeight: '500',
-                            }}
-                        >
-                            Pay Binny ₹100
-                        </Text>
-                    </Pressable>
-                </View> */}
+                        will be required when we add "Pay to XYZ rs. 500 feature"
+                        <Pressable style={styles.payBtn}>
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    fontSize: getFontSizeByWindowWidth(10.7),
+                                    fontWeight: '600',
+                                }}
+                            >
+                                Pay Binny ₹100
+                            </Text>
+                        </Pressable>
+                    </View> */}
                     <View style={styles.bottomContainer}>
                         <Pressable
                             style={{
@@ -346,7 +397,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                         >
                             <Text
                                 style={{
-                                    fontSize: getFontSizeByWindowWidth(21),
+                                    fontSize: getFontSizeByWindowWidth(15),
                                     color: 'white',
                                     marginRight: 4,
                                 }}
@@ -369,10 +420,10 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                                     }
                                 }}
                             />
-                            <Pressable style={styles.sendBtn} onPress={() => handleActivitySend(amount)}>
-                                <Ionicons name="send" size={24} color="#663CAB" />
-                            </Pressable>
                         </View>
+                        <Pressable style={styles.sendBtn} onPress={() => handleActivitySend(amount)}>
+                            <Ionicons name="send" size={calcWidth(5.5)} color="white" />
+                        </Pressable>
                     </View>
                 </View>
             </KeyboardAvoidingView>
@@ -412,51 +463,53 @@ const styles = StyleSheet.create({
 
     textInputContainer: {
         flex: 1,
-        borderWidth: 1,
-        borderRadius: calcWidth(3),
-        borderColor: 'white',
-        paddingHorizontal: calcWidth(2),
+        borderRadius: calcWidth(5.5),
+        paddingHorizontal: calcWidth(3),
         flexDirection: 'row',
+        backgroundColor: '#272239',
     },
 
     input: {
         color: 'white',
-        fontSize: getFontSizeByWindowWidth(12),
+        fontSize: getFontSizeByWindowWidth(10.7),
         flex: 1,
         margin: 'auto',
+        fontWeight: '400',
     },
 
     bottomContainer: {
         borderTopLeftRadius: calcWidth(3),
         borderTopRightRadius: calcWidth(3),
-        color: 'white',
         alignContent: 'center',
-        justifyContent: 'space-between',
         padding: calcWidth(5),
         flexDirection: 'row',
-        gap: calcWidth(3),
-        backgroundColor: '#272239',
+        gap: calcWidth(2),
+        backgroundColor: '#111016',
         minHeight: calcWidth(21),
     },
     button: {
-        borderRadius: calcWidth(3),
+        borderRadius: calcWidth(6.2),
         backgroundColor: '#663CAB',
         elevation: 3,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: calcWidth(4),
-        paddingVertical: calcWidth(1.2),
+        paddingHorizontal: calcWidth(3.8),
+        paddingVertical: calcWidth(2.5),
         flexDirection: 'row',
     },
     buttonText: {
-        fontSize: getFontSizeByWindowWidth(12),
+        fontSize: getFontSizeByWindowWidth(10.7),
         color: 'white',
         alignItems: 'center',
+        fontWeight: '400',
     },
     sendBtn: {
-        marginLeft: calcWidth(1),
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#8740FD',
+        width: calcWidth(10.3),
+        height: calcWidth(10.3),
+        borderRadius: calcWidth(5.5),
     },
     payContainer: {
         paddingVertical: calcWidth(5),
@@ -467,7 +520,7 @@ const styles = StyleSheet.create({
         paddingVertical: calcWidth(3),
         paddingHorizontal: calcWidth(4),
         borderWidth: 1,
-        borderColor: 'white',
+        borderColor: '#9566CF',
         borderRadius: calcWidth(6),
     },
     scrollToBottomButton: {
@@ -475,8 +528,9 @@ const styles = StyleSheet.create({
         right: calcWidth(4),
         bottom: calcWidth(4),
         backgroundColor: '#272239',
-        borderRadius: calcWidth(6),
-        padding: calcWidth(2.4),
+        borderRadius: calcWidth(5),
+        paddingHorizontal: calcWidth(2.8),
+        paddingVertical: calcWidth(2.5),
         zIndex: 100,
     },
 });

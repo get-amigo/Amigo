@@ -1,7 +1,7 @@
 import { Octicons, EvilIcons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, Pressable, Text, Image } from 'react-native';
+import { StyleSheet, View, Pressable, Text, Image, Dimensions } from 'react-native';
 
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
@@ -11,7 +11,7 @@ import editNames from '../helper/editNames';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 
-const SELECTOR_SIZE = 5;
+const SELECTOR_SIZE = 4;
 
 function convertToCustomTimeFormat(dateString) {
     const date = new Date(dateString);
@@ -79,25 +79,15 @@ function areDatesEqual(date1, date2) {
 function ActivityHeader({ icon, iconName, size, text }) {
     return (
         <View style={styles.header}>
-            <View
+            <Text
                 style={{
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignContent: 'center',
-                    alignItems: 'center',
-                    gap: calcWidth(2),
+                    fontSize: getFontSizeByWindowWidth(10.5),
+                    color: 'white',
+                    fontWeight: '400',
                 }}
             >
-                <Text
-                    style={{
-                        fontSize: getFontSizeByWindowWidth(11),
-                        color: 'white',
-                        fontWeight: 'bold',
-                    }}
-                >
-                    Split an Expense
-                </Text>
-            </View>
+                Split an Expense
+            </Text>
             <Text style={styles.headerText}>
                 {icon &&
                     React.createElement(icon, {
@@ -105,7 +95,7 @@ function ActivityHeader({ icon, iconName, size, text }) {
                         size,
                         color: 'white',
                     })}
-                {'   '}
+                {'  '}
                 {text}
             </Text>
         </View>
@@ -116,9 +106,8 @@ function Amount({ amount, description }) {
     return (
         <>
             <View style={styles.flexContainer}>
-                <Text style={styles.amount}>₹</Text>
                 <View>
-                    <Text style={styles.amount}>{amount}</Text>
+                    <Text style={styles.amount}>₹ {amount}</Text>
                 </View>
             </View>
             <View>{description && description != ' ' && <Text style={styles.description}>{description}</Text>}</View>
@@ -132,6 +121,10 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
 
     return (
         <Pressable
+            style={{
+                // backgroundColor: 'red',
+                width: calcWidth(47),
+            }}
             onPress={() => {
                 const editedTransaction = transaction;
                 for (const i in editedTransaction.splitAmong) {
@@ -147,52 +140,66 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 });
             }}
         >
-            <ActivityHeader icon={Octicons} iconName="person" size={calcHeight(1.8)} text={`${transaction.splitAmong?.length}`} />
-            <View style={{ marginTop: calcWidth(4) }}>
-                <Amount amount={transaction.amount} description={transaction.description} />
-            </View>
             <View
                 style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginTop: calcWidth(6),
+                    gap: calcWidth(3.8),
                 }}
             >
-                <View
-                    style={{
-                        flexDirection: 'row',
-                    }}
-                >
-                    <EvilIcons name="calendar" size={calcWidth(5.5)} color="white" />
-                    <Text
-                        style={{
-                            color: 'white',
-                            fontSize: getFontSizeByWindowWidth(11),
-                            fontWeight: '500',
-                            marginLeft: calcWidth(1.7),
-                        }}
-                    >
-                        {getDateAndMonth(createdAt)}
-                    </Text>
+                <ActivityHeader
+                    icon={Octicons}
+                    iconName="person"
+                    size={getFontSizeByWindowWidth(10.5)}
+                    text={`${transaction.splitAmong?.length}`}
+                />
+                <View>
+                    <Amount amount={transaction.amount} description={transaction.description} />
                 </View>
                 <View
                     style={{
                         flexDirection: 'row',
+                        justifyContent: 'space-between',
                     }}
                 >
-                    <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(9) }}>{convertToCustomTimeFormat(createdAt)}</Text>
-                    {synced === false && (
-                        <Image
-                            source={ClockIcon}
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            gap: calcWidth(1.2),
+                        }}
+                    >
+                        <View>
+                            <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginTop: 'auto' }} />
+                        </View>
+                        <Text
                             style={{
-                                height: calcWidth(2.5),
-                                width: calcWidth(2.5),
-                                margin: 'auto',
-                                marginLeft: calcWidth(1.2),
+                                color: 'white',
+                                fontSize: getFontSizeByWindowWidth(10.8),
+                                fontWeight: '400',
                             }}
-                        />
-                    )}
+                        >
+                            {getDateAndMonth(createdAt)}
+                        </Text>
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            marginTop: 'auto',
+                        }}
+                    >
+                        <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
+                            {convertToCustomTimeFormat(createdAt)}
+                        </Text>
+                        {synced === false && (
+                            <Image
+                                source={ClockIcon}
+                                style={{
+                                    height: calcWidth(2.2),
+                                    width: calcWidth(2.2),
+                                    margin: 'auto',
+                                    marginLeft: calcWidth(1),
+                                }}
+                            />
+                        )}
+                    </View>
                 </View>
             </View>
         </Pressable>
@@ -206,74 +213,102 @@ function PaymentActivity({ payment, contacts }) {
         <>
             <View
                 style={{
-                    gap: calcWidth(3),
+                    gap: calcWidth(2.5),
+                    width: calcWidth(47),
                 }}
             >
                 <Text
                     style={{
-                        fontSize: getFontSizeByWindowWidth(11),
+                        fontSize: getFontSizeByWindowWidth(10.7),
                         color: 'white',
-                        marginLeft: calcWidth(2),
-                        fontWeight: '500',
+                        fontWeight: '400',
                     }}
                 >
                     {payer.name} paid {receiver.name}
                 </Text>
-                <Amount amount={payment.amount} description={payment.description} />
+
+                <View style={styles.flexContainer}>
+                    <View>
+                        <Text style={styles.amount}>₹ {payment.amount}</Text>
+                    </View>
+                </View>
+                <View>
+                    {payment.description && payment.description != ' ' && (
+                        <Text
+                            style={{
+                                fontSize: getFontSizeByWindowWidth(10.7),
+                                color: 'white',
+                                fontWeight: '400',
+                            }}
+                        >
+                            {payment.description}
+                        </Text>
+                    )}
+                </View>
             </View>
-            <View
+            <Text
                 style={{
-                    alignItems: 'center',
-                    flexDirection: 'row',
-                    flex: 1,
-                    alignContent: 'center',
-                    justifyContent: 'flex-end',
-                    gap: calcWidth(1),
+                    color: 'white',
+                    fontSize: getFontSizeByWindowWidth(7),
+                    fontWeight: '300',
+                    marginLeft: 'auto',
+
+                    marginTop: payment.description && payment.description != ' ' ? 0 : -calcWidth(5),
                 }}
             >
-                <Text
-                    style={{
-                        color: '#FFFFFF',
-                        fontSize: getFontSizeByWindowWidth(9),
-                    }}
-                >
-                    {convertToCustomTimeFormat(payment.createdAt)}
-                </Text>
-            </View>
+                {convertToCustomTimeFormat(payment.createdAt)}
+            </Text>
         </>
     );
 }
 
 function ChatActivity({ chat, synced }) {
     return (
-        <View>
+        <View
+            style={{
+                maxWidth: calcWidth(47),
+                flexDirection: 'row',
+                flexWrap: 'wrap',
+                alignItems: 'flex-end',
+            }}
+        >
             <Text
                 style={{
                     color: 'white',
+                    fontSize: getFontSizeByWindowWidth(10.7),
+                    fontWeight: '400',
                 }}
             >
                 {chat.message}
             </Text>
             <View
                 style={{
-                    alignItems: 'center',
+                    marginLeft: 'auto',
                     flexDirection: 'row',
-                    flex: 1,
-                    alignContent: 'center',
-                    justifyContent: 'flex-end',
-                    gap: calcWidth(1),
                 }}
             >
                 <Text
                     style={{
-                        color: '#FFFFFF',
-                        fontSize: getFontSizeByWindowWidth(9),
+                        color: 'white',
+                        fontSize: getFontSizeByWindowWidth(7),
+                        fontWeight: '300',
+                        marginLeft: calcWidth(3),
                     }}
                 >
                     {convertToCustomTimeFormat(chat.createdAt)}
                 </Text>
                 {/* incase sync is missing for the data comming from the backend it should have the right sync */}
-                {synced === false && <Image source={ClockIcon} style={{ height: calcWidth(2.5), width: calcWidth(2.5) }} />}
+                {synced === false && (
+                    <Image
+                        source={ClockIcon}
+                        style={{
+                            height: calcWidth(2.2),
+                            width: calcWidth(2.2),
+                            margin: 'auto',
+                            marginLeft: calcWidth(1),
+                        }}
+                    />
+                )}
             </View>
         </View>
     );
@@ -297,20 +332,18 @@ function Feed(props) {
                 <View
                     style={{
                         alignItems: 'center',
-                        marginTop: calcWidth(5),
-                        marginBottom: calcWidth(5),
+                        marginVertical: calcWidth(7),
                     }}
                 >
                     <Text
                         style={{
                             color: 'white',
-                            borderWidth: 1,
-                            paddingHorizontal: calcWidth(3),
-                            paddingVertical: calcWidth(2),
-                            borderColor: 'white',
-                            borderRadius: calcWidth(4),
-                            fontSize: getFontSizeByWindowWidth(10),
-                            fontWeight: '500',
+                            paddingHorizontal: calcWidth(2.4),
+                            paddingVertical: calcWidth(1.2),
+                            borderRadius: calcWidth(3.6),
+                            fontSize: getFontSizeByWindowWidth(10.7),
+                            fontWeight: '400',
+                            backgroundColor: '#272239',
                         }}
                     >
                         {convertToCustomFormatDate(createdAt)}
@@ -322,7 +355,7 @@ function Feed(props) {
                     styles.activityContainer,
                     {
                         justifyContent: user._id === creator?._id ? 'flex-end' : 'flex-start',
-                        marginTop: showCreator ? calcWidth(4) : 0,
+                        marginTop: showCreator && user._id !== creator?._id ? calcWidth(4) : 0,
                     },
                 ]}
             >
@@ -346,13 +379,14 @@ function Feed(props) {
                             style={{
                                 alignItems: 'center',
                                 flexDirection: 'row',
+                                marginBottom: -calcWidth(1),
                             }}
                         >
                             <Text
                                 style={{
                                     color: COLOR.BUTTON,
-                                    fontSize: getFontSizeByWindowWidth(12),
-                                    fontWeight: '700',
+                                    fontSize: getFontSizeByWindowWidth(10.7),
+                                    fontWeight: '500',
                                 }}
                             >
                                 {' '}
@@ -428,34 +462,35 @@ const styles = StyleSheet.create({
         marginHorizontal: calcWidth(3),
     },
     activityCard: {
-        padding: calcWidth(5),
-        width: calcWidth(70),
+        paddingVertical: calcWidth(2.7),
+        paddingHorizontal: calcWidth(5.4),
         marginTop: calcWidth(2),
     },
     description: {
-        fontSize: getFontSizeByWindowWidth(11),
+        fontSize: getFontSizeByWindowWidth(10.7),
         color: 'white',
-        marginLeft: calcWidth(2),
-        marginRight: calcWidth(2),
-        marginTop: calcWidth(1),
+        marginTop: calcWidth(3.8),
+        fontWeight: '400',
     },
     header: {
         flexDirection: 'row',
-        gap: calcWidth(4),
+        gap: calcWidth(2.5),
         alignItems: 'center',
     },
     headerText: {
         color: 'white',
+        fontWeight: '400',
+        fontSize: getFontSizeByWindowWidth(10.5),
+        marginLeft: 'auto',
     },
     amount: {
-        fontSize: getFontSizeByWindowWidth(20),
+        fontSize: getFontSizeByWindowWidth(13.3),
         color: COLOR.TEXT,
-        fontWeight: 'bold',
+        fontWeight: '500',
         marginRight: calcWidth(2),
     },
     flexContainer: {
         flexDirection: 'row',
-        marginLeft: calcWidth(2),
     },
     createdAt: {
         fontSize: getFontSizeByWindowWidth(12),

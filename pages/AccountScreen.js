@@ -130,7 +130,7 @@ function ProfileScreen({ navigation }) {
             <SafeAreaView style={styles.container}>
                 <MotiView
                     from={{ opacity: 1, scale: 0.3 }}
-                    animate={{ opacity: 1, scale: 3 }}
+                    animate={{ opacity: 1, scale: 2.5 }}
                     transition={{
                         type: 'timing',
                         duration: 300,
@@ -141,6 +141,9 @@ function ProfileScreen({ navigation }) {
                     style={{
                         marginVertical: calcHeight(4),
                     }}
+                    from={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ type: 'timing', duration: 800, delay: 100 }}
                 >
                     {editMode ? (
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: calcWidth(4) }}>
@@ -164,7 +167,7 @@ function ProfileScreen({ navigation }) {
                         </View>
                     )}
                 </MotiView>
-                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 600, delay: 0 }}>
+                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 800, delay: 0 }}>
                     <View style={styles.userInfo}>
                         <MotiView
                             id="userav"
@@ -175,7 +178,6 @@ function ProfileScreen({ navigation }) {
                                 borderRadius: calcWidth(200),
                                 right: calcWidth(-72),
                                 scale: 0.5,
-                                zIndex: 1,
                             }}
                             animate={{
                                 top: calcHeight(0),
@@ -184,9 +186,9 @@ function ProfileScreen({ navigation }) {
                                 backgroundColor: COLOR.APP_BACKGROUND,
                                 scale: 1,
                             }}
-                            transition={{ type: 'timing', duration: 500 }}
+                            transition={{ type: 'timing', duration: 300 }}
                         >
-                            <UserAvatar user={user} size={7} />
+                            <UserAvatar user={user} size={9} />
                         </MotiView>
                         <View>
                             {editMode ? (
@@ -200,12 +202,13 @@ function ProfileScreen({ navigation }) {
                             onPress={() => {
                                 setEditMode((prev) => !prev);
                             }}
+                            style={{ marginLeft: calcWidth(20) }}
                         >
                             <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} />
                         </Pressable>
                     </View>
                 </MotiView>
-                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 600, delay: 0 }}>
+                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 800, delay: 0 }}>
                     <Pressable
                         style={styles.inviteFriends}
                         onPress={() => {
@@ -241,7 +244,7 @@ function ProfileScreen({ navigation }) {
                     </MotiView>
                 ))}
 
-                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 600, delay: 100 }}>
+                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 800, delay: 100 }}>
                     <MenuOption
                         label="Logout"
                         iconName="logout"
@@ -251,7 +254,7 @@ function ProfileScreen({ navigation }) {
                     />
                 </MotiView>
 
-                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 600, delay: 130 }}>
+                <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 800, delay: 130 }}>
                     <MenuOption
                         label="Delete"
                         iconName="delete-forever"
@@ -269,13 +272,13 @@ function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'rgba(31, 27, 46, 1)',
+        backgroundColor: COLOR.PAYMENT_BACKGROUND,
     },
     userInfo: {
         flexDirection: 'row',
         margin: calcHeight(3),
         alignItems: 'center',
-        justifyContent: 'space-between',
+        gap: calcWidth(4),
     },
     userImage: {
         width: calcHeight(8),

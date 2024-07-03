@@ -114,11 +114,11 @@ const QRCodeScanner = ({ navigation }) => {
     return (
         <MotiView style={styles.container}>
             <MotiView
-                from={{ opacity: 1, scale: 0.3 }}
-                animate={{ opacity: 1, scale: 3 }}
+                from={{ opacity: 1, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 2.5 }}
                 transition={{
                     type: 'timing',
-                    duration: 800,
+                    duration: 300,
                 }}
                 style={styles.pulsatingCircle}
             />
@@ -168,7 +168,7 @@ const QRCodeScanner = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'rgb(31, 27, 46)',
+        backgroundColor: COLOR.PAYMENT_BACKGROUND,
     },
     pulsatingCircle: {
         flex: 1,

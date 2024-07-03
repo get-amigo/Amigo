@@ -106,17 +106,53 @@ function Amount({ amount, description }) {
     );
 }
 
+function TransactionActivityDetails({ transaction, createdAt, contacts, synced, creator }) {
+    return (
+        <>
+            <ActivityHeader icon={Octicons} iconName="person" size={calcHeight(1.8)} text={`${transaction.splitAmong?.length}`} />
+            <View style={{ marginTop: calcHeight(3) }}>
+                <Amount amount={transaction.amount} description={transaction.description} />
+            </View>
+            <View
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginTop: calcHeight(3),
+                }}
+            >
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        gap: calcWidth(2),
+                    }}
+                >
+                    <EvilIcons name="calendar" size={calcWidth(5)} color="white" />
+                    <Text style={styles.description}>{getDateAndMonth(createdAt)}</Text>
+                </View>
+                {synced === false && (
+                    <Image
+                        source={ClockIcon}
+                        style={{
+                            height: calcHeight(1),
+                            width: calcHeight(1),
+                        }}
+                    />
+                )}
+            </View>
+        </>
+    );
+}
+
 function TransactionActivity({ transaction, createdAt, contacts, synced, creator, onDelete }) {
     const { user } = useAuth();
     const navigation = useNavigation();
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
-
     const transactionId = transaction._id;
 
     // TODO : HandleDelete functionality not implemented for Offline Mode
-
     const handleDelete = async () => {
         Alert.alert(
             'Confirm Delete',
@@ -153,51 +189,13 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                             <TouchableWithoutFeedback>
                                 <View style={[styles.modalContainer, { top: modalPosition.y - 160, left: calcWidth(20) }]}>
                                     {selectedTransaction && (
-                                        <>
-                                            <View style={styles.selectedTransactionCard}>
-                                                <ActivityHeader
-                                                    icon={Octicons}
-                                                    iconName="person"
-                                                    size={calcHeight(2.4)}
-                                                    text={`${selectedTransaction.splitAmong?.length}`}
-                                                />
-                                                <View style={{ marginTop: calcHeight(3) }}>
-                                                    <Amount
-                                                        amount={selectedTransaction.amount}
-                                                        description={selectedTransaction.description}
-                                                    />
-                                                </View>
-                                                <View
-                                                    style={{
-                                                        flexDirection: 'row',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'space-between',
-                                                        marginTop: calcHeight(3),
-                                                    }}
-                                                >
-                                                    <View
-                                                        style={{
-                                                            flexDirection: 'row',
-                                                            gap: calcWidth(2),
-                                                        }}
-                                                    >
-                                                        <EvilIcons name="calendar" size={calcWidth(5)} color="white" />
-                                                        <Text style={styles.description}>
-                                                            {getDateAndMonth(selectedTransaction.createdAt)}
-                                                        </Text>
-                                                    </View>
-                                                    {synced === false && (
-                                                        <Image
-                                                            source={ClockIcon}
-                                                            style={{
-                                                                height: calcHeight(1),
-                                                                width: calcHeight(1),
-                                                            }}
-                                                        />
-                                                    )}
-                                                </View>
-                                            </View>
-                                        </>
+                                        <TransactionActivityDetails
+                                            transaction={selectedTransaction}
+                                            createdAt={selectedTransaction.createdAt}
+                                            contacts={contacts}
+                                            synced={synced}
+                                            creator={creator}
+                                        />
                                     )}
                                     <View style={styles.modalButtons}>
                                         <Pressable
@@ -244,37 +242,13 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 });
             }}
         >
-            <ActivityHeader icon={Octicons} iconName="person" size={calcHeight(1.8)} text={`${transaction.splitAmong?.length}`} />
-            <View style={{ marginTop: calcHeight(3) }}>
-                <Amount amount={transaction.amount} description={transaction.description} />
-            </View>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginTop: calcHeight(3),
-                }}
-            >
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        gap: calcWidth(2),
-                    }}
-                >
-                    <EvilIcons name="calendar" size={calcWidth(5)} color="white" />
-                    <Text style={styles.description}>{getDateAndMonth(createdAt)}</Text>
-                </View>
-                {synced === false && (
-                    <Image
-                        source={ClockIcon}
-                        style={{
-                            height: calcHeight(1),
-                            width: calcHeight(1),
-                        }}
-                    />
-                )}
-            </View>
+            <TransactionActivityDetails
+                transaction={transaction}
+                createdAt={createdAt}
+                contacts={contacts}
+                synced={synced}
+                creator={creator}
+            />
             {renderDeleteModal()}
         </Pressable>
     );
@@ -526,7 +500,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         paddingHorizontal: calcWidth(4),
         paddingVertical: calcHeight(4),
-        // alignItems: 'center',
     },
     modalTitle: {
         fontSize: getFontSizeByWindowWidth(16),

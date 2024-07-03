@@ -7,9 +7,6 @@ const useNetwork = () => {
     useEffect(() => {
         const unsubscribe = NetInfo.addEventListener((state) => {
             setConnected(state.isConnected);
-            // if (!state.isConnected) {
-            //   showAlert();
-            // }
         });
 
         return () => {

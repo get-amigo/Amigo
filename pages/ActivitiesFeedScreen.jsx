@@ -97,7 +97,6 @@ const StickyDate = ({ isStickyDateVisible }) => {
 };
 
 const ActivitiesFeedScreen = ({ navigation }) => {
-    console.log('mounted');
     const { group } = useGroup();
     const { contacts } = useContacts();
     const { user } = useAuth();
@@ -110,7 +109,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
 
     const { isLoading, hasNextPage, fetchNextPage, handleItemLayout, shouldFetch } = useActivities();
 
-    const textRef = useRef();
     const [amount, setAmount] = useState('');
 
     const { setTransactionData, resetTransaction } = useTransaction();
@@ -178,7 +176,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
 
     const handleActivitySend = async (message) => {
         // hendle chats
-        console.log('isConnected ====================;;;;;;;;;;;;;------------', isConnected);
         setAmount('');
         if (message.replace(/^\s+|\s+$/g, '') == '') {
             return;
@@ -198,12 +195,10 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     chatId: otherId,
                 })
                 .then(() => {
-                    console.log('sent');
                     updateIsSynced({
                         _id: activityId,
                         group: group._id,
                     });
-                    console.log('added to local db');
                 })
                 .catch((err) => {
                     console.error(err);
@@ -214,11 +209,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     };
 
     const fetchActivity = useCallback(async (activity) => {
-        console.log('fetchActivity---------------- ', activity);
-        if (activity.creator._id === user._id) {
-            // updateIsSynced(activity); we can keey here but not necessary
-        } else {
-            console.log(' [[[[[[[[[[[[[[[[[[[[[[ caling else ]]]]]]]]]]]]]]]]]]]]]]]]]');
+        if (activity.creator._id !== user._id) {
             addActivityToLocalDB(activity, activity.group, user, true);
         }
     }, []);
@@ -228,14 +219,11 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     useEffect(() => {
         async function f() {
             if (isConnected) {
-                // sync here
                 syncAllPendingActivities();
             }
         }
         f();
     }, [isConnected]);
-
-    // clearPendingActivities();
 
     return (
         <>
@@ -351,7 +339,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                     }}
                 >
                     {/* <View style={styles.payContainer}>
-                        will be required when we add "Pay to XYZ rs. 500 feature"
+                        **** will be required when we add "Pay to XYZ rs. 500 feature" ****
                         <Pressable style={styles.payBtn}>
                             <Text
                                 style={{
@@ -386,7 +374,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                                 if (amt <= 0) {
                                     amt = '';
                                 }
-                                console.log('amt,', amt);
                                 setTransactionData((prev) => ({
                                     ...prev,
                                     group,
@@ -434,9 +421,6 @@ const ActivitiesFeedScreen = ({ navigation }) => {
 export default ActivitiesFeedScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',

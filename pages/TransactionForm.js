@@ -1,6 +1,6 @@
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, Pressable } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, Alert, Pressable } from 'react-native';
 import Toast from 'react-native-root-toast';
 import { StackActions } from '@react-navigation/native';
 
@@ -16,7 +16,6 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroup } from '../context/GroupContext';
-// import useGroupActivities, { useGroupActivitiesStore } from '../stores/groupActivities';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import useNetwork from '../hooks/useNetwork';
 
@@ -28,8 +27,6 @@ function TransactionFormScreen({ navigation }) {
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
 
-    // const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
-    // const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
@@ -79,7 +76,6 @@ function TransactionFormScreen({ navigation }) {
         }
     };
 
-    // const remainingCharacters = 100 - transactionData.description.length;
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
     const handleCategorySelect = (category) => {
@@ -134,16 +130,10 @@ function TransactionFormScreen({ navigation }) {
                 activityType: 'transaction',
             };
 
-            // const activities = Array.from(getActivities(newTransaction.group));
-            // setActivitiesHash(newTransaction.group, [newActivity, ...activities]);
-
-            // console.log('newActivity', newActivity);
-
-            console.log('isConnected =====================;;;;;;;;;;;;;------------', isConnected);
             if (isConnected) {
                 const { activityId, otherId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
                 const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: otherId };
-                console.log('newTransactionWithId ', newTransactionWithId);
+
                 apiHelper
                     .post('/transaction', newTransactionWithId)
                     .then((res) => {
@@ -151,15 +141,6 @@ function TransactionFormScreen({ navigation }) {
                             _id: activityId,
                             group: newActivity.relatedId.group._id,
                         });
-                        // addActivityToLocalDB(newTransaction, newTransaction.group, user, true);
-                        // console.log('transaction added to local db with sync true');
-                        // setActivitiesHash(newTransaction.group, [
-                        //     {
-                        //         ...newActivity,
-                        //         synced: true,
-                        //     },
-                        //     ...activities,
-                        // ]);
                     })
                     .catch((err) => {
                         console.log('error in api post', err);

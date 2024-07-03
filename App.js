@@ -67,7 +67,6 @@ function AnimatedSplashScreen({ children, image }) {
     const onImageLoaded = useCallback(async () => {
         try {
             await SplashScreen.hideAsync();
-            await Promise.all([]);
         } catch (e) {
             console.warn(e);
         } finally {
@@ -105,14 +104,6 @@ function AnimatedSplashScreen({ children, image }) {
 }
 
 function MainScreen() {
-    const onReloadPress = useCallback(() => {
-        if (Platform.OS === 'web') {
-            location.reload();
-        } else {
-            Updates.reloadAsync();
-        }
-    }, []);
-
     return (
         <SafeAreaView
             style={{

@@ -168,21 +168,16 @@ const QRCodeScanner = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // justifyContent: 'center',
-        // alignItems: 'center',
         backgroundColor: 'rgb(31, 27, 46)',
-        // backgroundColor: 'red',
     },
     pulsatingCircle: {
         flex: 1,
         position: 'absolute',
         top: -calcHeight(60),
-        // left: calcWidth(-2),
         right: calcWidth(-20),
         width: calcHeight(100),
         height: calcHeight(100),
         backgroundColor: 'rgba(39, 34, 57, 1)',
-        // backgroundColor: COLOR.BUTTON,
         borderRadius: calcHeight(100),
     },
 });

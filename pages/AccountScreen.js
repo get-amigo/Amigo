@@ -269,14 +269,12 @@ function ProfileScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: 'rgba(39, 34, 57, 1)',
-        // backgroundColor: 'rgba(25, 20, 35, 1)',
         backgroundColor: 'rgba(31, 27, 46, 1)',
     },
     userInfo: {
         flexDirection: 'row',
         margin: calcHeight(3),
-        // alignItems: 'center',
+        alignItems: 'center',
         justifyContent: 'space-between',
     },
     userImage: {
@@ -329,7 +327,6 @@ const styles = StyleSheet.create({
         width: calcHeight(100),
         height: calcHeight(100),
         backgroundColor: 'rgba(39, 34, 57, 1)',
-        // backgroundColor: COLOR.BUTTON,
         borderRadius: calcHeight(100),
     },
 });

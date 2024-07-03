@@ -2,14 +2,16 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Button } from 'react-native';
 import QRIndicator from './QRIndicator';
 import QRFooterButton from './QRFooterButton';
-import { calcHeight, calcWidth } from '../helper/res';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import getLocalImage from '../helper/getLocalImage';
 import getQrDataFromImage from '../helper/getQrDataFromImage';
-import { CameraView} from 'expo-camera';
+import { CameraView } from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import COLOR from '../constants/Colors';
 
-const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
+const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
     const { bottom } = useSafeAreaInsets();
     async function getImage() {
         const image = await getLocalImage();
@@ -21,8 +23,6 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
         alert('No QR code found in image');
     }
     const [scanned, setScanned] = useState(false);
-
-
 
     const handleBarCode = ({ data }) => {
         setScanned(true);
@@ -44,6 +44,11 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
                 }}
                 onBarcodeScanned={scanned ? null : handleBarCode}
             >
+                <View style={{ margin: calcWidth(4) }}>
+                    <TouchableOpacity style={{ marginLeft: calcWidth(2), marginTop: calcHeight(2) }} onPress={back}>
+                        <Ionicons name="arrow-back" size={calcWidth(7)} color={'#FFF'} />
+                    </TouchableOpacity>
+                </View>
                 <View style={styles.buttonContainer}>
                     <QRIndicator />
                     <View style={[styles.footer, { bottom: 30 + bottom }]}>
@@ -66,7 +71,7 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flex: 1,
-        flexDirection: 'row',
+        // flexDirection: 'row',
         backgroundColor: 'transparent',
         justifyContent: 'center',
         alignItems: 'center',

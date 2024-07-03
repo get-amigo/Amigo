@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Linking, Button, Image, Pressable, Text, Alert, AppState } from 'react-native';
+import { View, StyleSheet, Linking, Button, Image, Pressable, Text, Alert, TouchableOpacity, AppState } from 'react-native';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import CameraScanner from '../components/CameraScanner';
 import { useTransaction } from '../context/TransactionContext';
@@ -7,9 +7,10 @@ import URL from 'url-parse';
 import PAGES from '../constants/pages';
 import COLOR from '../constants/Colors';
 import openSettings from '../helper/openSettings';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import getFontSize from '../helper/getFontSize';
-import SignUpImage from '../assets/SignUp.png';
+import { MotiView } from 'moti';
+import { calcHeight, calcWidth } from '../helper/res';
+import { MaterialIcons } from '@expo/vector-icons';
+import { getFontSizeByWindowWidth } from '../helper/res';
 
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
@@ -106,76 +107,83 @@ const QRCodeScanner = ({ navigation }) => {
         }
     };
 
+    const handleBack = () => {
+        navigation.goBack();
+    };
+
     return (
-        <View style={styles.container}>
-            {!hasPermission ? (
-                <View style={{ flex: 1 }}>
-                    <View style={styles.top}>
-                        <Image source={SignUpImage} style={styles.permitImage} />
-                        <Text style={{ fontWeight: '600', color: '#FFF', fontSize: getFontSizeByWindowWidth(16), textAlign: 'center' }}>
-                            Allow Access to Camera
-                        </Text>
+        <MotiView style={styles.container}>
+            <MotiView
+                from={{ opacity: 1, scale: 0.3 }}
+                animate={{ opacity: 1, scale: 3 }}
+                transition={{
+                    type: 'timing',
+                    duration: 800,
+                }}
+                style={styles.pulsatingCircle}
+            />
+            <MotiView
+                style={styles.container}
+                from={{
+                    opacity: 0.3,
+                    zIndex: 1,
+                }}
+                animate={{
+                    opacity: 1,
+                    scale: 1,
+                }}
+                transition={{ type: 'timing', duration: 800 }}
+            >
+                {!hasPermission ? (
+                    <Pressable onPress={openSettings}>
                         <Text
                             style={{
-                                fontWeight: '400',
-                                color: '#FFF',
-                                fontSize: getFontSizeByWindowWidth(12),
-                                textAlign: 'center',
-                                marginTop: calcHeight(1),
-                                opacity: 0.6,
+                                color: COLOR.TEXT,
                             }}
                         >
-                            To scan QR codes, we need access to your camera.{`\n`}
-                            Please allow camera access to proceed.
+                            Allow Camera Permission
                         </Text>
-                    </View>
-                    <View style={styles.bottom}>
-                        <Pressable style={styles.btn} onPress={openSettings}>
-                            <Text
-                                style={{ color: '#FFFFFF', fontSize: getFontSizeByWindowWidth(15), fontWeight: '400', textAlign: 'center' }}
-                            >
-                                Allow
-                            </Text>
-                        </Pressable>
-                    </View>
-                </View>
-            ) : (
-                <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} />
-            )}
-        </View>
+                    </Pressable>
+                ) : (
+                    <MotiView
+                        style={styles.container}
+                        from={{
+                            opacity: 0,
+                            zIndex: 1,
+                        }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                        }}
+                        transition={{ type: 'timing', duration: 800 }}
+                    >
+                        <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} back={handleBack} />
+                    </MotiView>
+                )}
+            </MotiView>
+        </MotiView>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-        justifyContent: 'center',
+        // justifyContent: 'center',
+        // alignItems: 'center',
+        backgroundColor: 'rgb(31, 27, 46)',
+        // backgroundColor: 'red',
     },
-    btn: {
-        backgroundColor: COLOR.BUTTON,
-        marginTop: calcHeight((8 / 844) * 100),
-        paddingHorizontal: calcWidth(5),
-        paddingVertical: calcHeight(2),
-        width: calcWidth(90),
-        borderRadius: 10,
-        alignSelf: 'center',
-    },
-    permitImage: {
-        width: calcWidth((150 / 390) * 100),
-        height: calcHeight((180 / 844) * 100),
-        alignSelf: 'center',
-        marginBottom: calcHeight((12 / 844) * 100),
-    },
-    top: {
+    pulsatingCircle: {
         flex: 1,
-        marginTop: -calcHeight((180 / 844) * 100) / 2.5,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    bottom: {
-        marginBottom: calcHeight(4),
-        marginTop: 'auto',
+        position: 'absolute',
+        top: -calcHeight(60),
+        // left: calcWidth(-2),
+        right: calcWidth(-20),
+        width: calcHeight(100),
+        height: calcHeight(100),
+        backgroundColor: 'rgba(39, 34, 57, 1)',
+        // backgroundColor: COLOR.BUTTON,
+        borderRadius: calcHeight(100),
     },
 });
 

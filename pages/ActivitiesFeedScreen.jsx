@@ -62,9 +62,10 @@ function convertToCustomFormatDate(dateString) {
     return formattedDate;
 }
 
-const StickyDate = ({ isStickyDateVisible }) => {
+const StickyDate = ({ isStickyDateVisible, stickyDate }) => {
     return (
-        isStickyDateVisible && (
+        isStickyDateVisible &&
+        stickyDate !== '' && (
             <View
                 style={{
                     position: 'absolute',
@@ -88,8 +89,7 @@ const StickyDate = ({ isStickyDateVisible }) => {
                         backgroundColor: '#272239',
                     }}
                 >
-                    {/* {convertToCustomFormatDate(createdAt)} */}
-                    27 May 2024
+                    {stickyDate}
                 </Text>
             </View>
         )
@@ -106,6 +106,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const [balances, setBalances] = useState();
     const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
     const [isStickyDateVisible, setIsStickyDateVisible] = useState(false);
+    const [stickyDate, setStickyDate] = useState('');
 
     const { isLoading, hasNextPage, fetchNextPage, handleItemLayout, shouldFetch } = useActivities();
 
@@ -119,7 +120,11 @@ const ActivitiesFeedScreen = ({ navigation }) => {
     const handleScroll = useCallback((event) => {
         const yOffset = event.nativeEvent.contentOffset.y;
         setShowScrollToBottom(yOffset > 100);
-        setIsStickyDateVisible(yOffset > 50);
+        if (yOffset > 50 && yOffset < event.nativeEvent.contentSize.height - 670) {
+            setIsStickyDateVisible(true);
+        } else {
+            setIsStickyDateVisible(false);
+        }
     }, []);
 
     const scrollToBottom = useCallback(() => {
@@ -225,6 +230,17 @@ const ActivitiesFeedScreen = ({ navigation }) => {
         f();
     }, [isConnected]);
 
+    const handleViewableItemsChanged = useCallback(
+        ({ viewableItems }) => {
+            if (viewableItems?.length > 0) {
+                const lastVisibleItem = viewableItems[viewableItems.length - 1]?.item;
+                const date = convertToCustomFormatDate(activities[lastVisibleItem]?.createdAt);
+                setStickyDate(date);
+            }
+        },
+        [activityOrder],
+    );
+
     return (
         <>
             <ImageBackground
@@ -297,7 +313,7 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                 {/* Flat List */}
                 <>
                     <View style={{ flex: 1 }}>
-                        <StickyDate isStickyDateVisible={isStickyDateVisible} />
+                        <StickyDate isStickyDateVisible={isStickyDateVisible} stickyDate={stickyDate} />
                         <FlatList
                             ref={flatListRef}
                             inverted
@@ -322,6 +338,8 @@ const ActivitiesFeedScreen = ({ navigation }) => {
                             }}
                             style={{ flex: 1 }}
                             onScroll={handleScroll}
+                            onViewableItemsChanged={handleViewableItemsChanged}
+                            viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
                         />
                         {showScrollToBottom && (
                             <Pressable style={styles.scrollToBottomButton} onPress={scrollToBottom}>

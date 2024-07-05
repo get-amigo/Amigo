@@ -184,15 +184,16 @@ function TransactionFormScreen({ navigation }) {
             <View style={styles.rowCentered}>
                 <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
                     <TextInput
+                        ref={descriptionRef}
                         style={styles.description}
                         onChangeText={(text) => handleInputChange('description', text)}
                         value={transactionData.description}
                         placeholder="Description"
-                        placeholderTextColor="#ccc"
-                        ref={descriptionRef}
-                        textAlign="center"
+                        placeholderTextColor="gray"
+                        textAlign={transactionData?.description?.length === 0 ? 'left' : 'center'}
                         maxLength={100}
                         multiline={true}
+                        scrollEnabled
                     />
                 </Pressable>
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
@@ -349,7 +350,6 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     description: {
-        flex: 1,
         color: 'white',
     },
     descriptionContainer: {
@@ -359,7 +359,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        width: calcWidth(30),
+        minWidth: calcWidth(27),
+        maxWidth: calcWidth(65),
+        maxHeight: calcWidth(25),
     },
     remainingCharacters: {
         color: COLOR.BUTTON,

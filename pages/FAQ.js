@@ -19,6 +19,7 @@ const FAQ = () => {
             contentContainerStyle={{
                 padding: calcWidth(10),
             }}
+            alwaysBounceVertical={false}
         >
             {faqArray.map((faq, index) => (
                 <TouchableOpacity key={index} style={styles.faqItem} onPress={() => toggleExpand(index)}>

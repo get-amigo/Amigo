@@ -45,7 +45,6 @@ const GroupScreen = ({
         params: { balance },
     },
 }) => {
-    console.log('mounted');
     const { group, setGroup } = useGroup();
     const [groupMembers, setGroupMembers] = useState();
     const [isEditing, setIsEditing] = useState();

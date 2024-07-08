@@ -87,7 +87,24 @@ const groupActivitiesStore = (set, get) => ({
                 };
                 const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
                 if (!(activity._id in newActivitiesById)) {
-                    newActivityOrder.unshift(activity._id);
+                    // find correct index
+                    const fetchedDate = new Date(activity.createdAt);
+
+                    let low = 0;
+                    let high = newActivityOrder.length - 1;
+
+                    while (low <= high) {
+                        let mid = Math.floor(low + (high - low) / 2);
+                        let midDate = new Date(newActivitiesById[newActivityOrder[mid]]?.createdAt ?? '2000-06-19T09:08:12.155Z');
+
+                        if (midDate < fetchedDate) {
+                            high = mid - 1;
+                        } else {
+                            low = mid + 1;
+                        }
+                    }
+
+                    newActivityOrder.splice(low, 0, activity._id);
                 }
 
                 newActivitiesById[activity._id] = activity;

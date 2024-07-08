@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, RefreshControl } from 'react-native';
 import { useAuth } from '../stores/auth';
 import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
 import ExpenseCard from '../components/ExpenseCard';
@@ -11,13 +11,20 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
 
 function ExpenseScreen() {
-    const { expense, resetParams, loading } = useExpense();
+    const { expense, resetParams, loading, fetchExpense } = useExpense();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             resetParams();
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchExpense();
+        setRefreshing(false);
+    }, []);
 
     if (loading)
         return (
@@ -93,6 +100,7 @@ function ExpenseScreen() {
                     keyExtractor={(item, index) => item.id || index.toString()}
                     renderItem={({ item }) => <ExpenseCard item={item} />}
                     style={styles.list}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 />
             )}
         </>

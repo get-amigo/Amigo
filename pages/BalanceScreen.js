@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, RefreshControl } from 'react-native';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import FabIcon from '../components/FabIcon';
@@ -20,12 +20,19 @@ import { useBalance } from '../stores/balance';
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
     const { fetchData, loading, totalBalances, balances } = useBalance();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             fetchData(user);
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, [user]);
 
     if (loading)
         return (
@@ -185,6 +192,7 @@ function BalanceScreen({ navigation }) {
                     style={{
                         marginTop: calcHeight(5),
                     }}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 />
             )}
             {balances && balances.length != 0 && (

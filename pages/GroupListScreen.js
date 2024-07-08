@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, StyleSheet, FlatList, View, TextInput, Keyboard } from 'react-native';
+import { Text, StyleSheet, FlatList, View, TextInput, Keyboard, RefreshControl } from 'react-native';
 import Loader from '../components/Loader';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
@@ -17,12 +17,19 @@ import { useAuth } from '../stores/auth';
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
     const { user } = useAuth();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             fetchData(user);
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, [user]);
 
     useEffect(() => {
         fetchData(user);
@@ -91,6 +98,7 @@ function GroupListScreen({ navigation }) {
                         onScroll={() => {
                             Keyboard.dismiss();
                         }}
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                     />
                 </>
             )}

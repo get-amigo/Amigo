@@ -36,6 +36,7 @@ const CreateGroup = ({ navigation }) => {
     const { setTransactionData } = useTransaction();
     const { user } = useAuth();
     const nameRef = useRef();
+    const MAX_LEN = 40;
 
     const createGroupAsync = async () => {
         const isOnline = await checkConnectivity();
@@ -124,8 +125,12 @@ const CreateGroup = ({ navigation }) => {
                                     placeholder="Group Name"
                                     placeholderTextColor="gray"
                                     ref={nameRef}
+                                    maxLength={MAX_LEN}
                                 />
                             </Pressable>
+                            <View>
+                                <Text style={styles.characterCount}>{MAX_LEN - groupName?.length} characters left</Text>
+                            </View>
                             <View>
                                 <Text style={styles.titleText}>Add members</Text>
                             </View>
@@ -161,7 +166,8 @@ const styles = StyleSheet.create({
         padding: calcHeight(1),
         borderBottomWidth: 1,
         borderRadius: 5,
-        marginVertical: calcHeight(2),
+        marginTop: calcHeight(2),
+        marginBottom: calcHeight(1),
     },
     input: {
         color: 'white',
@@ -180,6 +186,11 @@ const styles = StyleSheet.create({
     },
     button: {
         alignItems: 'center',
+    },
+    characterCount: {
+        fontSize: 10,
+        color: COLOR.TEXT,
+        textAlign: 'right',
     },
 });
 

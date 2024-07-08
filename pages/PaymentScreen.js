@@ -146,9 +146,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        minWidth: calcWidth(27),
+        minWidth: calcWidth(30),
         maxWidth: calcWidth(65),
         maxHeight: calcWidth(25),
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     remainingCharacter: {
         paddingTop: calcHeight(1),

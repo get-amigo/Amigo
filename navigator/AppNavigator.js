@@ -65,6 +65,12 @@ const AppNavigator = () => {
                                 },
                                 title: null,
                                 headerTintColor: '#fff',
+                                headerTitle: 'Paid By',
+                                headerTitleStyle: {
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: getFontSizeByWindowWidth(19),
+                                },
                             }}
                         />
                         <Stack.Screen
@@ -214,6 +220,12 @@ const AppNavigator = () => {
                                 },
                                 title: null,
                                 headerTintColor: '#fff',
+                                headerTitle: 'Add Transaction',
+                                headerTitleStyle: {
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: getFontSizeByWindowWidth(19),
+                                },
                             }}
                         />
                         <Stack.Screen

@@ -9,6 +9,7 @@ import GroupListScreen from '../pages/GroupListScreen';
 import ExpenseScreen from '../pages/ExpenseScreen';
 
 import BalanceScreen from '../pages/BalanceScreen';
+import { calcWidth } from '../helper/res';
 const TabNavigator = () => {
     return (
         <Tab.Navigator
@@ -17,6 +18,12 @@ const TabNavigator = () => {
                 tabBarStyle,
                 tabBarIndicatorStyle: {
                     backgroundColor: 'transparent', // Set transparent to hide the default indicator
+                },
+                tabBarIconStyle: {
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: calcWidth(13),
+                    width: calcWidth(13),
                 },
             }}
             tabBarPosition={'bottom'}

@@ -351,6 +351,7 @@ const styles = StyleSheet.create({
     },
     description: {
         color: 'white',
+        paddingHorizontal: calcWidth(3),
     },
     descriptionContainer: {
         flexDirection: 'row',

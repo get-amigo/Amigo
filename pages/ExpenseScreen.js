@@ -11,7 +11,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
 
 function ExpenseScreen() {
-    const { expense, resetParams, loading } = useExpense();
+    const { expense, resetParams, loading, type, range } = useExpense();
 
     useFocusEffect(
         useCallback(() => {
@@ -72,17 +72,30 @@ function ExpenseScreen() {
                     <TypeSelector />
                     <DatePickerSelector />
                 </View>
-                <TouchableOpacity
-                    onPress={resetParams}
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: calcWidth(1),
-                    }}
-                >
-                    <FontAwesome5 name="redo" size={calcWidth(3)} color="rgba(255,255,255,0.66)" />
-                    <Text style={{ color: COLOR.TEXT }}>Reset</Text>
-                </TouchableOpacity>
+                {type || (range.endDate && range.startDate) ? (
+                    <TouchableOpacity
+                        onPress={resetParams}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: calcWidth(1),
+                        }}
+                    >
+                        <FontAwesome5 name="redo" size={calcWidth(3)} color="rgba(255,255,255,0.66)" />
+                        <Text style={{ color: COLOR.TEXT }}>Reset</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: calcWidth(1),
+                        }}
+                    >
+                        <FontAwesome5 name="redo" size={calcWidth(3)} color="#595957" />
+                        <Text style={{ color: '#595957' }}>Reset</Text>
+                    </View>
+                )}
             </View>
 
             {expense.length === 0 ? (

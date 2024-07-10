@@ -178,14 +178,7 @@ function BalanceScreen({ navigation }) {
                     title="No Transactions Yet"
                 />
             ) : (
-                <FlatList
-                    data={balances}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => <GroupBalanceCard group={item} />}
-                    style={{
-                        marginTop: calcHeight(5),
-                    }}
-                />
+                <FlatList data={balances} keyExtractor={(item) => item.id} renderItem={({ item }) => <GroupBalanceCard group={item} />} />
             )}
             {balances && balances.length != 0 && (
                 <FabIcon

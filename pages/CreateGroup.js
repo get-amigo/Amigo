@@ -81,8 +81,7 @@ const CreateGroup = ({ navigation }) => {
         <>
             {isLoading && <Loader />}
             {!isLoading && (
-                <View style={{ marginHorizontal: calcWidth(5) }}>
-                    <Text style={styles.heading}>New group</Text>
+                <View style={{ marginHorizontal: calcWidth(5), flex: 1, marginBottom: calcWidth(3), marginTop: calcWidth(5) }}>
                     <Pressable style={styles.inputContainer} onPress={() => nameRef.current.focus()}>
                         <TextInput
                             style={styles.input}
@@ -104,7 +103,9 @@ const CreateGroup = ({ navigation }) => {
                         <Button
                             title="Create Group"
                             onPress={handleCreateGroup}
-                            styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
+                            styleOverwrite={
+                                selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57, marginTop: 8 } : { marginTop: 8 }
+                            }
                         />
                     </View>
                 </View>
@@ -114,12 +115,6 @@ const CreateGroup = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    heading: {
-        color: COLOR.PRIMARY,
-        marginVertical: calcHeight(2),
-        fontSize: getFontSizeByWindowWidth(20),
-        fontWeight: 'bold',
-    },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -139,9 +134,9 @@ const styles = StyleSheet.create({
         marginVertical: calcHeight(2),
     },
     contactListContainer: {
-        margin: calcWidth(5),
+        marginTop: calcWidth(3),
         alignItems: 'center',
-        height: calcHeight(50),
+        flex: 1,
     },
     button: {
         alignItems: 'center',

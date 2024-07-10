@@ -79,7 +79,7 @@ function GroupListScreen({ navigation }) {
                         style={{
                             alignItems: 'center',
                             marginTop: calcHeight(2),
-                            marginBottom: calcHeight(4),
+                            marginBottom: calcWidth(1.5),
                         }}
                     >
                         <Search search={search} setSearch={setSearch} />

@@ -4,7 +4,6 @@ import BalanceGroupPin from '../components/BalanceGroupPin';
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
 import { calcWidth } from '../helper/res';
-import useActivities from '../hooks/useActivities';
 import useNetwork from '../hooks/useNetwork';
 import useSocket from '../hooks/useSocket';
 import { useAuth } from '../stores/auth';
@@ -22,12 +21,6 @@ const ActivitiesFeedScreen = () => {
 
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
-
-    const { isLoading, hasNextPage, fetchNextPage, shouldFetch } = useActivities();
-
-    useEffect(() => {
-        console.log('shouldFetch', shouldFetch);
-    }, [shouldFetch]);
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
@@ -56,13 +49,6 @@ const ActivitiesFeedScreen = () => {
             fetchBalance();
         }
     }, [activities]);
-
-    useEffect(() => {
-        // handle fetch
-        if (shouldFetch && hasNextPage && !isLoading) {
-            fetchNextPage();
-        }
-    }, [shouldFetch, hasNextPage, isLoading]);
 
     const fetchActivity = useCallback(async (activity) => {
         if (activity.creator._id !== user._id) {

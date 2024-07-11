@@ -1,5 +1,5 @@
 import { FontAwesome6 } from '@expo/vector-icons';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import { useGroup } from '../../context/GroupContext';
 import areDatesEqual from '../../helper/areDatesEqual';
@@ -18,7 +18,7 @@ const FeedsContainer = () => {
     const [isStickyDateVisible, setIsStickyDateVisible] = useState(false);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
     const [stickyDate, setStickyDate] = useState('');
-    const { trackViewedItem } = useActivities();
+    const { isLoading, hasNextPage, fetchNextPage, shouldFetch, trackViewedItem } = useActivities();
 
     const flatListRef = useRef(null);
 
@@ -49,6 +49,13 @@ const FeedsContainer = () => {
     const scrollToBottom = useCallback(() => {
         flatListRef.current.scrollToOffset({ offset: 0, animated: true });
     }, []);
+
+    useEffect(() => {
+        // handle fetch
+        if (shouldFetch && hasNextPage && !isLoading) {
+            fetchNextPage();
+        }
+    }, [shouldFetch, hasNextPage, isLoading]);
 
     return (
         <View style={{ flex: 1 }}>

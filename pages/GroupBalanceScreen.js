@@ -108,7 +108,9 @@ function GroupBalanceScreen({ navigation, route }) {
                 keyExtractor={(item) => item._id}
                 renderItem={renderListItem}
                 style={styles.list}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#8740FD']} progressBackgroundColor="#342F4F" />
+                }
             />
         </>
     );

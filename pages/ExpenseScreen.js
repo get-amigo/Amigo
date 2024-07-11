@@ -100,7 +100,14 @@ function ExpenseScreen() {
                     keyExtractor={(item, index) => item.id || index.toString()}
                     renderItem={({ item }) => <ExpenseCard item={item} />}
                     style={styles.list}
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={['#8740FD']}
+                            progressBackgroundColor="#342F4F"
+                        />
+                    }
                 />
             )}
         </>

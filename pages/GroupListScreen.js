@@ -98,7 +98,14 @@ function GroupListScreen({ navigation }) {
                         onScroll={() => {
                             Keyboard.dismiss();
                         }}
-                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                colors={['#8740FD']}
+                                progressBackgroundColor="#342F4F"
+                            />
+                        }
                     />
                 </>
             )}

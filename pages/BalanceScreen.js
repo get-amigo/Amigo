@@ -192,7 +192,14 @@ function BalanceScreen({ navigation }) {
                     style={{
                         marginTop: calcHeight(5),
                     }}
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={['#8740FD']}
+                            progressBackgroundColor="#342F4F"
+                        />
+                    }
                 />
             )}
             {balances && balances.length != 0 && (

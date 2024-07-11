@@ -1,7 +1,7 @@
-import { Octicons, EvilIcons, MaterialIcons } from '@expo/vector-icons';
+import { Octicons, EvilIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, Pressable, Text, Image, Dimensions } from 'react-native';
+import { StyleSheet, View, Pressable, Text, Image } from 'react-native';
 
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
@@ -10,71 +10,11 @@ import PAGES from '../constants/pages';
 import editNames from '../helper/editNames';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
+import formatTo12HourTime from '../helper/formatTo12HourTime';
+import formatDateRelativeToToday from '../helper/formatDateRelativeToToday';
+import getDateAndMonth from '../helper/getDateAndMonth';
 
 const SELECTOR_SIZE = 4;
-
-function convertToCustomTimeFormat(dateString) {
-    const date = new Date(dateString);
-    const timeOptions = {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true,
-    };
-    const formattedTime = date.toLocaleTimeString('en-US', timeOptions);
-    return formattedTime;
-}
-
-function convertToCustomFormatDate(dateString) {
-    const date = new Date(dateString);
-    const today = new Date();
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    if (areDatesEqual(today, date)) {
-        return 'Today';
-    } else if (areDatesEqual(yesterday, date)) {
-        return 'Yesterday';
-    }
-    const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
-    const formattedDate = date.toLocaleDateString('en-IN', dateOptions);
-    return formattedDate;
-}
-
-function getDateAndMonth(dateString) {
-    // Parse the dateString into a Date object
-    const date = new Date(dateString);
-
-    // Array of month names
-    const months = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December',
-    ];
-
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    return day + ' ' + month;
-}
-
-function areDatesEqual(date1, date2) {
-    const date1Day = date1.getDate();
-    const date1Month = date1.getMonth();
-    const date1Year = date1.getFullYear();
-
-    const date2Day = date2.getDate();
-    const date2Month = date2.getMonth();
-    const date2Year = date2.getFullYear();
-
-    return date1Day === date2Day && date1Month === date2Month && date1Year === date2Year;
-}
 
 function ActivityHeader({ icon, iconName, size, text }) {
     return (
@@ -122,7 +62,6 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
     return (
         <Pressable
             style={{
-                // backgroundColor: 'red',
                 width: calcWidth(47),
             }}
             onPress={() => {
@@ -186,7 +125,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         }}
                     >
                         <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
-                            {convertToCustomTimeFormat(createdAt)}
+                            {formatTo12HourTime(createdAt)}
                         </Text>
                         {synced === false && (
                             <Image
@@ -256,7 +195,7 @@ function PaymentActivity({ payment, contacts }) {
                     marginTop: payment.description && payment.description != ' ' ? 0 : -calcWidth(5),
                 }}
             >
-                {convertToCustomTimeFormat(payment.createdAt)}
+                {formatTo12HourTime(payment.createdAt)}
             </Text>
         </>
     );
@@ -295,7 +234,7 @@ function ChatActivity({ chat, synced }) {
                         marginLeft: calcWidth(3),
                     }}
                 >
-                    {convertToCustomTimeFormat(chat.createdAt)}
+                    {formatTo12HourTime(chat.createdAt)}
                 </Text>
                 {/* incase sync is missing for the data comming from the backend it should have the right sync */}
                 {synced === false && (
@@ -346,7 +285,7 @@ function Feed(props) {
                             backgroundColor: '#272239',
                         }}
                     >
-                        {convertToCustomFormatDate(createdAt)}
+                        {formatDateRelativeToToday(createdAt)}
                     </Text>
                 </View>
             )}

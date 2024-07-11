@@ -109,11 +109,10 @@ const groupActivitiesStore = (set, get) => ({
             let generatedActivity = null;
 
             const activityId = generateUniqueId();
-            const otherId = generateUniqueId();
+            const relatedId = generateUniqueId();
             switch (activityType) {
                 case 'transaction':
                     generatedActivity = {
-                        __v: 0,
                         _id: activityId,
                         activityType: 'transaction',
                         createdAt: now,
@@ -121,8 +120,7 @@ const groupActivitiesStore = (set, get) => ({
                         group: groupId,
                         onModel: 'Transaction',
                         relatedId: {
-                            __v: 0,
-                            _id: otherId,
+                            _id: relatedId,
                             amount: activity.relatedId.amount,
                             createdAt: now,
                             creator: {
@@ -150,7 +148,6 @@ const groupActivitiesStore = (set, get) => ({
                     return;
                 case 'chat':
                     generatedActivity = {
-                        __v: 0,
                         _id: activityId,
                         activityType: 'chat',
                         createdAt: now,
@@ -162,8 +159,7 @@ const groupActivitiesStore = (set, get) => ({
                         group: groupId,
                         onModel: 'Chat',
                         relatedId: {
-                            __v: 0,
-                            _id: otherId,
+                            _id: relatedId,
                             createdAt: now,
                             message: activity.relatedId.message,
                             updatedAt: now,
@@ -207,7 +203,7 @@ const groupActivitiesStore = (set, get) => ({
                     };
                 });
             }
-            return { activityId, otherId };
+            return { activityId, relatedId };
         }
     },
 

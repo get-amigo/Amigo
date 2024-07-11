@@ -1,9 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import apiHelper from '../helper/apiHelper';
 import { useGroup } from '../context/GroupContext';
+import apiHelper from '../helper/apiHelper';
 
-import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import { useCallback, useRef, useState } from 'react';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 const useActivities = () => {
     const { group } = useGroup();
@@ -17,7 +17,7 @@ const useActivities = () => {
     const isActivityAvailable = useGroupActivitiesStore((state) => state.isActivityAvailable);
     const addOldActivitiesToLocalDB = useGroupActivitiesStore((state) => state.addOldActivitiesToLocalDB);
 
-    const handleItemLayout = useCallback(
+    const trackViewedItem = useCallback(
         (itemKey) => {
             if (!viewedItems.current.has(itemKey)) {
                 viewedItems.current.add(itemKey);
@@ -72,7 +72,7 @@ const useActivities = () => {
         fetchNextPage,
         hasNextPage,
         isLoading,
-        handleItemLayout,
+        trackViewedItem,
         shouldFetch,
     };
 };

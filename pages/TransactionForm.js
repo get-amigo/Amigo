@@ -131,8 +131,8 @@ function TransactionFormScreen({ navigation }) {
             };
 
             if (isConnected) {
-                const { activityId, otherId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
-                const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: otherId };
+                const { activityId, relatedId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
+                const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: relatedId };
 
                 apiHelper
                     .post('/transaction', newTransactionWithId)

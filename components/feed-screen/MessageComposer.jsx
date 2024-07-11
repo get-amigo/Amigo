@@ -42,7 +42,7 @@ const MessageComposer = () => {
             return;
         }
         if (isConnected) {
-            const { activityId, otherId } = addActivityToLocalDB(
+            const { activityId, relatedId } = addActivityToLocalDB(
                 { activityType: 'chat', relatedId: { message: message } },
                 group._id,
                 user,
@@ -53,7 +53,7 @@ const MessageComposer = () => {
                 .post(`/group/${group._id}/chat`, {
                     message: message,
                     activityId: activityId,
-                    chatId: otherId,
+                    chatId: relatedId,
                 })
                 .then(() => {
                     updateIsSynced({

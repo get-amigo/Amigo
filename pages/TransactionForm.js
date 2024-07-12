@@ -155,7 +155,7 @@ function TransactionFormScreen({ navigation }) {
             if (upiParams.receiverId) {
                 setUpiParams((prev) => ({
                     ...prev,
-                    am: newActivity.amount,
+                    am: transactionData.amount.toString(),
                 }));
                 navigation.navigate(PAGES.UPI_APP_SELECTION);
                 return;

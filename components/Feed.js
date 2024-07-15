@@ -21,9 +21,9 @@ function ActivityHeader({ icon, iconName, size, text }) {
         <View style={styles.header}>
             <Text
                 style={{
-                    fontSize: getFontSizeByWindowWidth(10.5),
+                    fontSize: getFontSizeByWindowWidth(10.7),
                     color: 'white',
-                    fontWeight: '400',
+                    fontWeight: '600',
                 }}
             >
                 Split an Expense
@@ -42,27 +42,14 @@ function ActivityHeader({ icon, iconName, size, text }) {
     );
 }
 
-function Amount({ amount, description }) {
-    return (
-        <>
-            <View style={styles.flexContainer}>
-                <View>
-                    <Text style={styles.amount}>₹ {amount}</Text>
-                </View>
-            </View>
-            <View>{description && description != ' ' && <Text style={styles.description}>{description}</Text>}</View>
-        </>
-    );
-}
-
-function TransactionActivity({ transaction, createdAt, contacts, synced, creator }) {
+function TransactionActivity({ transaction, createdAt, contacts, synced, creator, highlightColor }) {
     const { user } = useAuth();
     const navigation = useNavigation();
 
     return (
         <Pressable
             style={{
-                width: calcWidth(47),
+                width: calcWidth(54),
             }}
             onPress={() => {
                 const editedTransaction = transaction;
@@ -79,65 +66,87 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 });
             }}
         >
-            <View
-                style={{
-                    gap: calcWidth(3.8),
-                }}
-            >
-                <ActivityHeader
-                    icon={Octicons}
-                    iconName="person"
-                    size={getFontSizeByWindowWidth(10.5)}
-                    text={`${transaction.splitAmong?.length}`}
-                />
-                <View>
-                    <Amount amount={transaction.amount} description={transaction.description} />
+            <View>
+                <View
+                    style={{
+                        gap: calcWidth(3.8),
+                        backgroundColor: highlightColor,
+                        padding: calcWidth(2.5),
+                        borderRadius: calcWidth(2.35),
+                    }}
+                >
+                    <ActivityHeader
+                        icon={Octicons}
+                        iconName="person"
+                        size={getFontSizeByWindowWidth(10.5)}
+                        text={`${transaction.splitAmong?.length}`}
+                    />
+                    <View style={styles.flexContainer}>
+                        <View>
+                            <Text style={styles.amount}>₹ {transaction.amount}</Text>
+                        </View>
+                    </View>
                 </View>
                 <View
                     style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
+                        marginLeft: calcWidth(1),
                     }}
                 >
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            gap: calcWidth(1.2),
-                        }}
-                    >
-                        <View>
-                            <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginTop: 'auto' }} />
-                        </View>
-                        <Text
-                            style={{
-                                color: 'white',
-                                fontSize: getFontSizeByWindowWidth(10.8),
-                                fontWeight: '400',
-                            }}
-                        >
-                            {getDateAndMonth(createdAt)}
-                        </Text>
+                    <View>
+                        {transaction.description && transaction.description != ' ' && (
+                            <Text style={styles.description}>{transaction.description}</Text>
+                        )}
                     </View>
                     <View
                         style={{
                             flexDirection: 'row',
-                            marginTop: 'auto',
+                            justifyContent: 'space-between',
+                            marginTop: calcWidth(3.3),
                         }}
                     >
-                        <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
-                            {formatTo12HourTime(createdAt)}
-                        </Text>
-                        {synced === false && (
-                            <Image
-                                source={ClockIcon}
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                gap: calcWidth(1.2),
+                            }}
+                        >
+                            <View>
+                                <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginLeft: calcWidth(-1) }} />
+                            </View>
+                            <Text
                                 style={{
-                                    height: calcWidth(2.2),
-                                    width: calcWidth(2.2),
-                                    margin: 'auto',
-                                    marginLeft: calcWidth(1),
+                                    color: 'white',
+                                    fontSize: getFontSizeByWindowWidth(10.8),
+                                    fontWeight: '400',
                                 }}
-                            />
-                        )}
+                            >
+                                {getDateAndMonth(createdAt)}
+                            </Text>
+                        </View>
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'flex-end',
+                            marginRight: calcWidth(1),
+                        }}
+                    >
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
+                                {formatTo12HourTime(createdAt)}
+                            </Text>
+                            {synced === false && (
+                                <Image
+                                    source={ClockIcon}
+                                    style={{
+                                        height: calcWidth(2.2),
+                                        width: calcWidth(2.2),
+                                        margin: 'auto',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                />
+                            )}
+                        </View>
                     </View>
                 </View>
             </View>
@@ -145,58 +154,88 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
     );
 }
 
-function PaymentActivity({ payment, contacts }) {
+function PaymentActivity({ payment, contacts, highlightColor }) {
     const { user } = useAuth();
     const [payer, receiver] = editNames([payment.payer, payment.receiver], user._id, contacts);
     return (
         <>
             <View
                 style={{
-                    gap: calcWidth(2.5),
-                    width: calcWidth(47),
+                    width: calcWidth(54),
                 }}
             >
-                <Text
+                <View
                     style={{
-                        fontSize: getFontSizeByWindowWidth(10.7),
-                        color: 'white',
-                        fontWeight: '400',
+                        gap: calcWidth(3.8),
+                        backgroundColor: highlightColor,
+                        padding: calcWidth(2.5),
+                        borderRadius: calcWidth(2.35),
                     }}
                 >
-                    {payer.name} paid {receiver.name}
-                </Text>
+                    <Text
+                        style={{
+                            fontSize: getFontSizeByWindowWidth(10.7),
+                            color: 'white',
+                            fontWeight: '600',
+                        }}
+                    >
+                        {payer.name} paid {receiver.name}
+                    </Text>
 
-                <View style={styles.flexContainer}>
-                    <View>
-                        <Text style={styles.amount}>₹ {payment.amount}</Text>
+                    <View style={styles.flexContainer}>
+                        <View>
+                            <Text style={styles.amount}>₹ {payment.amount}</Text>
+                        </View>
                     </View>
                 </View>
-                <View>
-                    {payment.description && payment.description != ' ' && (
-                        <Text
+                <View
+                    style={{
+                        marginLeft: calcWidth(1),
+                    }}
+                >
+                    <View>
+                        {payment.description && payment.description != ' ' && <Text style={styles.description}>{payment.description}</Text>}
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            marginTop: calcWidth(3.3),
+                        }}
+                    >
+                        <View
                             style={{
-                                fontSize: getFontSizeByWindowWidth(10.7),
-                                color: 'white',
-                                fontWeight: '400',
+                                flexDirection: 'row',
+                                gap: calcWidth(1.2),
                             }}
                         >
-                            {payment.description}
+                            <View>
+                                <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginLeft: calcWidth(-1) }} />
+                            </View>
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    fontSize: getFontSizeByWindowWidth(10.8),
+                                    fontWeight: '400',
+                                }}
+                            >
+                                {getDateAndMonth(payment.createdAt)}
+                            </Text>
+                        </View>
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'flex-end',
+                            marginRight: calcWidth(1),
+                        }}
+                    >
+                        <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
+                            {formatTo12HourTime(payment.createdAt)}
                         </Text>
-                    )}
+                    </View>
                 </View>
             </View>
-            <Text
-                style={{
-                    color: 'white',
-                    fontSize: getFontSizeByWindowWidth(7),
-                    fontWeight: '300',
-                    marginLeft: 'auto',
-
-                    marginTop: payment.description && payment.description != ' ' ? 0 : -calcWidth(5),
-                }}
-            >
-                {formatTo12HourTime(payment.createdAt)}
-            </Text>
         </>
     );
 }
@@ -205,7 +244,7 @@ function ChatActivity({ chat, synced }) {
     return (
         <View
             style={{
-                maxWidth: calcWidth(47),
+                maxWidth: calcWidth(50),
                 flexDirection: 'row',
                 flexWrap: 'wrap',
                 alignItems: 'flex-end',
@@ -255,10 +294,10 @@ function ChatActivity({ chat, synced }) {
 
 function Feed(props) {
     const { user } = useAuth();
-    const { creator, activityType, createdAt, showCreator, showDate } = props;
+    const { creator, activityType, createdAt, showCreatorName, showCreatorAvatar, showDate } = props;
 
     const renderActivity = () => {
-        const activityStrategy = ActivityStrategyFactory(activityType);
+        const activityStrategy = ActivityStrategyFactory(activityType, user._id === creator?._id);
         if (activityStrategy) {
             return activityStrategy.renderActivity(props);
         }
@@ -294,18 +333,18 @@ function Feed(props) {
                     styles.activityContainer,
                     {
                         justifyContent: user._id === creator?._id ? 'flex-end' : 'flex-start',
-                        marginTop: showCreator && user._id !== creator?._id ? calcWidth(4) : 0,
+                        marginTop: showCreatorName && user._id !== creator?._id ? calcWidth(8) : 0,
                     },
                 ]}
             >
                 {user._id !== creator?._id && (
                     <View
                         style={{
-                            height: calcHeight(SELECTOR_SIZE),
                             width: calcHeight(SELECTOR_SIZE),
+                            justifyContent: 'flex-end',
                         }}
                     >
-                        {showCreator && <UserAvatar user={creator} size={SELECTOR_SIZE} />}
+                        {showCreatorAvatar && <UserAvatar user={creator} size={SELECTOR_SIZE} />}
                     </View>
                 )}
                 <View
@@ -313,7 +352,7 @@ function Feed(props) {
                         marginLeft: user._id === creator?._id ? 0 : calcWidth(2),
                     }}
                 >
-                    {user._id !== creator?._id && showCreator && (
+                    {user._id !== creator?._id && showCreatorName && (
                         <View
                             style={{
                                 alignItems: 'center',
@@ -340,14 +379,23 @@ function Feed(props) {
                                 backgroundColor: user._id === creator?._id ? '#663CAB' : '#342F4F',
                                 ...(user._id === creator?._id
                                     ? {
-                                          borderTopLeftRadius: calcWidth(5),
-                                          borderBottomRightRadius: calcWidth(5),
+                                          borderTopLeftRadius: calcWidth(3.85),
+                                          borderTopRightRadius: calcWidth(3.85),
+                                          borderBottomLeftRadius: calcWidth(3.85),
                                       }
                                     : {
-                                          borderTopRightRadius: calcWidth(5),
-                                          borderBottomLeftRadius: calcWidth(5),
+                                          borderTopLeftRadius: calcWidth(3.85),
+                                          borderTopRightRadius: calcWidth(3.85),
+                                          borderBottomRightRadius: calcWidth(3.85),
                                       }),
                             },
+                            activityType === 'transaction' || activityType === 'payment'
+                                ? {
+                                      paddingHorizontal: calcWidth(1.5),
+                                      paddingBottom: calcWidth(2.7),
+                                      paddingTop: calcWidth(1.5),
+                                  }
+                                : { paddingVertical: calcWidth(2.7), paddingHorizontal: calcWidth(3) },
                         ]}
                     >
                         {renderActivity()}
@@ -358,7 +406,7 @@ function Feed(props) {
     );
 }
 
-const ActivityStrategyFactory = (activityType) => {
+const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
     switch (activityType) {
         case 'transaction':
             return {
@@ -369,12 +417,15 @@ const ActivityStrategyFactory = (activityType) => {
                         contacts={contacts}
                         synced={synced}
                         creator={creator}
+                        highlightColor={isUserTheCreator ? '#9566CF' : '#4B426B'}
                     />
                 ),
             };
         case 'payment':
             return {
-                renderActivity: ({ relatedId: payment, contacts }) => <PaymentActivity payment={payment} contacts={contacts} />,
+                renderActivity: ({ relatedId: payment, contacts }) => (
+                    <PaymentActivity payment={payment} contacts={contacts} highlightColor={isUserTheCreator ? '#9566CF' : '#4B426B'} />
+                ),
             };
         case 'chat':
             return {
@@ -401,15 +452,13 @@ const styles = StyleSheet.create({
         marginHorizontal: calcWidth(3),
     },
     activityCard: {
-        paddingVertical: calcWidth(2.7),
-        paddingHorizontal: calcWidth(5.4),
         marginTop: calcWidth(2),
     },
     description: {
-        fontSize: getFontSizeByWindowWidth(10.7),
+        fontSize: getFontSizeByWindowWidth(10),
         color: 'white',
-        marginTop: calcWidth(3.8),
         fontWeight: '400',
+        marginTop: calcWidth(1.2),
     },
     header: {
         flexDirection: 'row',
@@ -423,9 +472,9 @@ const styles = StyleSheet.create({
         marginLeft: 'auto',
     },
     amount: {
-        fontSize: getFontSizeByWindowWidth(13.3),
+        fontSize: getFontSizeByWindowWidth(18),
         color: COLOR.TEXT,
-        fontWeight: '500',
+        fontWeight: '600',
         marginRight: calcWidth(2),
     },
     flexContainer: {

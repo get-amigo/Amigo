@@ -6,7 +6,7 @@ import { calcHeight, calcWidth } from '../helper/res';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import getLocalImage from '../helper/getLocalImage';
 import getQrDataFromImage from '../helper/getQrDataFromImage';
-import { CameraView} from 'expo-camera';
+import { CameraView } from 'expo-camera';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
@@ -22,13 +22,9 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
     }
     const [scanned, setScanned] = useState(false);
 
-
-
-    const handleBarCode = ({ data }) => {
+    const handleBarCode = (event) => {
         setScanned(true);
-
-        data && handleBarCodeScanned(data);
-
+        handleBarCodeScanned(event);
         setTimeout(() => {
             setScanned(false);
         }, 1000);

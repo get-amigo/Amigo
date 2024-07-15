@@ -58,6 +58,7 @@ function TransactionFormScreen({ navigation }) {
             setTransactionData((prev) => ({
                 ...prev,
                 amount: upiParams.am || '',
+                description: upiParams.description || '',
             }));
         }
         return () => {
@@ -138,6 +139,7 @@ function TransactionFormScreen({ navigation }) {
                 apiHelper
                     .post('/transaction', newTransaction)
                     .then((res) => {
+                        setUpiParams({});
                         setActivitiesHash(newTransaction.group, [
                             {
                                 ...newActivity,

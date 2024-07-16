@@ -10,9 +10,9 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
-import FeedsContainer from '../components/feed-screen/FeedsContainer';
-import FeedScreenHeader from '../components/feed-screen/FeedScreenHeader';
-import MessageComposer from '../components/feed-screen/MessageComposer';
+import FeedsContainer from '../components/FeedScreen/FeedsContainer';
+import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
+import MessageComposer from '../components/FeedScreen/MessageComposer';
 
 const ActivitiesFeedScreen = () => {
     const { group } = useGroup();

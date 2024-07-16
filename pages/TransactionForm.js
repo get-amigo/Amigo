@@ -1,8 +1,8 @@
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, Pressable } from 'react-native';
-import Toast from 'react-native-root-toast';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { StackActions } from '@react-navigation/native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
 import Button from '../components/Button';
@@ -10,14 +10,14 @@ import Loader from '../components/Loader';
 import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import { useGroup } from '../context/GroupContext';
 import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
 import checkConnectivity from '../helper/getNetworkStateAsync';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
-import { useGroup } from '../context/GroupContext';
-import useGroupActivities, { useGroupActivitiesStore } from '../stores/groupActivities';
+import { useGroupActivitiesStore } from '../stores/groupActivities';
 
 function TransactionFormScreen({ navigation }) {
     const [loading, setIsLoading] = useState(false);
@@ -74,7 +74,6 @@ function TransactionFormScreen({ navigation }) {
         }
     };
 
-    // const remainingCharacters = 100 - transactionData.description.length;
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
     const handleCategorySelect = (category) => {
@@ -199,135 +198,56 @@ function TransactionFormScreen({ navigation }) {
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                    marginVertical: calcHeight(3),
-                }}
-            >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.verticalScrollView}>
                 {Categories.map((item, index) => (
                     <Pressable
                         key={index}
-                        style={[
-                            styles.categoryItem,
-                            transactionData.type === item.name && styles.selectedCategory,
-                            {
-                                borderColor: '#4D426C',
-                                borderWidth: 1,
-                                borderRadius: 10,
-                                marginHorizontal: calcWidth(1),
-                            },
-                        ]}
+                        style={[styles.categoryItem, transactionData.type === item.name && styles.selectedCategory]}
                         onPress={() => handleCategorySelect(item.name)}
                     >
                         {item.icon}
-                        <Text style={[styles.categoryText]}>{item.name}</Text>
+                        <Text style={styles.categoryText}>{item.name}</Text>
                     </Pressable>
                 ))}
             </ScrollView>
             {getPreviousPageName(navigation) != PAGES.GROUP && (
                 <View>
                     <Pressable
-                        style={{
-                            backgroundColor: '#302B49',
-                            padding: calcWidth(4),
-                            borderRadius: 8,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}
+                        style={styles.addGroupBtn}
                         onPress={() => {
                             navigation.navigate(PAGES.SELECT_GROUP);
                         }}
                     >
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}
-                        >
+                        <View style={styles.buttonWrapper}>
                             <MaterialIcons name="group-add" size={calcWidth(8)} color="white" />
-                            <Text
-                                style={{
-                                    color: 'white',
-                                    paddingLeft: calcWidth(2),
-                                }}
-                            >
-                                {transactionData.group?.name || 'Add Group'}
-                            </Text>
+                            <Text style={styles.buttonText}>{transactionData.group?.name || 'Add Group'}</Text>
                         </View>
                         <AntDesign name="right" size={calcWidth(5)} color="white" />
                     </Pressable>
                 </View>
             )}
             {transactionData.group?.members?.length > 0 && (
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                    }}
-                >
+                <View style={styles.paidByAndSplitContainer}>
                     <Pressable
-                        style={{
-                            backgroundColor: '#302B49',
-                            padding: calcWidth(4),
-                            borderRadius: 8,
-                            flexDirection: 'row',
-                            justifyContent: 'space-evenly',
-                            marginTop: calcHeight(2),
-                            width: calcWidth(40),
-                        }}
+                        style={styles.button}
                         onPress={() => {
                             navigation.navigate(PAGES.SELECT_PAID_BY);
                         }}
                     >
-                        <Text
-                            style={{
-                                color: 'white',
-                            }}
-                        >
-                            Paid By {transactionData.paidBy?.name}
-                        </Text>
+                        <Text style={styles.buttonText}>Paid By {transactionData.paidBy?.name}</Text>
                     </Pressable>
                     <Pressable
-                        style={{
-                            backgroundColor: '#302B49',
-                            padding: calcWidth(4),
-                            borderRadius: 8,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-evenly',
-                            marginTop: calcHeight(2),
-                            width: calcWidth(40),
-                        }}
+                        style={styles.button}
                         onPress={() => {
                             navigation.navigate(PAGES.GROUP_SPLIT_SCREEN);
                         }}
                     >
-                        <Text
-                            style={{
-                                color: 'white',
-                            }}
-                        >
-                            Split Equally
-                        </Text>
+                        <Text style={styles.buttonText}>Split Equally</Text>
                     </Pressable>
                 </View>
             )}
-            <View
-                style={{
-                    alignItems: 'center',
-                }}
-            >
-                <Button
-                    styleOverwrite={{
-                        width: calcWidth(90),
-                        marginTop: calcHeight(2),
-                    }}
-                    onPress={handleSubmit}
-                    title="Submit"
-                />
+            <View style={styles.submitBtnContainer}>
+                <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
             </View>
         </ScrollView>
     );
@@ -340,7 +260,6 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.APP_BACKGROUND,
     },
     rowCentered: {
-        // flexDirection: 'row',
         justifyContent: 'center',
     },
     amount: {
@@ -377,6 +296,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: calcWidth(3),
         paddingVertical: calcHeight(0.5),
+        borderColor: COLOR.CATEGORY_BORDER_AND_HIGHLIGHT_COLOR,
+        borderWidth: 1,
+        borderRadius: 10,
+        marginHorizontal: calcWidth(1),
     },
     categoryText: {
         color: COLOR.TEXT,
@@ -384,9 +307,51 @@ const styles = StyleSheet.create({
         paddingHorizontal: calcWidth(1),
     },
     selectedCategory: {
-        backgroundColor: '#4D426C', // Highlight color for selected category,
+        backgroundColor: COLOR.CATEGORY_BORDER_AND_HIGHLIGHT_COLOR,
         borderRadius: 10,
         color: COLOR.TEXT,
+    },
+    verticalScrollView: {
+        marginVertical: calcHeight(3),
+    },
+    addGroupBtn: {
+        backgroundColor: COLOR.PRESSABLE_BACKGROUND,
+        padding: calcWidth(4),
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    buttonWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: 'white',
+        paddingLeft: calcWidth(2),
+    },
+    paidByAndSplitContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    button: {
+        backgroundColor: COLOR.PRESSABLE_BACKGROUND,
+        padding: calcWidth(4),
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginTop: calcHeight(2),
+        width: calcWidth(40),
+    },
+    buttonText: {
+        color: 'white',
+    },
+    submitBtnContainer: {
+        alignItems: 'center',
+    },
+    submitBtn: {
+        width: calcWidth(90),
+        marginTop: calcHeight(2),
     },
 });
 

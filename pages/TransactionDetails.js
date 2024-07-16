@@ -77,7 +77,7 @@ const TransactionDetail = ({
     // }, [navigation]);
 
     return (
-        <ScrollView>
+        <ScrollView alwaysBounceVertical={false}>
             <View
                 style={{
                     alignItems: 'center',

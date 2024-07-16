@@ -1,29 +1,24 @@
-import React, { useEffect, useState, useLayoutEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, TextInput, Image, Share, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { DEEP_LINK_URL } from '@env';
+import { Ionicons, Octicons } from '@expo/vector-icons';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Alert, FlatList, Image, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AddMembersImage from '../assets/icons/addMembers.png';
+import ShareImage from '../assets/icons/share.png';
 import GroupIcon from '../components/GroupIcon';
 import Loader from '../components/Loader';
 import UserAvatar from '../components/UserAvatar';
-import { useGroup } from '../context/GroupContext';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
-import apiHelper from '../helper/apiHelper';
+import { GROUP_NAME_MAX_LENGTH } from '../constants/constants';
 import PAGES from '../constants/pages';
-import { Octicons } from '@expo/vector-icons';
+import { useGroup } from '../context/GroupContext';
+import apiHelper from '../helper/apiHelper';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import showToast from '../helper/Toast';
 
 const MemberItem = ({ name, phone, _id }) => (
     <View style={styles.memberItem}>
         {name && _id && <UserAvatar user={{ name, _id }} />}
-        <View
-            style={[
-                styles.memberInfo,
-                {
-                    gap: calcHeight(1),
-                },
-            ]}
-        >
+        <View style={styles.memberInfo}>
             <Text style={styles.memberName}>{name}</Text>
             <Text style={styles.memberPhone}>{phone}</Text>
         </View>
@@ -51,7 +46,6 @@ const GroupScreen = ({
     const [groupName, setGroupName] = useState();
     const groupRef = useRef();
     const [loading, setLoading] = useState(false);
-    const MAX_LEN = 40;
 
     const inputRef = useRef(null);
 
@@ -113,14 +107,14 @@ const GroupScreen = ({
             headerLeft: () =>
                 isEditing ? (
                     <TouchableOpacity onPress={() => setIsEditing(false)}>
-                        <Text style={[{ fontWeight: 'bold', color: COLOR.TEXT }]}>Cancel</Text>
+                        <Text style={styles.headerBtn}>Cancel</Text>
                     </TouchableOpacity>
                 ) : undefined,
 
             headerRight: () =>
                 isEditing ? (
                     <TouchableOpacity onPress={() => submitGroupData()}>
-                        <Text style={[{ fontWeight: 'bold', color: COLOR.TEXT }]}>Done</Text>
+                        <Text style={styles.headerBtn}>Done</Text>
                     </TouchableOpacity>
                 ) : undefined,
         });
@@ -145,31 +139,23 @@ const GroupScreen = ({
                                 }}
                                 value={groupName}
                                 autoFocus
-                                style={[styles.groupName]}
-                                maxLength={MAX_LEN}
+                                style={styles.groupName}
+                                maxLength={GROUP_NAME_MAX_LENGTH}
                             />
                         ) : (
                             <Text style={styles.groupName}>{groupName}</Text>
                         )}
 
-                        <TouchableOpacity
-                            onPress={() => setIsEditing((prev) => !prev)}
-                            style={{
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                flex: 1,
-                            }}
-                        >
+                        <TouchableOpacity onPress={() => setIsEditing((prev) => !prev)} style={styles.editIcon}>
                             <Octicons name="pencil" size={calcWidth(6)} color="white" />
                         </TouchableOpacity>
                     </View>
                     {/* char remaining */}
                     {isEditing && (
-                        <View style={{ marginTop: 4 }}>
-                            <Text style={styles.characterCount}>{MAX_LEN - groupName?.length} characters left</Text>
+                        <View style={styles.remainingCharacters}>
+                            <Text style={styles.characterCount}>{GROUP_NAME_MAX_LENGTH - groupName?.length} characters left</Text>
                         </View>
                     )}
-                    {/* <Text style={styles.groupCreatedAt}>Created on 25 Dec 2023, 10:32 PM</Text> */}
                     <Text style={styles.groupCreatedAt}>Created on {convertToCustomFormat(group.createdAt)}</Text>
                 </View>
                 <TouchableOpacity
@@ -178,24 +164,12 @@ const GroupScreen = ({
                     }}
                     style={styles.memberItem}
                 >
-                    <Image source={require('../assets/icons/addMembers.png')} style={{ height: calcHeight(5), width: calcHeight(5) }} />
-                    <View
-                        style={{
-                            marginLeft: calcWidth(3),
-                        }}
-                    >
-                        <Text style={styles.buttonText}>Add new members</Text>
-                    </View>
+                    <Image source={AddMembersImage} style={styles.icon} />
+                    <Text style={styles.buttonText}>Add new members</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.memberItem} onPress={shareGroupLink}>
-                    <Image source={require('../assets/icons/share.png')} style={{ height: calcHeight(5), width: calcHeight(5) }} />
-                    <View
-                        style={{
-                            marginLeft: calcWidth(3),
-                        }}
-                    >
-                        <Text style={styles.buttonText}>Share Group Link</Text>
-                    </View>
+                    <Image source={ShareImage} style={styles.icon} />
+                    <Text style={styles.buttonText}>Share Group Link</Text>
                 </TouchableOpacity>
             </>
         );
@@ -205,20 +179,15 @@ const GroupScreen = ({
         !balance && (
             <TouchableOpacity style={styles.memberItem} onPress={leaveGroupAlert}>
                 <Ionicons name="exit-outline" size={calcHeight(5)} color="rgba(253 ,64,9, 0.59)" />
-                <View
-                    style={{
-                        marginLeft: calcWidth(3),
-                    }}
-                >
-                    <Text style={{ color: 'rgba(253 ,64,9, 0.59)' }}>Leave Group</Text>
-                </View>
+
+                <Text style={styles.leaveGroupText}>Leave Group</Text>
             </TouchableOpacity>
         );
 
     return loading ? (
         <Loader />
     ) : (
-        <View style={{ flex: 1 }}>
+        <View style={styles.faltListContainer}>
             <FlatList
                 data={groupMembers}
                 keyExtractor={(item, index) => index.toString()}
@@ -270,6 +239,7 @@ const styles = StyleSheet.create({
     memberInfo: {
         flex: 1,
         marginLeft: calcWidth(3),
+        gap: calcHeight(1),
     },
     memberName: {
         fontSize: getFontSizeByWindowWidth(12),
@@ -297,12 +267,23 @@ const styles = StyleSheet.create({
         color: COLOR.BUTTON,
         fontSize: getFontSizeByWindowWidth(12),
         fontWeight: 'bold',
+        marginLeft: calcWidth(3),
     },
     characterCount: {
         fontSize: 10,
         color: COLOR.TEXT,
         textAlign: 'left',
     },
+    headerBtn: { fontWeight: 'bold', color: COLOR.TEXT },
+    editIcon: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+    },
+    remainingCharacters: { marginTop: 4 },
+    icon: { height: calcHeight(5), width: calcHeight(5) },
+    leaveGroupText: { color: 'rgba(253 ,64,9, 0.59)', marginLeft: calcWidth(3) },
+    faltListContainer: { flex: 1 },
 });
 
 export default GroupScreen;

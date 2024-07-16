@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ImageBackground, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import BalanceGroupPin from '../components/BalanceGroupPin';
-import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
 import { calcWidth } from '../helper/res';

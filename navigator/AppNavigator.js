@@ -16,7 +16,6 @@ import AccountScreen from '../pages/AccountScreen';
 import QRCodeScanner from '../pages/QRCodeScanner';
 import UPIAppSelection from '../pages/UPIAppSelection';
 import TabNavigator from './TabNavigator';
-import Group from '../pages/Group';
 import CreateGroup from '../pages/CreateGroup';
 import { getFontSizeByWindowWidth } from '../helper/res';
 import TransactionFormScreen from '../pages/TransactionForm';
@@ -28,24 +27,11 @@ import AddPeople from '../pages/AddPeople';
 import LoginScreen from '../pages/LoginScreen';
 import { ContactsProvider } from '../hooks/useContacts';
 import NetInfo from '@react-native-community/netinfo';
-import syncAllChat from '../utility/syncAllChat';
 
-const Stack = createNativeStackNavigator();
-
+import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
 const AppNavigator = () => {
     const { user } = useAuth();
 
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener((state) => {
-            if (state.isConnected) {
-                syncAllChat();
-            }
-        });
-
-        return () => {
-            unsubscribe();
-        };
-    }, []);
     return (
         <ContactsProvider>
             <Stack.Navigator
@@ -187,7 +173,7 @@ const AppNavigator = () => {
 
                         <Stack.Screen
                             name={PAGES.GROUP}
-                            component={Group}
+                            component={ActivitiesFeedScreen}
                             options={{
                                 headerShown: false,
                                 animation: 'ios',
@@ -254,6 +240,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                headerTintColor: '#fff',
                                 title: null,
                                 headerTintColor: '#fff',
                                 animation: 'ios',

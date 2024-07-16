@@ -50,11 +50,6 @@ const ContactList = ({ eliminatedContacts }) => {
             {contactPermission ? (
                 <FlatList
                     ref={flatListRef}
-                    style={
-                        {
-                            // marginTop: calcHeight(1),
-                        }
-                    }
                     data={eliminateContacts()}
                     keyExtractor={(item) => item.phoneNumber}
                     renderItem={({ item }) => (

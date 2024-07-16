@@ -56,11 +56,6 @@ function GroupScreen({ navigation }) {
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
 
-    // Delete function
-    const handleDelete = (transactionId) => {
-        setActivities((prevActivities) => prevActivities.filter((activity) => activity._id !== transactionId));
-    };
-
     const { fetchNextPage, hasNextPage } = useInfiniteQuery({
         queryKey: ['group', group._id],
         queryFn: async ({ pageParam = null }) => {
@@ -220,7 +215,7 @@ function GroupScreen({ navigation }) {
                 inverted
                 data={activities}
                 keyExtractor={(item) => item._id}
-                renderItem={({ item }) => <Feed {...item} contacts={contacts} onDelete={handleDelete} />}
+                renderItem={({ item }) => <Feed {...item} contacts={contacts} />}
                 style={{
                     height: calcHeight(totalBalance != 0 ? 65 : 70),
                 }}

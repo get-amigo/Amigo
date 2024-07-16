@@ -1547,11 +1547,6 @@
   dependencies:
     merge-options "^3.0.4"
 
-"@react-native-community/blur@^4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@react-native-community/blur/-/blur-4.4.0.tgz#b2440dab17d94e480fbc4470e03155573b5b7375"
-  integrity sha512-P+xdT2LIq1ewOsF3zx7C0nu4dj7nxl2NVTsMXEzRDjM3bWMdrrEbTRA7uwPV5ngn7/BXIommBPlT/JW4SAedrw==
-
 "@react-native-community/cli-clean@13.6.6":
   version "13.6.6"
   resolved "https://registry.yarnpkg.com/@react-native-community/cli-clean/-/cli-clean-13.6.6.tgz#87c7ad8746c38dab0fe7b3c6ff89d44351d5d943"
@@ -4307,7 +4302,7 @@ expo-barcode-scanner@~13.0.1:
   dependencies:
     expo-image-loader "~4.7.0"
 
-expo-blur@^13.0.2:
+expo-blur@~13.0.2:
   version "13.0.2"
   resolved "https://registry.yarnpkg.com/expo-blur/-/expo-blur-13.0.2.tgz#c2d179b19b13830db1d8b90c51373235f462e958"
   integrity sha512-t2p7BChO3Reykued++QJRMZ/og6J3aXtSQ+bU31YcBeXhZLkHwjWEhiPKPnJka7J2/yTs4+jOCNDY0kCZmcE3w==

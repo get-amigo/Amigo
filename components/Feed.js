@@ -1,18 +1,18 @@
-import { Octicons, EvilIcons } from '@expo/vector-icons';
+import { AntDesign, EvilIcons, Octicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, Pressable, Text, Image } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import editNames from '../helper/editNames';
+import formatDateRelativeToToday from '../helper/formatDateRelativeToToday';
+import formatTo12HourTime from '../helper/formatTo12HourTime';
+import getDateAndMonth from '../helper/getDateAndMonth';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
-import formatTo12HourTime from '../helper/formatTo12HourTime';
-import formatDateRelativeToToday from '../helper/formatDateRelativeToToday';
-import getDateAndMonth from '../helper/getDateAndMonth';
 
 const SELECTOR_SIZE = 4;
 
@@ -29,12 +29,7 @@ function ActivityHeader({ icon, iconName, size, text }) {
                 Split an Expense
             </Text>
             <Text style={styles.headerText}>
-                {icon &&
-                    React.createElement(icon, {
-                        name: iconName,
-                        size,
-                        color: 'white',
-                    })}
+                {icon && <AntDesign name="user" size={size} color="white" />}
                 {'  '}
                 {text}
             </Text>

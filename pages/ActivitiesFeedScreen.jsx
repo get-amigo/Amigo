@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ImageBackground, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
 import BalanceGroupPin from '../components/BalanceGroupPin';
+import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
 import { calcWidth } from '../helper/res';
@@ -10,9 +11,8 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
-import FeedsContainer from '../components/feed-screen/FeedsContainer';
-import FeedScreenHeader from '../components/feed-screen/FeedScreenHeader';
-import MessageComposer from '../components/feed-screen/MessageComposer';
+import FeedsContainer from '../components/FeedScreen/FeedsContainer';
+import MessageComposer from '../components/FeedScreen/MessageComposer';
 
 const ActivitiesFeedScreen = () => {
     const { group } = useGroup();

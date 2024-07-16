@@ -29,6 +29,7 @@ import { ContactsProvider } from '../hooks/useContacts';
 import NetInfo from '@react-native-community/netinfo';
 
 import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
+const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
     const { user } = useAuth();
 

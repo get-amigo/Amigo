@@ -68,7 +68,9 @@ const FeedsContainer = () => {
                 renderItem={({ item, index }) => {
                     const currentCreator = activities[item].creator;
                     const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
-                    const showCreator = !previousCreator || currentCreator._id !== previousCreator._id;
+                    const nextCreator = index > 0 ? activities[activityOrder[index - 1]].creator : null;
+                    const showCreatorName = !previousCreator || currentCreator._id !== previousCreator._id;
+                    const showCreatorAvatar = !nextCreator || currentCreator._id !== nextCreator._id;
 
                     const currentDate = new Date(activities[item].createdAt);
                     const previousDate = index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
@@ -76,7 +78,13 @@ const FeedsContainer = () => {
                     const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
                     return (
                         <View onLayout={() => trackViewedItem(item)}>
-                            <Feed {...activities[item]} contacts={contacts} showCreator={showCreator} showDate={showDate} />
+                            <Feed
+                                {...activities[item]}
+                                contacts={contacts}
+                                showCreatorName={showCreatorName}
+                                showCreatorAvatar={showCreatorAvatar}
+                                showDate={showDate}
+                            />
                         </View>
                     );
                 }}

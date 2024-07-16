@@ -20,6 +20,7 @@ const MessageComposer = () => {
     const navigation = useNavigation();
 
     const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
+    const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
     const [text, setText] = useState('');
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
@@ -28,10 +29,13 @@ const MessageComposer = () => {
     const handleTextInputAndToggleExpenseButton = useCallback((text) => {
         if (text.length === 0) {
             setIsExpenseBtnVisible(false);
+            setIsSendBtnVisible(false);
         } else if (!isNaN(text) && Number(text) > 0) {
             setIsExpenseBtnVisible(true);
+            setIsSendBtnVisible(true);
         } else {
             setIsExpenseBtnVisible(false);
+            setIsSendBtnVisible(true);
         }
         setText(text);
     }, []);
@@ -90,64 +94,70 @@ const MessageComposer = () => {
                 </Pressable>
             </View> */}
             <View style={styles.bottomContainer}>
-                <Pressable
-                    style={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        paddingHorizontal: calcWidth(2),
-                        display: !isExpenseBtnVisible ? 'flex' : 'none',
-                    }}
-                    onPress={() => setIsExpenseBtnVisible(true)}
-                >
-                    <FontAwesome name="angle-right" size={getFontSizeByWindowWidth(27)} color="white" />
-                </Pressable>
-                <Pressable
-                    style={[styles.button, { display: isExpenseBtnVisible ? 'flex' : 'none' }]}
-                    onPress={() => {
-                        setText('');
-                        resetTransaction();
-                        // If it's a number, strip out non-digit characters
-                        let amt = parseInt(text);
-                        if (amt <= 0) {
-                            amt = '';
-                        }
-                        setTransactionData((prev) => ({
-                            ...prev,
-                            group,
-                            amount: amt ? '' + amt : '',
-                        }));
-                        navigation.navigate(PAGES.ADD_TRANSACTION);
-                    }}
-                >
-                    <Text
+                <View style={styles.row}>
+                    <Pressable
                         style={{
-                            fontSize: getFontSizeByWindowWidth(15),
-                            color: 'white',
-                            marginRight: 4,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            display: !isExpenseBtnVisible ? 'flex' : 'none',
+                            marginLeft: calcWidth(4),
+                        }}
+                        onPress={() => setIsExpenseBtnVisible(true)}
+                    >
+                        <FontAwesome name="angle-right" size={getFontSizeByWindowWidth(27)} color="white" />
+                    </Pressable>
+                    <Pressable
+                        style={[styles.button, { display: isExpenseBtnVisible ? 'flex' : 'none' }]}
+                        onPress={() => {
+                            setText('');
+                            resetTransaction();
+                            // If it's a number, strip out non-digit characters
+                            let amt = parseInt(text);
+                            if (amt <= 0) {
+                                amt = '';
+                            }
+                            setTransactionData((prev) => ({
+                                ...prev,
+                                group,
+                                amount: amt ? '' + amt : '',
+                            }));
+                            navigation.navigate(PAGES.ADD_TRANSACTION);
                         }}
                     >
-                        +
-                    </Text>
-                    <Text style={styles.buttonText}> Expense</Text>
-                </Pressable>
-                <View style={styles.textInputContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholderTextColor="#ccc"
-                        placeholder="Message..."
-                        value={text}
-                        onChangeText={handleTextInputAndToggleExpenseButton}
-                        onFocus={() => setIsExpenseBtnVisible(false)}
-                        onBlur={() => {
-                            if (text === '') {
-                                setIsExpenseBtnVisible(true);
-                            }
-                        }}
-                    />
+                        <Text
+                            style={{
+                                fontSize: getFontSizeByWindowWidth(15),
+                                color: 'white',
+                                marginRight: 4,
+                            }}
+                        >
+                            +
+                        </Text>
+                        <Text style={styles.buttonText}> Expense</Text>
+                    </Pressable>
+                    <View style={styles.textInputContainer}>
+                        <TextInput
+                            style={styles.input}
+                            placeholderTextColor="#ccc"
+                            placeholder="Message..."
+                            value={text}
+                            onChangeText={handleTextInputAndToggleExpenseButton}
+                            onFocus={() => {
+                                if (text.length === 0) setIsExpenseBtnVisible(false);
+                            }}
+                            onBlur={() => {
+                                if (text === '') {
+                                    setIsExpenseBtnVisible(true);
+                                }
+                            }}
+                        />
+                    </View>
+                    {isSendBtnVisible && (
+                        <Pressable style={styles.sendBtn} onPress={() => sendChatMessage(text)}>
+                            <Ionicons name="send" size={calcWidth(5.5)} color="white" />
+                        </Pressable>
+                    )}
                 </View>
-                <Pressable style={styles.sendBtn} onPress={() => sendChatMessage(text)}>
-                    <Ionicons name="send" size={calcWidth(5.5)} color="white" />
-                </Pressable>
             </View>
         </View>
     );
@@ -161,14 +171,20 @@ const styles = StyleSheet.create({
         borderTopRightRadius: calcWidth(3),
         alignContent: 'center',
         padding: calcWidth(5),
-        flexDirection: 'row',
-        gap: calcWidth(2),
         backgroundColor: '#111016',
         minHeight: calcWidth(21),
     },
+    row: {
+        alignContent: 'center',
+        flexDirection: 'row',
+        backgroundColor: '#272239',
+        overflow: 'hidden',
+        borderRadius: calcWidth(6),
+        minHeight: calcWidth(12.5),
+    },
     button: {
-        borderRadius: calcWidth(6.2),
-        backgroundColor: '#663CAB',
+        borderRadius: calcWidth(6),
+        backgroundColor: '#8740FD',
         elevation: 3,
         justifyContent: 'center',
         alignItems: 'center',
@@ -192,11 +208,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: calcWidth(4),
         borderWidth: 1,
         borderColor: '#9566CF',
-        borderRadius: calcWidth(6),
+        borderRadius: calcWidth(5.5),
     },
     textInputContainer: {
         flex: 1,
-        borderRadius: calcWidth(5.5),
         paddingHorizontal: calcWidth(3),
         flexDirection: 'row',
         backgroundColor: '#272239',
@@ -214,8 +229,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#8740FD',
-        width: calcWidth(10.3),
-        height: calcWidth(10.3),
+        width: calcWidth(11.5),
+        height: calcWidth(11.5),
         borderRadius: calcWidth(5.5),
+        marginVertical: 'auto',
     },
 });

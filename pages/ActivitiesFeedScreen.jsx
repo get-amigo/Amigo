@@ -12,6 +12,7 @@ import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
 import FeedsContainer from '../components/FeedScreen/FeedsContainer';
+import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import MessageComposer from '../components/FeedScreen/MessageComposer';
 
 const ActivitiesFeedScreen = () => {

@@ -1,7 +1,7 @@
 import { Octicons, EvilIcons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { StyleSheet, View, Pressable, Text, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Pressable, Text, Image, Modal, TouchableWithoutFeedback, Alert } from 'react-native';
 
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
@@ -10,6 +10,9 @@ import PAGES from '../constants/pages';
 import editNames from '../helper/editNames';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
+import apiHelper from '../helper/apiHelper';
+import Toast from 'react-native-root-toast';
+import { BlurView } from '@react-native-community/blur';
 
 function convertToCustomFormat(dateString) {
     const date = new Date(dateString);
@@ -103,27 +106,9 @@ function Amount({ amount, description }) {
     );
 }
 
-function TransactionActivity({ transaction, createdAt, contacts, synced, creator }) {
-    const { user } = useAuth();
-    const navigation = useNavigation();
-
+function TransactionActivityDetails({ transaction, createdAt, contacts, synced, creator }) {
     return (
-        <Pressable
-            onPress={() => {
-                const editedTransaction = transaction;
-                for (const i in editedTransaction.splitAmong) {
-                    editedTransaction.splitAmong[i].user = editNames([transaction.splitAmong[i].user], user._id, contacts)[0];
-                }
-                editedTransaction.paidBy = editNames([transaction.paidBy], user._id, contacts)[0];
-
-                navigation.navigate(PAGES.TRANSACTION_DETAIL, {
-                    transaction: {
-                        ...editedTransaction,
-                        creator,
-                    },
-                });
-            }}
-        >
+        <>
             <ActivityHeader icon={Octicons} iconName="person" size={calcHeight(1.8)} text={`${transaction.splitAmong?.length}`} />
             <View style={{ marginTop: calcHeight(3) }}>
                 <Amount amount={transaction.amount} description={transaction.description} />
@@ -155,6 +140,116 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                     />
                 )}
             </View>
+        </>
+    );
+}
+
+function TransactionActivity({ transaction, createdAt, contacts, synced, creator, onDelete }) {
+    const { user } = useAuth();
+    const navigation = useNavigation();
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedTransaction, setSelectedTransaction] = useState(null);
+    const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+    const transactionId = transaction._id;
+
+    // TODO : HandleDelete functionality not implemented for Offline Mode
+    const handleDelete = async () => {
+        Alert.alert(
+            'Confirm Delete',
+            'Are you sure you want to delete this transaction?',
+            [
+                {
+                    text: 'No',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Yes',
+                    onPress: async () => {
+                        try {
+                            await apiHelper.delete(`/transaction/${transactionId}`);
+                            onDelete(transactionId);
+                        } catch (error) {
+                            console.error('Error deleting transaction:', error);
+                        }
+                    },
+                    style: 'destructive',
+                },
+            ],
+            { cancelable: false },
+        );
+    };
+
+    const renderDeleteModal = () => {
+        if (user._id === creator._id) {
+            return (
+                <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
+                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                        <View style={styles.modalOverlay}>
+                            <BlurView style={styles.absolute} blurType="regular" blurAmount={10} reducedTransparencyFallbackColor="white" />
+                            <TouchableWithoutFeedback>
+                                <View style={[styles.modalContainer, { top: modalPosition.y - 160, left: calcWidth(20) }]}>
+                                    {selectedTransaction && (
+                                        <TransactionActivityDetails
+                                            transaction={selectedTransaction}
+                                            createdAt={selectedTransaction.createdAt}
+                                            contacts={contacts}
+                                            synced={synced}
+                                            creator={creator}
+                                        />
+                                    )}
+                                    <View style={styles.modalButtons}>
+                                        <Pressable
+                                            style={styles.modalButton}
+                                            onPress={() => {
+                                                setModalVisible(false);
+                                                handleDelete();
+                                            }}
+                                        >
+                                            <Text style={styles.modalButtonText}>Delete</Text>
+                                            <MaterialIcons name="delete" size={calcWidth(6)} color="red" />
+                                        </Pressable>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+            );
+        } else {
+            return null;
+        }
+    };
+
+    return (
+        <Pressable
+            onLongPress={(event) => {
+                setSelectedTransaction(transaction);
+                setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
+                setModalVisible(true);
+            }}
+            onPress={() => {
+                const editedTransaction = transaction;
+                for (const i in editedTransaction.splitAmong) {
+                    editedTransaction.splitAmong[i].user = editNames([transaction.splitAmong[i].user], user._id, contacts)[0];
+                }
+                editedTransaction.paidBy = editNames([transaction.paidBy], user._id, contacts)[0];
+
+                navigation.navigate(PAGES.TRANSACTION_DETAIL, {
+                    transaction: {
+                        ...editedTransaction,
+                        creator,
+                    },
+                });
+            }}
+        >
+            <TransactionActivityDetails
+                transaction={transaction}
+                createdAt={createdAt}
+                contacts={contacts}
+                synced={synced}
+                creator={creator}
+            />
+            {renderDeleteModal()}
         </Pressable>
     );
 }
@@ -223,10 +318,10 @@ function ChatActivity({ chat, synced }) {
 
 function Feed(props) {
     const { user } = useAuth();
-    const { creator, activityType, createdAt } = props;
+    const { creator, activityType, createdAt, onDelete } = props;
 
     const renderActivity = () => {
-        const activityStrategy = ActivityStrategyFactory(activityType);
+        const activityStrategy = ActivityStrategyFactory(activityType, onDelete);
         if (activityStrategy) {
             return activityStrategy.renderActivity(props);
         }
@@ -299,7 +394,7 @@ function Feed(props) {
     );
 }
 
-const ActivityStrategyFactory = (activityType) => {
+const ActivityStrategyFactory = (activityType, onDelete) => {
     switch (activityType) {
         case 'transaction':
             return {
@@ -310,6 +405,7 @@ const ActivityStrategyFactory = (activityType) => {
                         contacts={contacts}
                         synced={synced}
                         creator={creator}
+                        onDelete={onDelete}
                     />
                 ),
             };
@@ -376,6 +472,66 @@ const styles = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(12),
         color: 'white',
         marginTop: calcHeight(2),
+    },
+
+    selectedTransactionCard: {
+        flexDirection: 'column',
+        width: calcWidth(76),
+        paddingHorizontal: calcWidth(4),
+    },
+    absolute: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        bottom: 0,
+        right: 0,
+    },
+    modalOverlay: {
+        flex: 1,
+        paddingTop: calcHeight(32),
+        alignItems: 'flex-end',
+        paddingRight: calcWidth(6),
+    },
+    modalContainer: {
+        position: 'absolute',
+        width: calcWidth(128),
+        backgroundColor: '#663CAB',
+        borderWidth: 1,
+        borderRadius: 20,
+        paddingHorizontal: calcWidth(4),
+        paddingVertical: calcHeight(4),
+    },
+    modalTitle: {
+        fontSize: getFontSizeByWindowWidth(16),
+        fontWeight: 'bold',
+        color: 'rgba(255,255,255,0.8)',
+        marginBottom: calcHeight(1),
+    },
+    modalText: {
+        fontSize: getFontSizeByWindowWidth(14),
+        marginBottom: calcHeight(2),
+        color: 'rgba(255,255,255,0.6)',
+    },
+    modalButtons: {
+        position: 'absolute',
+        top: calcHeight(22.8),
+        left: calcWidth(22),
+    },
+    modalButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: calcWidth(54),
+        paddingVertical: calcHeight(2),
+        paddingHorizontal: calcWidth(4),
+        borderRadius: 5,
+        borderWidth: 1,
+        borderColor: 'rgba(44, 44, 46, 1)',
+        backgroundColor: 'rgba(28, 28, 30, 0.9)',
+        alignItems: 'center',
+    },
+    modalButtonText: {
+        color: 'rgba(255, 69, 58, 1)',
+        fontSize: getFontSizeByWindowWidth(14),
     },
 });
 

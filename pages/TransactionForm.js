@@ -339,7 +339,6 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.APP_BACKGROUND,
     },
     rowCentered: {
-        // flexDirection: 'row',
         justifyContent: 'center',
     },
     amount: {
@@ -379,7 +378,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: calcWidth(1),
     },
     selectedCategory: {
-        backgroundColor: '#4D426C', // Highlight color for selected category,
+        backgroundColor: '#4D426C',
         borderRadius: 10,
         color: COLOR.TEXT,
     },

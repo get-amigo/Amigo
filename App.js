@@ -1,16 +1,15 @@
+import * as Sentry from '@sentry/react-native';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Updates from 'expo-updates';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Animated, Platform, SafeAreaView, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import RootNavigator from './navigator/RootNavigator';
-import { KeyboardAvoidingView } from 'react-native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Animated, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
-import * as Sentry from '@sentry/react-native';
-import COLOR from './constants/Colors';
 import 'react-native-get-random-values';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import COLOR from './constants/Colors';
+import RootNavigator from './navigator/RootNavigator';
 
 Sentry.init({
     dsn: 'https://5e35d45895f220b8681a2ce7bb0728df@o4507295198085120.ingest.us.sentry.io/4507295216762880',
@@ -110,6 +109,7 @@ function MainScreen() {
             style={{
                 flex: 1,
                 backgroundColor: COLOR.APP_BACKGROUND,
+                paddingTop: Platform.OS === 'ios' ? Constants.statusBarHeight : 0,
             }}
         >
             <StatusBar style="auto" />

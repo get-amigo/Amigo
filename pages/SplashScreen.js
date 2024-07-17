@@ -1,9 +1,9 @@
 import React from 'react';
 import { SafeAreaView, Image, StyleSheet } from 'react-native';
-import SplashImage from '../assets/Loader.gif';
+import SplashImage from '../assets/SplashScreen.gif';
 import { calcHeight, calcWidth } from '../helper/res';
 
-function Loader() {
+function SplashScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <Image source={SplashImage} style={styles.image} />
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Loader;
+export default SplashScreen;

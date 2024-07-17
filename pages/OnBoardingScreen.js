@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 // Assuming this is the path to your image
 import OnboardingImage from '../assets/Onboarding.png'; // Update the image path if necessary
@@ -7,9 +7,10 @@ import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import Button from '../components/Button';
+
 const OnboardingScreen = ({ navigation }) => {
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.innerContainer}>
                 <Image source={OnboardingImage} style={styles.image} resizeMode="contain" />
                 <Text style={styles.title}>Group payments made easy</Text>
@@ -23,33 +24,24 @@ const OnboardingScreen = ({ navigation }) => {
                     }}
                 >
                     By Pressing on "Continue with Phone Number" you agree to our{' '}
-                    <Text
-                        style={{ color: 'white' }}
-                        onPress={() => WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/')}
-                    >
+                    <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy')}>
                         Privacy Policy
                     </Text>{' '}
                     and{' '}
-                    <Text
-                        style={{ color: 'white' }}
-                        onPress={() =>
-                            WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/terms-and-conditions')
-                        }
-                    >
+                    <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms')}>
                         Terms and Conditions
                     </Text>
                 </Text>
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND, // Changed to the dark background color
         alignItems: 'center', // Centers content horizontally
         justifyContent: 'flex-end',
+        flex: 1,
     },
     innerContainer: {
         width: calcWidth(80), // 80% of the screen width

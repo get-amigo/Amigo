@@ -8,9 +8,9 @@
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "automatic",
         "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#000"
+            "image": "./assets/Splashh.png",
+            "backgroundColor": "#000",
+            "resizeMode": "cover"
         },
         "assetBundlePatterns": ["**/*"],
         "ios": {
@@ -29,7 +29,13 @@
                 "backgroundColor": "#000"
             },
             "versionCode": 16,
-            "package": "app.amigo.app"
+            "package": "app.amigo.app",
+            "permissions": [
+                "android.permission.READ_CONTACTS",
+                "android.permission.WRITE_CONTACTS",
+                "android.permission.CAMERA",
+                "android.permission.RECORD_AUDIO"
+            ]
         },
         "web": {
             "favicon": "./assets/favicon.png"
@@ -64,8 +70,8 @@
             [
                 "@sentry/react-native/expo",
                 {
-                  "organization": "amigo-lo",
-                  "project": "react-native"
+                    "organization": "amigo-lo",
+                    "project": "react-native"
                 }
             ],
             [
@@ -76,6 +82,12 @@
                     }
                 }
             ]
-        ]
+        ],
+        "runtimeVersion": {
+            "policy": "appVersion"
+        },
+        "updates": {
+            "url": "https://u.expo.dev/66c67f7c-cbf3-49dd-b4a5-b57f9920f978"
+        }
     }
 }

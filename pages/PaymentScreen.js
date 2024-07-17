@@ -40,6 +40,10 @@ function GroupScreen({
             offlineMessage();
             return;
         }
+        if (amount <= 0) {
+            alert('Amount cannot be 0.');
+            return;
+        }
         setIsLoading(true);
         try {
             const { data } = await apiHelper.post('/payment', {
@@ -56,7 +60,7 @@ function GroupScreen({
             navigation.navigate(PAGES.BALANCE);
         } catch (e) {
             setIsLoading(false);
-            alert(e);
+            alert('Amount cannot be empty.');
         }
     }
 
@@ -122,10 +126,6 @@ function GroupScreen({
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -139,17 +139,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     description: {
-        flex: 1,
         color: 'white',
     },
     descriptionContainer: {
-        flexDirection: 'row',
+        padding: calcWidth(2.2),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        width: calcWidth(60),
-        paddingVertical: calcHeight(2),
-        marginTop: calcHeight(1),
+        maxWidth: calcWidth(80),
+        maxHeight: calcWidth(20),
+        marginTop: calcWidth(2),
     },
     remainingCharacter: {
         paddingTop: calcHeight(1),

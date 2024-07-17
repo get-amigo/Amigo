@@ -21,16 +21,25 @@ function App() {
     return (
         <>
             <SafeAreaProvider>
-                <StatusBar style="auto" />
-                <KeyboardAvoidingView
-                    style={{ flex: 1 }}
-                    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                    enabled
-                    keyboardVerticalOffset={-900}
+                <SafeAreaView
+                    style={[
+                        {
+                            flex: 1,
+                            backgroundColor: COLOR.APP_BACKGROUND,
+                        },
+                    ]}
                 >
-                    <RootNavigator />
-                </KeyboardAvoidingView>
-                <FlashMessage position="top" duration={2000} />
+                    <StatusBar style="auto" />
+                    <KeyboardAvoidingView
+                        style={{ flex: 1 }}
+                        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                        enabled
+                        keyboardVerticalOffset={-900}
+                    >
+                        <RootNavigator />
+                    </KeyboardAvoidingView>
+                    <FlashMessage position="top" duration={2000} />
+                </SafeAreaView>
             </SafeAreaProvider>
         </>
     );

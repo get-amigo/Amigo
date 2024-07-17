@@ -20,15 +20,7 @@ Sentry.init({
 function App() {
     return (
         <>
-            <SafeAreaView
-                style={[
-                    {
-                        flex: 1,
-                        backgroundColor: COLOR.APP_BACKGROUND,
-                        paddingTop: Platform.OS === 'ios' ? Constants.statusBarHeight : 0,
-                    },
-                ]}
-            >
+            <SafeAreaProvider>
                 <StatusBar style="auto" />
                 <KeyboardAvoidingView
                     style={{ flex: 1 }}
@@ -39,7 +31,7 @@ function App() {
                     <RootNavigator />
                 </KeyboardAvoidingView>
                 <FlashMessage position="top" duration={2000} />
-            </SafeAreaView>
+            </SafeAreaProvider>
         </>
     );
 }

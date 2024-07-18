@@ -16,7 +16,7 @@ const About = () => {
     );
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent} alwaysBounceVertical={false}>
             <View style={styles.header}>
                 <Image source={icon} style={styles.icon} />
                 <Text style={styles.headerText}>What's Amigo</Text>

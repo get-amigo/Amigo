@@ -1,6 +1,6 @@
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, Pressable } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView, Alert, Pressable } from 'react-native';
 import Toast from 'react-native-root-toast';
 import { StackActions } from '@react-navigation/native';
 
@@ -12,12 +12,12 @@ import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
-import checkConnectivity from '../helper/getNetworkStateAsync';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroup } from '../context/GroupContext';
-import useGroupActivities, { useGroupActivitiesStore } from '../stores/groupActivities';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import useNetwork from '../hooks/useNetwork';
 
 function TransactionFormScreen({ navigation }) {
     const [loading, setIsLoading] = useState(false);
@@ -25,8 +25,10 @@ function TransactionFormScreen({ navigation }) {
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
+    const isConnected = useNetwork();
 
-    const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
+    const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
+    const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
     useEffect(() => {
         const { group } = transactionData;
@@ -74,7 +76,6 @@ function TransactionFormScreen({ navigation }) {
         }
     };
 
-    // const remainingCharacters = 100 - transactionData.description.length;
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
     const handleCategorySelect = (category) => {
@@ -129,27 +130,24 @@ function TransactionFormScreen({ navigation }) {
                 activityType: 'transaction',
             };
 
-            const activities = Array.from(getActivities(newTransaction.group));
-            setActivitiesHash(newTransaction.group, [newActivity, ...activities]);
+            if (isConnected) {
+                const { activityId, relatedId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
+                const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: relatedId };
 
-            const isOnline = await checkConnectivity();
-
-            if (isOnline) {
                 apiHelper
-                    .post('/transaction', newTransaction)
+                    .post('/transaction', newTransactionWithId)
                     .then((res) => {
-                        setActivitiesHash(newTransaction.group, [
-                            {
-                                ...newActivity,
-                                synced: true,
-                            },
-                            ...activities,
-                        ]);
+                        updateIsSynced({
+                            _id: activityId,
+                            group: newActivity.relatedId.group._id,
+                        });
                     })
                     .catch((err) => {
-                        console.log('error', err);
+                        console.log('error in api post', err);
                         Alert.alert('Error', JSON.stringify(err));
                     });
+            } else {
+                addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
             }
 
             if (upiParams.receiverId) {
@@ -178,7 +176,7 @@ function TransactionFormScreen({ navigation }) {
     return loading ? (
         <Loader />
     ) : (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} alwaysBounceVertical={false}>
             <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
             <View style={styles.rowCentered}>
@@ -339,7 +337,6 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.APP_BACKGROUND,
     },
     rowCentered: {
-        // flexDirection: 'row',
         justifyContent: 'center',
     },
     amount: {
@@ -349,17 +346,17 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     description: {
-        flex: 1,
         color: 'white',
     },
     descriptionContainer: {
-        flexDirection: 'row',
         alignSelf: 'center',
-        padding: calcWidth(3),
+        padding: calcWidth(2.2),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        width: calcWidth(30),
+        maxWidth: calcWidth(80),
+        maxHeight: calcWidth(20),
+        marginTop: calcWidth(2),
     },
     remainingCharacters: {
         color: COLOR.BUTTON,

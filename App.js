@@ -7,8 +7,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import 'react-native-get-random-values';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import COLOR from './constants/Colors';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './navigator/RootNavigator';
 
 Sentry.init({
@@ -105,14 +104,8 @@ function AnimatedSplashScreen({ children, image }) {
 
 function MainScreen() {
     return (
-        <SafeAreaView
-            style={{
-                flex: 1,
-                backgroundColor: COLOR.APP_BACKGROUND,
-                paddingTop: Platform.OS === 'ios' ? Constants.statusBarHeight : 0,
-            }}
-        >
-            <StatusBar style="auto" />
+        <SafeAreaProvider>
+            <StatusBar style="light" />
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -122,7 +115,7 @@ function MainScreen() {
                 <RootNavigator />
             </KeyboardAvoidingView>
             <FlashMessage position="top" duration={2000} />
-        </SafeAreaView>
+        </SafeAreaProvider>
     );
 }
 

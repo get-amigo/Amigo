@@ -13,6 +13,8 @@ import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculate
 import FeedsContainer from '../components/FeedScreen/FeedsContainer';
 import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import MessageComposer from '../components/FeedScreen/MessageComposer';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ActivitiesFeedScreen = () => {
     const { group } = useGroup();
@@ -68,7 +70,7 @@ const ActivitiesFeedScreen = () => {
     }, [isConnected]);
 
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <ImageBackground
                 source={require('../assets/chatBackground_new.png')}
                 style={{
@@ -93,7 +95,7 @@ const ActivitiesFeedScreen = () => {
 
                 <MessageComposer />
             </KeyboardAvoidingView>
-        </>
+        </SafeAreaView>
     );
 };
 

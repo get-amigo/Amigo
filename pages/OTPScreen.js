@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Image, Pressable, ScrollView, Keyboard } from 'react-native';
 import COLOR from '../constants/Colors';
-import Button from '../components/Button';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import OTPImage from '../assets/OTPImage.png';
-import Loader from '../components/Loader';
 import OTPFilled from '../assets/OTPFilled.png';
 import { useOtp } from '../context/OtpContext';
+import Button from '../components/Button';
 import * as Haptics from 'expo-haptics';
 
 const OTPScreen = ({
@@ -23,7 +22,6 @@ const OTPScreen = ({
     const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
 
     useEffect(() => {
-        // Function to handle the countdown logic
         const interval = setInterval(() => {
             if (seconds > 0) {
                 setSeconds(seconds - 1);
@@ -37,6 +35,12 @@ const OTPScreen = ({
             clearInterval(interval);
         };
     }, [seconds]);
+
+    useEffect(() => {
+        if (isAuthStateLoading) {
+            Keyboard.dismiss();
+        }
+    }, [isAuthStateLoading]);
 
     const resendOTP = () => {
         setSeconds(30);
@@ -59,6 +63,7 @@ const OTPScreen = ({
                 setLoading(false);
             })
             .catch(() => {
+                inputRef.current.focus();
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 setLoading(false);
                 setError(true);
@@ -84,10 +89,8 @@ const OTPScreen = ({
         );
     });
 
-    return loading ? (
-        <Loader />
-    ) : (
-        <SafeAreaView style={styles.container}>
+    return (
+        <ScrollView style={{ flex: 1 }} keyboardDismissMode="none" keyboardShouldPersistTaps="always">
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
                     <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
@@ -111,6 +114,8 @@ const OTPScreen = ({
                         onChangeText={handleOTPChange}
                         maxLength={6}
                         autoFocus
+                        blurOnSubmit={false}
+                        onSubmitEditing={handleVerifyOTP}
                     />
                     <View style={{ flexDirection: 'row' }}>
                         <Text style={styles.resendText}>Didn't get the OTP? </Text>
@@ -147,20 +152,14 @@ const OTPScreen = ({
                             )}
                         </Pressable>
                     </View>
-                    <View style={{}}>
-                        <Button title="Verify" onPress={handleVerifyOTP} />
-                    </View>
+                    <Button loading={loading || isAuthStateLoading} title="Verify OTP" onPress={handleVerifyOTP} />
                 </View>
             </View>
-        </SafeAreaView>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     innerContainer: {
         paddingHorizontal: calcWidth(5),
         marginTop: calcHeight(5),
@@ -206,7 +205,7 @@ const styles = StyleSheet.create({
         height: calcHeight(7),
     },
     indicator: {
-        marginTop: calcHeight(-1),
+        marginTop: calcHeight(3),
         paddingHorizontal: calcWidth(2),
     },
     highlightedBox: {

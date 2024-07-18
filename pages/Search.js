@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Alert, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Button } from 'react-native';
 import Loader from '../components/Loader';
 import Search from '../components/Search';
 import apiHelper from '../helper/apiHelper';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SearchScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
@@ -53,7 +55,7 @@ const SearchScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={safeAreaStyle}>
             <Search setSearch={setSearchString} search={searchString} />
             <ScrollView style={{ width: '100%' }}>
                 {searchResults.map((group, index) => (

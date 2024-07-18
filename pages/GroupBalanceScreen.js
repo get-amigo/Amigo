@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, SafeAreaView, View, Pressable, FlatList, Image } from 'react-native';
+import { Text, StyleSheet, View, Pressable, FlatList, Image } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import GroupIcon from '../components/GroupIcon';
 import COLOR from '../constants/Colors';
@@ -8,6 +8,9 @@ import { useAuth } from '../stores/auth';
 import sliceText from '../helper/sliceText';
 import Cross from '../assets/icons/cross.png';
 import UserAvatar from '../components/UserAvatar';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 function GroupBalanceScreen({ navigation, route }) {
     const { group } = route.params;
     const { user } = useAuth();
@@ -47,7 +50,7 @@ function GroupBalanceScreen({ navigation, route }) {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={safeAreaStyle}>
             <View style={styles.header}>
                 <Pressable onPress={() => navigation.goBack()}>
                     <Image style={styles.crossIcon} source={Cross} />
@@ -80,7 +83,7 @@ function GroupBalanceScreen({ navigation, route }) {
                             },
                         ]}
                     >
-                        <Feather name={group.totalBalance > 0 ? 'arrow-up-right' : 'arrow-down-left'} size={calcWidth(2)} color="white" />
+                        <Feather name={group.totalBalance > 0 ? 'arrow-up-right' : 'arrow-down-left'} size={calcWidth(4)} color="white" />
                     </View>
                 </View>
             </View>
@@ -99,10 +102,7 @@ function GroupBalanceScreen({ navigation, route }) {
 // // StyleSheet
 const styles = StyleSheet.create({
     // ... existing styles
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
+
     balanceText: {
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(15),

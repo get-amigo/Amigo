@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import React, { useState, useRef, useEffect } from 'react';
-import { SafeAreaView, View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
@@ -35,6 +35,10 @@ function GroupScreen({
             offlineMessage();
             return;
         }
+        if (amount <= 0) {
+            alert('Amount cannot be 0.');
+            return;
+        }
         setIsLoading(true);
         try {
             const { data } = await apiHelper.post('/payment', {
@@ -51,7 +55,7 @@ function GroupScreen({
             navigation.navigate(PAGES.BALANCE);
         } catch (e) {
             setIsLoading(false);
-            alert(e);
+            alert('Amount cannot be empty.');
         }
     }
 
@@ -64,7 +68,11 @@ function GroupScreen({
             enabled
             keyboardVerticalOffset={calcHeight(10)}
         >
-            <SafeAreaView style={styles.container}>
+            <ScrollView
+                style={{
+                    flex: 1,
+                }}
+            >
                 <View style={styles.header}>
                     <View style={styles.headerItem}>
                         <UserAvatar user={payment.from} />
@@ -97,26 +105,29 @@ function GroupScreen({
                             placeholder="Description"
                             placeholderTextColor="#ccc"
                             ref={descriptionRef}
-                            textAlign="center"
                             multiline={true}
-                            numberOfLines={4}
+                            // numberOfLines={4}
+                            textAlign="center"
                         />
                     </Pressable>
                     <Text style={styles.remainingCharacter}>{remainingChars} left</Text>
                 </View>
-                <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: calcHeight(2) }}>
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        marginBottom: calcWidth(20),
+                    }}
+                >
                     <Button onPress={submitPayment} title="Record as Cash Payment" />
                 </View>
-            </SafeAreaView>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -130,16 +141,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     description: {
-        flex: 1,
         color: 'white',
     },
     descriptionContainer: {
-        flexDirection: 'row',
+        padding: calcWidth(2.2),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        width: calcWidth(30),
-        marginTop: calcHeight(1),
+        maxWidth: calcWidth(80),
+        maxHeight: calcWidth(20),
+        marginTop: calcWidth(2),
     },
     remainingCharacter: {
         paddingTop: calcHeight(1),

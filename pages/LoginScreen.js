@@ -4,7 +4,6 @@ import {
     Text,
     TextInput,
     StyleSheet,
-    SafeAreaView,
     Image,
     TouchableOpacity,
     FlatList,
@@ -73,7 +72,7 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
                     <Image source={LoginImage} style={styles.image} resizeMode="contain" />
@@ -162,15 +161,11 @@ const LoginScreen = ({ navigation }) => {
                     </View>
                 </KeyboardAvoidingView>
             </Modal>
-        </SafeAreaView>
+        </>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     innerContainer: {
         paddingHorizontal: calcWidth(5),
         marginTop: calcHeight(5),

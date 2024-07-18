@@ -75,15 +75,12 @@ const QRCodeScanner = ({ navigation }) => {
         if (!barcodeScanEnabled) return;
         try {
             const url = new URL(data);
-
             const params = parseQueryString(url.query);
-
             // Initialize an object to store extracted parameters
             const extractedParams = {
                 receiverId: '',
-                // Add other common parameters here
+                description: params['tn'] || '',
             };
-
             // Check the URL scheme to identify UPI and extract relevant data
             if (url.protocol === 'upi:') {
                 extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId

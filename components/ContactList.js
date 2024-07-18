@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, FlatList, Pressable, Alert, Keyboard } from 'react-native';
 import ContactCard from './ContactCard';
 import Search from './Search';
@@ -7,10 +7,10 @@ import { calcHeight } from '../helper/res';
 import openSettings from '../helper/openSettings';
 import { Button } from 'react-native-paper';
 import COLOR from '../constants/Colors';
+import AddMemberWithoutContact from './AddMemberWithoutContact';
 
 const ContactList = ({ eliminatedContacts }) => {
     const { search, setSearch, contacts, selectedContacts, handleSelectContact, setSelectedContacts, contactPermission } = useContacts();
-
     const flatListRef = useRef(null);
 
     useEffect(() => {
@@ -44,12 +44,12 @@ const ContactList = ({ eliminatedContacts }) => {
     return (
         <View>
             <Search search={search} setSearch={setSearch} />
+            <View>
+                <AddMemberWithoutContact />
+            </View>
             {contactPermission ? (
                 <FlatList
                     ref={flatListRef}
-                    style={{
-                        marginTop: calcHeight(5),
-                    }}
                     data={eliminateContacts()}
                     keyExtractor={(item) => item.phoneNumber}
                     renderItem={({ item }) => (

@@ -11,8 +11,11 @@ import useNetwork from '../../hooks/useNetwork';
 import { useAuth } from '../../stores/auth';
 import apiHelper from '../../helper/apiHelper';
 import { useNavigation } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MESSAGE_COMPOSER_PADDING } from '../../constants/constants';
 
 const MessageComposer = () => {
+    const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
     const { setTransactionData, resetTransaction } = useTransaction();
@@ -93,7 +96,16 @@ const MessageComposer = () => {
                     </Text>
                 </Pressable>
             </View> */}
-            <View style={styles.bottomContainer}>
+            <View
+                style={[
+                    styles.bottomContainer,
+                    {
+                        paddingHorizontal: calcWidth(5),
+                        paddingTop: MESSAGE_COMPOSER_PADDING,
+                        paddingBottom: MESSAGE_COMPOSER_PADDING > insets.bottom ? MESSAGE_COMPOSER_PADDING : insets.bottom,
+                    },
+                ]}
+            >
                 <View style={styles.row}>
                     <Pressable
                         style={{
@@ -170,7 +182,6 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: calcWidth(3),
         borderTopRightRadius: calcWidth(3),
         alignContent: 'center',
-        padding: calcWidth(5),
         backgroundColor: '#111016',
         minHeight: calcWidth(21),
     },

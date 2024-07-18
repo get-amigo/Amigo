@@ -16,6 +16,8 @@ const headerIconSize = calcHeight(1);
 import NetInfo from '@react-native-community/netinfo';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 import { useBalance } from '../stores/balance';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
@@ -109,7 +111,7 @@ function BalanceScreen({ navigation }) {
         );
 
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <View
                 style={{
                     flexDirection: 'row',
@@ -209,7 +211,7 @@ function BalanceScreen({ navigation }) {
                     }}
                 />
             )}
-        </>
+        </SafeAreaView>
     );
 }
 

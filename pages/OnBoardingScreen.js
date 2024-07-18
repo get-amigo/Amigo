@@ -7,33 +7,37 @@ import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import Button from '../components/Button';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const OnboardingScreen = ({ navigation }) => {
     return (
-        <View style={styles.container}>
-            <View style={styles.innerContainer}>
-                <Image source={OnboardingImage} style={styles.image} resizeMode="contain" />
-                <Text style={styles.title}>Group payments made easy</Text>
-                <Text style={styles.subtitle}>Keep track of your shared expenses and balances</Text>
-                <Button title="Continue with Phone number" onPress={() => navigation.navigate(PAGES.LOGIN)} />
-                <Text
-                    style={{
-                        marginVertical: calcHeight(2),
-                        color: '#8c89a1',
-                        fontSize: getFontSizeByWindowWidth(8),
-                    }}
-                >
-                    By Pressing on "Continue with Phone Number" you agree to our{' '}
-                    <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy')}>
-                        Privacy Policy
-                    </Text>{' '}
-                    and{' '}
-                    <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms')}>
-                        Terms and Conditions
+        <SafeAreaView style={safeAreaStyle}>
+            <View style={styles.container}>
+                <View style={styles.innerContainer}>
+                    <Image source={OnboardingImage} style={styles.image} resizeMode="contain" />
+                    <Text style={styles.title}>Group payments made easy</Text>
+                    <Text style={styles.subtitle}>Keep track of your shared expenses and balances</Text>
+                    <Button title="Continue with Phone number" onPress={() => navigation.navigate(PAGES.LOGIN)} />
+                    <Text
+                        style={{
+                            marginVertical: calcHeight(2),
+                            color: '#8c89a1',
+                            fontSize: getFontSizeByWindowWidth(8),
+                        }}
+                    >
+                        By Pressing on "Continue with Phone Number" you agree to our{' '}
+                        <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy')}>
+                            Privacy Policy
+                        </Text>{' '}
+                        and{' '}
+                        <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms')}>
+                            Terms and Conditions
+                        </Text>
                     </Text>
-                </Text>
+                </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 

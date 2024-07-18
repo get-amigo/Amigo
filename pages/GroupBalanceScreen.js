@@ -10,6 +10,8 @@ import Cross from '../assets/icons/cross.png';
 import UserAvatar from '../components/UserAvatar';
 import apiHelper from '../helper/apiHelper';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function GroupBalanceScreen({ navigation, route }) {
     const { group } = route.params;
@@ -60,7 +62,7 @@ function GroupBalanceScreen({ navigation, route }) {
     }, [user]);
 
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <View style={styles.header}>
                 <Pressable onPress={() => navigation.goBack()}>
                     <Image style={styles.crossIcon} source={Cross} />
@@ -112,7 +114,7 @@ function GroupBalanceScreen({ navigation, route }) {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#8740FD']} progressBackgroundColor="#342F4F" />
                 }
             />
-        </>
+        </SafeAreaView>
     );
 }
 

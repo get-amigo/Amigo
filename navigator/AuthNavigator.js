@@ -28,9 +28,13 @@ const AuthNavigator = (
                     }}
                     component={OnboardingScreen}
                 />
-                <Stack.Screen name={PAGES.LOGIN} component={LoginScreen} />
+                <Stack.Screen name={PAGES.LOGIN} component={LoginScreen} options={{
+                    animation :"fade" 
+                }}/>
 
-                <Stack.Screen name={PAGES.OTP} component={OTPScreen} />
+                <Stack.Screen name={PAGES.OTP} component={OTPScreen} options={{
+                    animation :"ios" 
+                }}/>
             </Stack.Group>
         </Stack.Navigator>
     </OtpProvider>

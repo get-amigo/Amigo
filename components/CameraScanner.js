@@ -24,11 +24,9 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
     }
     const [scanned, setScanned] = useState(false);
 
-    const handleBarCode = ({ data }) => {
+    const handleBarCode = (event) => {
         setScanned(true);
-
-        data && handleBarCodeScanned(data);
-
+        handleBarCodeScanned(event);
         setTimeout(() => {
             setScanned(false);
         }, 1000);

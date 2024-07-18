@@ -27,55 +27,6 @@ const TransactionDetail = ({
 
     const generateColor = useCustomColor();
 
-    // const handleDeleteTransaction = async () => {
-    //     Alert.alert(
-    //         'Delete Transaction',
-    //         'Are you sure you want to delete this transaction?',
-    //         [
-    //             {
-    //                 text: 'Cancel',
-    //                 onPress: () => {},
-    //                 style: 'cancel',
-    //             },
-    //             {
-    //                 text: 'Delete',
-    //                 onPress: async () => {
-    //                     try {
-    //                         navigation.goBack();
-    //                         deleteExpenseById(transaction._id);
-    //                     } catch (error) {
-    //                         // Handle errors
-    //                         console.log(
-    //                             'An error occurred while deleting the transaction.',
-    //                         );
-    //                     }
-    //                 },
-    //             },
-    //         ],
-    //         { cancelable: false },
-    //     );
-    // };
-
-    // useLayoutEffect(() => {
-    //     navigation.setOptions({
-    //         headerRight: () => (
-    //             <View
-    //                 style={{
-    //                     flexDirection: 'row',
-    //                 }}
-    //             >
-    //                 <TouchableOpacity onPress={handleDeleteTransaction}>
-    //                     <AntDesign
-    //                         name="delete"
-    //                         size={calcWidth(6)}
-    //                         color={COLOR.BUTTON}
-    //                     />
-    //                 </TouchableOpacity>
-    //             </View>
-    //         ),
-    //     });
-    // }, [navigation]);
-
     return (
         <ScrollView alwaysBounceVertical={false}>
             <View

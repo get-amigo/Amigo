@@ -337,7 +337,6 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.APP_BACKGROUND,
     },
     rowCentered: {
-        // flexDirection: 'row',
         justifyContent: 'center',
     },
     amount: {

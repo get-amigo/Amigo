@@ -1,6 +1,6 @@
 // React Native Components and Utilities
 import React from 'react';
-import { StyleSheet, SafeAreaView, View, Text, FlatList, Image, Pressable, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, FlatList, Image, Pressable, TouchableOpacity } from 'react-native';
 
 // Custom Components and Utility Functions
 import GroupIcon from '../components/GroupIcon';

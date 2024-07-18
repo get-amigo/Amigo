@@ -106,8 +106,8 @@ function ExpenseScreen() {
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={onRefresh}
-                            colors={['#8740FD']}
-                            progressBackgroundColor="#342F4F"
+                            colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
                         />
                     }
                 />

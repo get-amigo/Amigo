@@ -33,9 +33,9 @@ const OtpProviderProd = ({ children }: { children: ReactNode }) => {
       try {
         unsubscribe = await onAuthStateChanged(async (firebaseUser) => {
           if (firebaseUser) {
-            setLoading(true);
             const firebaseIdToken = await firebaseUser.getIdToken();
-    
+            
+            setLoading(true);
             const { data: { user, token } } = await apiHelper.post(`/auth/verifyOTP`, { payload: firebaseIdToken });
 
             login({ user, token });

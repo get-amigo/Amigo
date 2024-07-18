@@ -77,7 +77,7 @@ const TransactionDetail = ({
     // }, [navigation]);
 
     return (
-        <ScrollView>
+        <ScrollView alwaysBounceVertical={false}>
             <View
                 style={{
                     alignItems: 'center',
@@ -100,7 +100,7 @@ const TransactionDetail = ({
                         fontSize: getFontSizeByWindowWidth(12),
                     }}
                 >
-                    Create By {transaction.creator.name}
+                    Created By {transaction.creator.name}
                 </Text>
                 <View
                     style={{

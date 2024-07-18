@@ -19,87 +19,13 @@ import { useBalance } from '../stores/balance';
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
-    const { fetchData, loading, totalBalances, balances } = useBalance();
+    const { fetchData, totalBalances, balances } = useBalance();
 
     useFocusEffect(
         useCallback(() => {
             fetchData(user);
         }, []),
     );
-
-    if (loading)
-        return (
-            <>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        margin: calcWidth(headerIconSize),
-                    }}
-                >
-                    <Pressable onPress={() => navigation.navigate(PAGES.SCANNER)}>
-                        <Image
-                            source={ScanIcon}
-                            style={{
-                                width: calcWidth(headerIconSize),
-                                height: calcWidth(headerIconSize),
-                            }}
-                        />
-                    </Pressable>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                        }}
-                    >
-                        <Pressable
-                            onPress={() => {
-                                navigation.navigate(PAGES.ACCOUNT);
-                            }}
-                        >
-                            <UserAvatar user={user} size={4} />
-                        </Pressable>
-                    </View>
-                </View>
-                <View
-                    style={{
-                        padding: calcWidth(2),
-                    }}
-                >
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            backgroundColor: COLOR.SKELETON_MASK_COLOR,
-                            padding: calcHeight(2),
-                            borderRadius: 10,
-                            justifyContent: 'space-between',
-                            marginTop: calcHeight(1),
-                        }}
-                    >
-                        <Text
-                            style={{
-                                color: COLOR.TEXT,
-                                fontWeight: 'bold',
-                            }}
-                        ></Text>
-                        <Text
-                            style={{
-                                color: COLOR.TEXT,
-                                fontWeight: 'bold',
-                            }}
-                        ></Text>
-                    </View>
-                </View>
-                <FlatList
-                    data={[{}, {}, {}]}
-                    renderItem={({ item }) => <GroupBalanceCard group={item} loading />}
-                    style={{
-                        marginTop: calcHeight(5),
-                    }}
-                />
-            </>
-        );
 
     return (
         <>

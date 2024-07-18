@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
@@ -35,6 +35,10 @@ function GroupScreen({
             offlineMessage();
             return;
         }
+        if (amount <= 0) {
+            alert('Amount cannot be 0.');
+            return;
+        }
         setIsLoading(true);
         try {
             const { data } = await apiHelper.post('/payment', {
@@ -51,7 +55,7 @@ function GroupScreen({
             navigation.navigate(PAGES.BALANCE);
         } catch (e) {
             setIsLoading(false);
-            alert(e);
+            alert('Amount cannot be empty.');
         }
     }
 
@@ -64,48 +68,61 @@ function GroupScreen({
             enabled
             keyboardVerticalOffset={calcHeight(10)}
         >
-            <View style={styles.header}>
-                <View style={styles.headerItem}>
-                    <UserAvatar user={payment.from} />
-                    <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
-                        {sliceText(payment.from.name, 10)}
-                    </Text>
+            <ScrollView
+                style={{
+                    flex: 1,
+                }}
+            >
+                <View style={styles.header}>
+                    <View style={styles.headerItem}>
+                        <UserAvatar user={payment.from} />
+                        <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
+                            {sliceText(payment.from.name, 10)}
+                        </Text>
+                    </View>
+                    <View style={{ ...styles.headerItem, justifyContent: 'flex-end', marginTop: calcHeight(1.7) }}>
+                        <Text style={{ color: '#D9D9D9' }}>Paying To</Text>
+                        <AntDesign style={{ marginTop: calcHeight(3) }} name="arrowright" size={24} color="white" />
+                    </View>
+                    <View style={styles.headerItem}>
+                        <UserAvatar user={payment.to} />
+                        <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
+                            {sliceText(payment.to.name, 10)}
+                        </Text>
+                    </View>
                 </View>
-                <View style={{ ...styles.headerItem, justifyContent: 'flex-end', marginTop: calcHeight(1.7) }}>
-                    <Text style={{ color: '#D9D9D9' }}>Paying To</Text>
-                    <AntDesign style={{ marginTop: calcHeight(3) }} name="arrowright" size={24} color="white" />
+                <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
+                <View style={styles.rowCentered}>
+                    <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
+                        <TextInput
+                            style={styles.description}
+                            onChangeText={(text) => {
+                                const remaining = 100 - text.length;
+                                setRemainingChars(remaining >= 0 ? remaining : 0);
+                                setDescription(text.slice(0, 100));
+                            }}
+                            value={description}
+                            placeholder="Description"
+                            placeholderTextColor="#ccc"
+                            ref={descriptionRef}
+                            multiline={true}
+                            // numberOfLines={4}
+                            textAlign="center"
+                        />
+                    </Pressable>
+                    <Text style={styles.remainingCharacter}>{remainingChars} left</Text>
                 </View>
-                <View style={styles.headerItem}>
-                    <UserAvatar user={payment.to} />
-                    <Text style={{ color: COLOR.TEXT, fontWeight: 'bold', marginTop: calcHeight(2) }}>
-                        {sliceText(payment.to.name, 10)}
-                    </Text>
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        marginBottom: calcWidth(20),
+                    }}
+                >
+                    <Button onPress={submitPayment} title="Record as Cash Payment" />
                 </View>
-            </View>
-            <AmountInput amount={amount} handleInputChange={(text) => setAmount(text)} isTextInput />
-            <View style={styles.rowCentered}>
-                <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
-                    <TextInput
-                        style={styles.description}
-                        onChangeText={(text) => {
-                            const remaining = 100 - text.length;
-                            setRemainingChars(remaining >= 0 ? remaining : 0);
-                            setDescription(text.slice(0, 100));
-                        }}
-                        value={description}
-                        placeholder="Description"
-                        placeholderTextColor="#ccc"
-                        ref={descriptionRef}
-                        textAlign="center"
-                        multiline={true}
-                        numberOfLines={4}
-                    />
-                </Pressable>
-                <Text style={styles.remainingCharacter}>{remainingChars} left</Text>
-            </View>
-            <View style={{ flex: 1, alignItems: 'center', justifyContent: 'flex-end', marginBottom: calcHeight(2) }}>
-                <Button onPress={submitPayment} title="Record as Cash Payment" />
-            </View>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 }
@@ -124,16 +141,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     description: {
-        flex: 1,
         color: 'white',
     },
     descriptionContainer: {
-        flexDirection: 'row',
+        padding: calcWidth(2.2),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        width: calcWidth(30),
-        marginTop: calcHeight(1),
+        maxWidth: calcWidth(80),
+        maxHeight: calcWidth(20),
+        marginTop: calcWidth(2),
     },
     remainingCharacter: {
         paddingTop: calcHeight(1),

@@ -1,34 +1,38 @@
-import React, { useEffect, useState, useLayoutEffect, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ScrollView, TextInput, Image, Share, Alert } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { DEEP_LINK_URL } from '@env';
+import { Ionicons, Octicons } from '@expo/vector-icons';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Alert, FlatList, Image, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import AddMembersImage from '../assets/icons/addMembers.png';
+import ShareImage from '../assets/icons/share.png';
 import GroupIcon from '../components/GroupIcon';
 import Loader from '../components/Loader';
 import UserAvatar from '../components/UserAvatar';
-import { useGroup } from '../context/GroupContext';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
-import apiHelper from '../helper/apiHelper';
+import { GROUP_NAME_MAX_LENGTH } from '../constants/constants';
 import PAGES from '../constants/pages';
-import { Octicons } from '@expo/vector-icons';
+import { useGroup } from '../context/GroupContext';
+import apiHelper from '../helper/apiHelper';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import showToast from '../helper/Toast';
 
 const MemberItem = ({ name, phone, _id }) => (
     <View style={styles.memberItem}>
         {name && _id && <UserAvatar user={{ name, _id }} />}
-        <View
-            style={[
-                styles.memberInfo,
-                {
-                    gap: calcHeight(1),
-                },
-            ]}
-        >
+        <View style={styles.memberInfo}>
             <Text style={styles.memberName}>{name}</Text>
             <Text style={styles.memberPhone}>{phone}</Text>
         </View>
     </View>
 );
+
+function convertToCustomFormat(dateString) {
+    const date = new Date(dateString);
+    const dateOptions = { day: 'numeric', month: 'short', year: 'numeric' };
+    const timeOptions = { hour: '2-digit', minute: '2-digit' };
+    const formattedDate = date.toLocaleDateString('en-IN', dateOptions);
+    const formattedTime = date.toLocaleTimeString('en-IN', timeOptions);
+    return formattedDate + ', ' + formattedTime;
+}
 
 const GroupScreen = ({
     navigation,
@@ -42,6 +46,8 @@ const GroupScreen = ({
     const [groupName, setGroupName] = useState();
     const groupRef = useRef();
     const [loading, setLoading] = useState(false);
+
+    const inputRef = useRef(null);
 
     useEffect(() => {
         setGroupMembers(group.members);
@@ -76,15 +82,15 @@ const GroupScreen = ({
 
     const leaveGroupAlert = () => {
         Alert.alert(
-            'Leave Group',
-            'Do you really want to leave the group',
+            'Confirm group exit',
+            'Are you sure you want to leave the group?',
             [
                 {
                     text: 'Cancel',
                     style: 'cancel',
                 },
                 {
-                    text: 'Exit',
+                    text: 'Yes, leave the group',
                     onPress: leaveGroup,
                     style: 'destructive', // Set the style to destructive to make it red
                 },
@@ -97,16 +103,18 @@ const GroupScreen = ({
 
     useLayoutEffect(() => {
         navigation.setOptions({
+            headerTitleAlign: isEditing ? 'center' : 'left',
             headerLeft: () =>
                 isEditing ? (
                     <TouchableOpacity onPress={() => setIsEditing(false)}>
-                        <Text style={[{ fontWeight: 'bold', color: COLOR.TEXT }]}>Cancel</Text>
+                        <Text style={styles.headerBtn}>Cancel</Text>
                     </TouchableOpacity>
                 ) : undefined,
+
             headerRight: () =>
                 isEditing ? (
                     <TouchableOpacity onPress={() => submitGroupData()}>
-                        <Text style={[{ fontWeight: 'bold', color: COLOR.TEXT }]}>Done</Text>
+                        <Text style={styles.headerBtn}>Done</Text>
                     </TouchableOpacity>
                 ) : undefined,
         });
@@ -114,62 +122,17 @@ const GroupScreen = ({
 
     const renderMemberItem = ({ item }) => <MemberItem name={item.name} phone={item.phoneNumber} _id={item._id} />;
 
-    const renderListHeader = () => (
-        <>
-            <TouchableOpacity
-                onPress={() => {
-                    navigation.navigate(PAGES.ADD_PEOPLE);
-                }}
-                style={styles.memberItem}
-            >
-                <Image source={require('../assets/icons/addMembers.png')} style={{ height: calcHeight(5), width: calcHeight(5) }} />
-                <View
-                    style={{
-                        marginLeft: calcWidth(3),
-                    }}
-                >
-                    <Text style={styles.buttonText}>Add new members</Text>
+    function renderListHeader() {
+        return (
+            <>
+                <View style={styles.centeredView}>
+                    <GroupIcon size={10} groupId={group._id} />
                 </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.memberItem} onPress={shareGroupLink}>
-                <Image source={require('../assets/icons/share.png')} style={{ height: calcHeight(5), width: calcHeight(5) }} />
-                <View
-                    style={{
-                        marginLeft: calcWidth(3),
-                    }}
-                >
-                    <Text style={styles.buttonText}>Share Group Link</Text>
-                </View>
-            </TouchableOpacity>
-        </>
-    );
-
-    const renderListFooter = () =>
-        !balance && (
-            <TouchableOpacity style={styles.memberItem} onPress={leaveGroupAlert}>
-                <Ionicons name="exit-outline" size={calcHeight(5)} color="rgba(253 ,64,9, 0.59)" />
-                <View
-                    style={{
-                        marginLeft: calcWidth(3),
-                    }}
-                >
-                    <Text style={{ color: 'rgba(253 ,64,9, 0.59)' }}>Leave Group</Text>
-                </View>
-            </TouchableOpacity>
-        );
-
-    return loading ? (
-        <Loader />
-    ) : (
-        <ScrollView>
-            <TouchableOpacity style={styles.centeredView}>
-                <GroupIcon size={10} groupId={group._id} />
-            </TouchableOpacity>
-            <View style={styles.header}>
-                <View style={styles.groupInfo}>
-                    <View style={styles.spacing}>
+                <View style={styles.header}>
+                    <View style={styles.nameWrapper}>
                         {isEditing ? (
                             <TextInput
+                                ref={inputRef}
                                 onChangeText={(text) => {
                                     setGroupName(text);
                                     groupRef.current = text;
@@ -177,55 +140,88 @@ const GroupScreen = ({
                                 value={groupName}
                                 autoFocus
                                 style={styles.groupName}
+                                maxLength={GROUP_NAME_MAX_LENGTH}
                             />
                         ) : (
                             <Text style={styles.groupName}>{groupName}</Text>
                         )}
 
-                        <Text style={styles.groupCreatedAt}>Created on 25 Dec 2023, 10:32 PM</Text>
+                        <TouchableOpacity onPress={() => setIsEditing((prev) => !prev)} style={styles.editIcon}>
+                            <Octicons name="pencil" size={calcWidth(6)} color="white" />
+                        </TouchableOpacity>
                     </View>
+                    {/* char remaining */}
+                    {isEditing && (
+                        <View style={styles.remainingCharacters}>
+                            <Text style={styles.characterCount}>{GROUP_NAME_MAX_LENGTH - groupName?.length} characters left</Text>
+                        </View>
+                    )}
+                    <Text style={styles.groupCreatedAt}>Created on {convertToCustomFormat(group.createdAt)}</Text>
                 </View>
-                <TouchableOpacity onPress={() => setIsEditing((prev) => !prev)}>
-                    <Octicons name="pencil" size={calcHeight(3)} color="white" />
+                <TouchableOpacity
+                    onPress={() => {
+                        navigation.navigate(PAGES.ADD_PEOPLE);
+                    }}
+                    style={styles.memberItem}
+                >
+                    <Image source={AddMembersImage} style={styles.icon} />
+                    <Text style={styles.buttonText}>Add new members</Text>
                 </TouchableOpacity>
-            </View>
+                <TouchableOpacity style={styles.memberItem} onPress={shareGroupLink}>
+                    <Image source={ShareImage} style={styles.icon} />
+                    <Text style={styles.buttonText}>Share Group Link</Text>
+                </TouchableOpacity>
+            </>
+        );
+    }
 
-            <View style={styles.memberListContainer}>
-                <View style={styles.listHeader}>
-                    <Text style={styles.totalMembersTitle}>Total Members</Text>
-                </View>
-                <FlatList
-                    data={groupMembers}
-                    keyExtractor={(item, index) => index.toString()}
-                    renderItem={renderMemberItem}
-                    ListHeaderComponent={renderListHeader}
-                    ListFooterComponent={renderListFooter}
-                />
-            </View>
-        </ScrollView>
+    const renderListFooter = () =>
+        !balance && (
+            <TouchableOpacity style={styles.memberItem} onPress={leaveGroupAlert}>
+                <Ionicons name="exit-outline" size={calcHeight(5)} color="rgba(253 ,64,9, 0.59)" />
+
+                <Text style={styles.leaveGroupText}>Leave Group</Text>
+            </TouchableOpacity>
+        );
+
+    return loading ? (
+        <Loader />
+    ) : (
+        <View style={styles.faltListContainer}>
+            <FlatList
+                data={groupMembers}
+                keyExtractor={(item, index) => index.toString()}
+                renderItem={renderMemberItem}
+                ListHeaderComponent={renderListHeader()}
+                ListFooterComponent={renderListFooter}
+            />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         margin: calcHeight(1),
         padding: calcHeight(2),
+        borderBottomWidth: 1,
+        borderBottomColor: COLOR.BORDER_COLOR,
     },
-    groupInfo: {
+    nameWrapper: {
         flexDirection: 'row',
-        alignItems: 'center',
+        flex: 1,
+        gap: calcWidth(4),
     },
     groupName: {
         fontSize: getFontSizeByWindowWidth(15),
         fontWeight: 'bold',
         color: COLOR.TEXT,
+        width: calcWidth(75),
     },
+
     groupCreatedAt: {
         fontSize: getFontSizeByWindowWidth(10),
         color: COLOR.TEXT,
+        marginTop: calcWidth(2.2),
     },
     totalMembersTitle: {
         fontSize: getFontSizeByWindowWidth(12),
@@ -243,6 +239,7 @@ const styles = StyleSheet.create({
     memberInfo: {
         flex: 1,
         marginLeft: calcWidth(3),
+        gap: calcHeight(1),
     },
     memberName: {
         fontSize: getFontSizeByWindowWidth(12),
@@ -255,13 +252,13 @@ const styles = StyleSheet.create({
     },
     centeredView: {
         alignItems: 'center',
-        margin: calcHeight(5),
+        margin: calcWidth(11),
     },
     spacing: {
-        gap: calcHeight(1),
+        gap: calcWidth(2),
     },
     listHeader: {
-        marginBottom: calcHeight(2),
+        marginBottom: calcWidth(4),
         padding: calcWidth(5),
         borderBottomColor: COLOR.BORDER_COLOR,
         borderBottomWidth: 1,
@@ -270,7 +267,23 @@ const styles = StyleSheet.create({
         color: COLOR.BUTTON,
         fontSize: getFontSizeByWindowWidth(12),
         fontWeight: 'bold',
+        marginLeft: calcWidth(3),
     },
+    characterCount: {
+        fontSize: 10,
+        color: COLOR.TEXT,
+        textAlign: 'left',
+    },
+    headerBtn: { fontWeight: 'bold', color: COLOR.TEXT },
+    editIcon: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        flex: 1,
+    },
+    remainingCharacters: { marginTop: 4 },
+    icon: { height: calcHeight(5), width: calcHeight(5) },
+    leaveGroupText: { color: 'rgba(253 ,64,9, 0.59)', marginLeft: calcWidth(3) },
+    faltListContainer: { flex: 1 },
 });
 
 export default GroupScreen;

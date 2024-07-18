@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, RefreshControl } from 'react-native';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import FabIcon from '../components/FabIcon';
@@ -21,13 +21,94 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
-    const { fetchData, totalBalances, balances } = useBalance();
+    const { fetchData, loading, totalBalances, balances } = useBalance();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             fetchData(user);
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, [user]);
+
+    if (loading)
+        return (
+            <>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        margin: calcWidth(headerIconSize),
+                    }}
+                >
+                    <Pressable onPress={() => navigation.navigate(PAGES.SCANNER)}>
+                        <Image
+                            source={ScanIcon}
+                            style={{
+                                width: calcWidth(headerIconSize),
+                                height: calcWidth(headerIconSize),
+                            }}
+                        />
+                    </Pressable>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                        }}
+                    >
+                        <Pressable
+                            onPress={() => {
+                                navigation.navigate(PAGES.ACCOUNT);
+                            }}
+                        >
+                            <UserAvatar user={user} size={4} />
+                        </Pressable>
+                    </View>
+                </View>
+                <View
+                    style={{
+                        padding: calcWidth(2),
+                    }}
+                >
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            backgroundColor: COLOR.SKELETON_MASK_COLOR,
+                            padding: calcHeight(2),
+                            borderRadius: 10,
+                            justifyContent: 'space-between',
+                            marginTop: calcHeight(1),
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: COLOR.TEXT,
+                                fontWeight: 'bold',
+                            }}
+                        ></Text>
+                        <Text
+                            style={{
+                                color: COLOR.TEXT,
+                                fontWeight: 'bold',
+                            }}
+                        ></Text>
+                    </View>
+                </View>
+                <FlatList
+                    data={[{}, {}, {}]}
+                    renderItem={({ item }) => <GroupBalanceCard group={item} loading />}
+                    style={{
+                        marginTop: calcHeight(5),
+                    }}
+                />
+            </>
+        );
 
     return (
         <SafeAreaView style={safeAreaStyle}>
@@ -113,6 +194,14 @@ function BalanceScreen({ navigation }) {
                     style={{
                         marginTop: calcHeight(5),
                     }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                        />
+                    }
                 />
             )}
             {balances && balances.length != 0 && (

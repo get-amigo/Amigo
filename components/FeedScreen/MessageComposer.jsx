@@ -100,7 +100,7 @@ const MessageComposer = () => {
                 style={[
                     styles.bottomContainer,
                     {
-                        paddingHorizontal: calcWidth(5),
+                        paddingHorizontal: calcWidth(2.8),
                         paddingTop: MESSAGE_COMPOSER_PADDING,
                         paddingBottom: MESSAGE_COMPOSER_PADDING > insets.bottom ? MESSAGE_COMPOSER_PADDING : insets.bottom,
                     },
@@ -183,7 +183,6 @@ const styles = StyleSheet.create({
         borderTopRightRadius: calcWidth(3),
         alignContent: 'center',
         backgroundColor: '#111016',
-        minHeight: calcWidth(21),
     },
     row: {
         alignContent: 'center',

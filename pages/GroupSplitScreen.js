@@ -263,7 +263,8 @@ const GroupSplitScreen = ({ navigation }) => {
                         alignItems: 'center',
                         borderWidth: 1,
                         padding: calcHeight(0.5),
-                        borderColor: '#D9D9D9',
+                        gap:calcWidth(1),
+                        borderColor: COLOR.SECONDARY_BORDER_COLOR,
                         borderRadius: 5,
                     }}
                 >

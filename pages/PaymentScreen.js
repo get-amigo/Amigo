@@ -1,6 +1,6 @@
 import { AntDesign } from '@expo/vector-icons';
-import React, { useRef, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { View, Text, StyleSheet, TextInput, Pressable, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
@@ -34,6 +34,10 @@ function GroupScreen({
             offlineMessage();
             return;
         }
+        if (amount <= 0) {
+            alert('Amount cannot be 0.');
+            return;
+        }
         setIsLoading(true);
         try {
             const { data } = await apiHelper.post('/payment', {
@@ -50,7 +54,7 @@ function GroupScreen({
             navigation.navigate(PAGES.BALANCE);
         } catch (e) {
             setIsLoading(false);
-            alert(e);
+            alert('Amount cannot be empty.');
         }
     }
 
@@ -91,7 +95,7 @@ function GroupScreen({
                             placeholder="Description"
                             placeholderTextColor="gray"
                             textAlign={description?.length === 0 ? 'left' : 'center'}
-                            multiline={true}
+                            multiline
                             maxLength={100}
                             scrollEnabled
                             ref={descriptionRef}

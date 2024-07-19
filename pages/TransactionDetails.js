@@ -1,18 +1,19 @@
+import { AntDesign, Entypo } from '@expo/vector-icons';
 import React, { useState, useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
-import { AntDesign, Entypo } from '@expo/vector-icons';
-import COLOR from '../constants/Colors';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
-import { getCategoryIcon } from '../constants/Categories';
-import apiHelper from '../helper/apiHelper';
-import useCustomColor from '../hooks/useCustomColor';
-import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
-import SharedList from '../components/SharedList';
-import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
-import TransactionDetailsButton from '../components/TransactionDetailsButton';
-import sliceText from '../helper/sliceText';
+
 import CalendarIcon from '../assets/icons/calendar.png';
 import AmountInput from '../components/AmountInput';
+import SharedList from '../components/SharedList';
+import TransactionDetailsButton from '../components/TransactionDetailsButton';
+import { getCategoryIcon } from '../constants/Categories';
+import COLOR from '../constants/Colors';
+import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
+import apiHelper from '../helper/apiHelper';
+import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
+import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import sliceText from '../helper/sliceText';
+import useCustomColor from '../hooks/useCustomColor';
 import { useExpense } from '../stores/expense';
 
 const TransactionDetail = ({
@@ -27,57 +28,8 @@ const TransactionDetail = ({
 
     const generateColor = useCustomColor();
 
-    // const handleDeleteTransaction = async () => {
-    //     Alert.alert(
-    //         'Delete Transaction',
-    //         'Are you sure you want to delete this transaction?',
-    //         [
-    //             {
-    //                 text: 'Cancel',
-    //                 onPress: () => {},
-    //                 style: 'cancel',
-    //             },
-    //             {
-    //                 text: 'Delete',
-    //                 onPress: async () => {
-    //                     try {
-    //                         navigation.goBack();
-    //                         deleteExpenseById(transaction._id);
-    //                     } catch (error) {
-    //                         // Handle errors
-    //                         console.log(
-    //                             'An error occurred while deleting the transaction.',
-    //                         );
-    //                     }
-    //                 },
-    //             },
-    //         ],
-    //         { cancelable: false },
-    //     );
-    // };
-
-    // useLayoutEffect(() => {
-    //     navigation.setOptions({
-    //         headerRight: () => (
-    //             <View
-    //                 style={{
-    //                     flexDirection: 'row',
-    //                 }}
-    //             >
-    //                 <TouchableOpacity onPress={handleDeleteTransaction}>
-    //                     <AntDesign
-    //                         name="delete"
-    //                         size={calcWidth(6)}
-    //                         color={COLOR.BUTTON}
-    //                     />
-    //                 </TouchableOpacity>
-    //             </View>
-    //         ),
-    //     });
-    // }, [navigation]);
-
     return (
-        <ScrollView>
+        <ScrollView alwaysBounceVertical={false}>
             <View
                 style={{
                     alignItems: 'center',
@@ -100,7 +52,7 @@ const TransactionDetail = ({
                         fontSize: getFontSizeByWindowWidth(12),
                     }}
                 >
-                    Create By {transaction.creator.name}
+                    Created By {transaction.creator.name}
                 </Text>
                 <View
                     style={{

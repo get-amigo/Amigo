@@ -1,12 +1,13 @@
+import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
-import { useAuth } from '../stores/auth';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import UserAvatar from '../components/UserAvatar';
-import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+
 import MenuOption from '../components/AccountPageOption';
+import UserAvatar from '../components/UserAvatar';
+import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
 
 function ProfileScreen({ navigation }) {

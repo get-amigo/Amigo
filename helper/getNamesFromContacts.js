@@ -15,7 +15,7 @@ async function getNamesFromContacts() {
     });
 
     // Create an object to store the formatted contact names
-    let contactNames = {};
+    const contactNames = {};
 
     // Iterate through each contact
     data.forEach((contact) => {

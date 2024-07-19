@@ -1,14 +1,15 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import COLOR from '../constants/Colors';
-import LoginImage from '../assets/Login.png';
-import { useNavigation } from '@react-navigation/native';
-import PAGES from '../constants/pages';
+
 import GroupIcon from './GroupIcon';
+import LoginImage from '../assets/Login.png';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
-import getMembersString from '../utility/getMembersString';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
+import getMembersString from '../utility/getMembersString';
 function GroupCard({ group, loading }) {
     if (loading)
         return (
@@ -24,7 +25,7 @@ function GroupCard({ group, loading }) {
                                 borderRadius: 10,
                             },
                         ]}
-                    ></Text>
+                    />
                     <Text
                         style={[
                             styles.memberText,
@@ -34,7 +35,7 @@ function GroupCard({ group, loading }) {
                                 borderRadius: 10,
                             },
                         ]}
-                    ></Text>
+                    />
                 </View>
             </View>
         );

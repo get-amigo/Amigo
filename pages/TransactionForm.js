@@ -13,11 +13,11 @@ import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
 import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
-import checkConnectivity from '../helper/getNetworkStateAsync';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
-import { useGroupActivitiesStore } from '../stores/groupActivities';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 function TransactionFormScreen({ navigation }) {
     const [loading, setIsLoading] = useState(false);
@@ -25,8 +25,10 @@ function TransactionFormScreen({ navigation }) {
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
+    const isConnected = useNetwork();
 
-    const { setActivitiesHash, getActivities } = useGroupActivitiesStore();
+    const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
+    const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
     useEffect(() => {
         const { group } = transactionData;
@@ -58,6 +60,7 @@ function TransactionFormScreen({ navigation }) {
             setTransactionData((prev) => ({
                 ...prev,
                 amount: upiParams.am || '',
+                description: upiParams.description || '',
             }));
         }
         return () => {
@@ -128,33 +131,38 @@ function TransactionFormScreen({ navigation }) {
                 activityType: 'transaction',
             };
 
-            const activities = Array.from(getActivities(newTransaction.group));
-            setActivitiesHash(newTransaction.group, [newActivity, ...activities]);
+            if (isConnected) {
+                const { activityId, relatedId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
+                const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
 
-            const isOnline = await checkConnectivity();
-
-            if (isOnline) {
                 apiHelper
-                    .post('/transaction', newTransaction)
+                    .post('/transaction', newTransactionWithId)
                     .then((res) => {
-                        setActivitiesHash(newTransaction.group, [
-                            {
-                                ...newActivity,
-                                synced: true,
-                            },
-                            ...activities,
-                        ]);
+                        setUpiParams({});
+                        //                         setActivitiesHash(newTransaction.group, [
+                        //                             {
+                        //                                 ...newActivity,
+                        //                                 synced: true,
+                        //                             },
+                        //                             ...activities,
+                        //                         ]);
+                        updateIsSynced({
+                            _id: activityId,
+                            group: newActivity.relatedId.group._id,
+                        });
                     })
                     .catch((err) => {
-                        console.log('error', err);
+                        console.log('error in api post', err);
                         Alert.alert('Error', JSON.stringify(err));
                     });
+            } else {
+                addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
             }
 
             if (upiParams.receiverId) {
                 setUpiParams((prev) => ({
                     ...prev,
-                    am: newActivity.amount,
+                    am: transactionData.amount.toString(),
                 }));
                 navigation.navigate(PAGES.UPI_APP_SELECTION);
                 return;
@@ -177,7 +185,7 @@ function TransactionFormScreen({ navigation }) {
     return loading ? (
         <Loader />
     ) : (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} alwaysBounceVertical={false}>
             <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
             <View style={styles.rowCentered}>
@@ -191,7 +199,7 @@ function TransactionFormScreen({ navigation }) {
                         placeholderTextColor="gray"
                         textAlign={transactionData?.description?.length === 0 ? 'left' : 'center'}
                         maxLength={100}
-                        multiline={true}
+                        multiline
                         scrollEnabled
                     />
                 </Pressable>
@@ -273,9 +281,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: calcWidth(3),
     },
     descriptionContainer: {
-        flexDirection: 'row',
         alignSelf: 'center',
-        padding: calcWidth(3),
+        padding: calcWidth(2.2),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,

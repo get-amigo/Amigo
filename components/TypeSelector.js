@@ -1,12 +1,12 @@
+import { AntDesign } from '@expo/vector-icons';
 import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, Text, Image, Modal, View, FlatList, Pressable, StyleSheet } from 'react-native';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import COLOR from '../constants/Colors';
+
 import typeIcon from '../assets/icons/type.png';
-import Categories from '../constants/Categories';
-import { AntDesign } from '@expo/vector-icons';
 import CheckBox from '../components/CheckBox';
-import { getCategoryIcon } from '../constants/Categories';
+import Categories, { getCategoryIcon } from '../constants/Categories';
+import COLOR from '../constants/Colors';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useExpense } from '../stores/expense';
 
 const TypeSelector = () => {
@@ -77,7 +77,7 @@ const TypeSelector = () => {
             </TouchableOpacity>
             <Modal
                 animationType="slide"
-                transparent={true}
+                transparent
                 visible={modalVisible}
                 onRequestClose={() => {
                     setModalVisible(false);

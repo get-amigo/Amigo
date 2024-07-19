@@ -107,6 +107,7 @@ function ExpenseScreen() {
                             refreshing={refreshing}
                             onRefresh={onRefresh}
                             colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
                             progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
                         />
                     }

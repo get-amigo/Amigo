@@ -58,6 +58,7 @@ function TransactionFormScreen({ navigation }) {
             setTransactionData((prev) => ({
                 ...prev,
                 amount: upiParams.am || '',
+                description: upiParams.description || '',
             }));
         }
         return () => {
@@ -140,10 +141,20 @@ function TransactionFormScreen({ navigation }) {
                 apiHelper
                     .post('/transaction', newTransactionWithId)
                     .then((res) => {
+
+                        setUpiParams({});
+//                         setActivitiesHash(newTransaction.group, [
+//                             {
+//                                 ...newActivity,
+//                                 synced: true,
+//                             },
+//                             ...activities,
+//                         ]);
                         updateIsSynced({
                             _id: activityId,
                             group: newActivity.relatedId.group._id,
                         });
+
                     })
                     .catch((err) => {
                         console.log('error in api post', err);
@@ -156,7 +167,7 @@ function TransactionFormScreen({ navigation }) {
             if (upiParams.receiverId) {
                 setUpiParams((prev) => ({
                     ...prev,
-                    am: newActivity.amount,
+                    am: transactionData.amount.toString(),
                 }));
                 navigation.navigate(PAGES.UPI_APP_SELECTION);
                 return;
@@ -333,7 +344,6 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.APP_BACKGROUND,
     },
     rowCentered: {
-        // flexDirection: 'row',
         justifyContent: 'center',
     },
     amount: {

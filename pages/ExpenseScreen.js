@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, RefreshControl } from 'react-native';
 import { useAuth } from '../stores/auth';
 import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
 import ExpenseCard from '../components/ExpenseCard';
@@ -9,9 +9,12 @@ import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function ExpenseScreen() {
-    const { expense, resetParams, loading } = useExpense();
+    const { expense, resetParams, loading, fetchExpense } = useExpense();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -19,9 +22,15 @@ function ExpenseScreen() {
         }, []),
     );
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchExpense();
+        setRefreshing(false);
+    }, []);
+
     if (loading)
         return (
-            <>
+            <SafeAreaView style={safeAreaStyle}>
                 <Text style={styles.header}>Expense Summary</Text>
                 <View
                     style={{
@@ -56,10 +65,10 @@ function ExpenseScreen() {
                     </View>
                 </View>
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
-            </>
+            </SafeAreaView>
         );
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <Text style={styles.header}>Expense Summary</Text>
             <View
                 style={{
@@ -93,9 +102,17 @@ function ExpenseScreen() {
                     keyExtractor={(item, index) => item.id || index.toString()}
                     renderItem={({ item }) => <ExpenseCard item={item} />}
                     style={styles.list}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                        />
+                    }
                 />
             )}
-        </>
+        </SafeAreaView>
     );
 }
 

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import Toast from 'react-native-root-toast';
 import Loader from '../components/Loader'; // Assuming you have a Loader component
 import PAGES from '../constants/pages'; // Ensure you have the relevant pages constant
 import apiHelper from '../helper/apiHelper'; // And the apiHelper for your API calls
@@ -16,41 +16,22 @@ const InvitationLandingScreen = ({
 
     const handleJoin = async () => {
         try {
-            await apiHelper.post(`group/${groupId}/join`);
-        } catch (e) {}
-        navigation.navigate(PAGES.GROUP_LIST);
+            const { data } = await apiHelper.post(`group/${groupId}/join`);
+            Toast.show(`Joined ${data?.name}`, {
+                duration: Toast.durations.LONG,
+            });
+        } catch (e) {
+            Toast.show('Already in the group', {
+                duration: Toast.durations.LONG,
+            });
+        }
+
+        navigation.navigate(PAGES.TAB_NAVIGATOR, {
+            screen: PAGES.GROUP_LIST,
+        });
     };
 
     return <Loader />;
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    input: {
-        width: '80%',
-        height: 40,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 5,
-        marginBottom: 10,
-        padding: 10,
-    },
-    button: {
-        width: '80%',
-        height: 40,
-        backgroundColor: 'blue',
-        borderRadius: 5,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 16,
-    },
-});
 
 export default InvitationLandingScreen;

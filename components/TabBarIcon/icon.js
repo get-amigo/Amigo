@@ -8,8 +8,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Expense from '../../assets/icons/expense.png';
 import SelectedExpense from '../../assets/icons/selectedExpense.png';
 import { Image } from 'react-native';
-import { calcHeight } from '../../helper/res';
-const size = calcHeight(3);
+import { calcWidth } from '../../helper/res';
+const size = calcWidth(6.5);
 export default ({ focused, screen }) => {
     const icons = {
         [PAGES.BALANCE]: focused ? (

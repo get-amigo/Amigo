@@ -48,16 +48,16 @@ export default [
         generateDeeplink: (params) => generateDeeplink('paytmmp://pay?', params),
         icon: createIcon(PaytmLogo),
     },
-    {
-        name: 'Amazon Pay',
-        generateDeeplink: (params) => generateDeeplink('amazonpay://pay?', params),
-        icon: createIcon(AmazonPayLogo),
-    },
-    {
-        name: 'BHIM UPI',
-        generateDeeplink: (params) => generateDeeplink('bhim://upi/pay?', params),
-        icon: createIcon(BhimLogo),
-    },
+    // {
+    //     name: 'Amazon Pay',
+    //     generateDeeplink: (params) => generateDeeplink('amazonpay://pay?', params),
+    //     icon: createIcon(AmazonPayLogo),
+    // },
+    // {
+    //     name: 'BHIM UPI',
+    //     generateDeeplink: (params) => generateDeeplink('bhim://upi/pay?', params),
+    //     icon: createIcon(BhimLogo),
+    // },
     {
         name: 'Default UPI App',
         generateDeeplink: (params) => generateDeeplink('upi://pay?', params),

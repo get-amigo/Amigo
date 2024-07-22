@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, RefreshControl } from 'react-native';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
 import FabIcon from '../components/FabIcon';
@@ -16,16 +16,25 @@ const headerIconSize = calcHeight(1);
 import NetInfo from '@react-native-community/netinfo';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 import { useBalance } from '../stores/balance';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
     const { fetchData, loading, totalBalances, balances } = useBalance();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             fetchData(user);
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, [user]);
 
     if (loading)
         return (
@@ -102,7 +111,7 @@ function BalanceScreen({ navigation }) {
         );
 
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <View
                 style={{
                     flexDirection: 'row',
@@ -185,6 +194,14 @@ function BalanceScreen({ navigation }) {
                     style={{
                         marginTop: calcHeight(5),
                     }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                        />
+                    }
                 />
             )}
             {balances && balances.length != 0 && (
@@ -194,7 +211,7 @@ function BalanceScreen({ navigation }) {
                     }}
                 />
             )}
-        </>
+        </SafeAreaView>
     );
 }
 

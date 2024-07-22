@@ -9,7 +9,7 @@ import UserAvatar from '../components/UserAvatar';
 function GroupListScreen({ navigation }) {
     const { setTransactionData, transactionData } = useTransaction();
     return (
-        <ScrollView>
+        <ScrollView alwaysBounceVertical={false}>
             {transactionData.group.members.map((member) => (
                 <GroupSelectCard
                     name={member.name}

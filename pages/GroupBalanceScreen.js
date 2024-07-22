@@ -1,5 +1,5 @@
-import React from 'react';
-import { Text, StyleSheet, View, Pressable, FlatList, Image } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { Text, StyleSheet, View, Pressable, FlatList, Image, RefreshControl } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 import GroupIcon from '../components/GroupIcon';
 import COLOR from '../constants/Colors';
@@ -8,19 +8,25 @@ import { useAuth } from '../stores/auth';
 import sliceText from '../helper/sliceText';
 import Cross from '../assets/icons/cross.png';
 import UserAvatar from '../components/UserAvatar';
+import apiHelper from '../helper/apiHelper';
+import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function GroupBalanceScreen({ navigation, route }) {
     const { group } = route.params;
     const { user } = useAuth();
+    const [refreshing, setRefreshing] = useState(null);
+    const [groupData, setGroupData] = useState(group);
 
     // Helper function to render list item
     const renderListItem = ({ item }) => {
-        const isBorrower = group.totalBalance > 0;
-        const balanceColor = group.totalBalance < 0 ? 'red' : '#00C83D';
+        const isBorrower = groupData.totalBalance > 0;
+        const balanceColor = groupData.totalBalance < 0 ? 'red' : '#00C83D';
 
         const handlePress = () => {
             const payment = {
-                group: group._id,
+                group: groupData._id,
                 amount: item.amount,
                 from: isBorrower ? item : user,
                 to: isBorrower ? user : item,
@@ -38,7 +44,7 @@ function GroupBalanceScreen({ navigation, route }) {
                     <View style={styles.amountView}>
                         <Text style={[styles.amountText, { color: balanceColor }]}>₹{item.amount}</Text>
                         <Text style={[styles.subAmountText, { color: balanceColor }]}>
-                            {group.totalBalance < 0 ? 'you owe' : 'you get back'}
+                            {groupData.totalBalance < 0 ? 'you owe' : 'you get back'}
                         </Text>
                     </View>
                     <Ionicons name="chevron-forward" size={calcHeight(2)} color="white" />
@@ -47,14 +53,22 @@ function GroupBalanceScreen({ navigation, route }) {
         );
     };
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        const { data } = await apiHelper(`/balance/${groupData._id}`);
+        const { groups } = await groupBalancesAndCalculateTotal(data, user._id);
+        setGroupData(groups[0]);
+        setRefreshing(false);
+    }, [user]);
+
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <View style={styles.header}>
                 <Pressable onPress={() => navigation.goBack()}>
                     <Image style={styles.crossIcon} source={Cross} />
                 </Pressable>
-                <GroupIcon groupId={group._id} />
-                <Text style={styles.groupName}>{sliceText(group.name, 25)}</Text>
+                <GroupIcon groupId={groupData._id} />
+                <Text style={styles.groupName}>{sliceText(groupData.name, 25)}</Text>
             </View>
             <View style={styles.balanceInfo}>
                 <View style={styles.balanceInfoLeft}>
@@ -62,38 +76,50 @@ function GroupBalanceScreen({ navigation, route }) {
                         style={[
                             styles.indicator,
                             {
-                                backgroundColor: group.totalBalance > 0 ? '#00C83D' : 'red',
+                                backgroundColor: groupData.totalBalance > 0 ? '#00C83D' : 'red',
                             },
                         ]}
                     />
                     <View style={styles.balanceTextContainer}>
                         <Text style={styles.balanceText}>Total Split Balance</Text>
-                        <Text style={styles.subBalanceText}>{group.totalBalance < 0 ? 'you owe' : 'you get back'}</Text>
+                        <Text style={styles.subBalanceText}>{groupData.totalBalance < 0 ? 'you owe' : 'you get back'}</Text>
                     </View>
                 </View>
                 <View style={styles.balanceAmountContainer}>
-                    <Text style={styles.balanceAmount}>₹{Math.abs(group.totalBalance)}</Text>
+                    <Text style={styles.balanceAmount}>₹{Math.abs(groupData.totalBalance)}</Text>
                     <View
                         style={[
                             styles.arrowIconContainer,
                             {
-                                backgroundColor: group.totalBalance > 0 ? '#00C83D' : 'red',
+                                backgroundColor: groupData.totalBalance > 0 ? '#00C83D' : 'red',
                             },
                         ]}
                     >
-                        <Feather name={group.totalBalance > 0 ? 'arrow-up-right' : 'arrow-down-left'} size={calcWidth(2)} color="white" />
+                        <Feather
+                            name={groupData.totalBalance > 0 ? 'arrow-up-right' : 'arrow-down-left'}
+                            size={calcWidth(2)}
+                            color="white"
+                        />
                     </View>
                 </View>
             </View>
 
             {/* List */}
             <FlatList
-                data={group.totalBalance > 0 ? group.borrowers : group.lenders}
+                data={groupData.totalBalance > 0 ? groupData.borrowers : groupData.lenders}
                 keyExtractor={(item) => item._id}
                 renderItem={renderListItem}
                 style={styles.list}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                        progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                    />
+                }
             />
-        </>
+        </SafeAreaView>
     );
 }
 

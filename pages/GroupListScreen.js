@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, StyleSheet, FlatList, View, TextInput, Keyboard } from 'react-native';
+import { Text, StyleSheet, FlatList, View, TextInput, Keyboard, RefreshControl } from 'react-native';
 import Loader from '../components/Loader';
 import apiHelper from '../helper/apiHelper';
 import PAGES from '../constants/pages';
@@ -13,16 +13,25 @@ import NoGroupsImage from '../assets/NoGroups.png';
 import Search from '../components/Search';
 import { useGroupList } from '../stores/groupList';
 import { useAuth } from '../stores/auth';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
     const { user } = useAuth();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             fetchData(user);
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, [user]);
 
     useEffect(() => {
         fetchData(user);
@@ -31,7 +40,7 @@ function GroupListScreen({ navigation }) {
     const filterGroups = () => (search === '' ? groups : groups.filter((group) => group.name.toLowerCase().includes(search.toLowerCase())));
     if (loading)
         return (
-            <>
+            <SafeAreaView style={safeAreaStyle}>
                 <Text style={styles.header}>Groups</Text>
                 <>
                     <View
@@ -59,11 +68,11 @@ function GroupListScreen({ navigation }) {
                     }}
                     loading
                 />
-            </>
+            </SafeAreaView>
         );
 
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <Text style={styles.header}>Groups</Text>
             {groups && groups.length == 0 ? (
                 <EmptyScreen
@@ -91,6 +100,14 @@ function GroupListScreen({ navigation }) {
                         onScroll={() => {
                             Keyboard.dismiss();
                         }}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                                progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                            />
+                        }
                     />
                 </>
             )}
@@ -103,7 +120,7 @@ function GroupListScreen({ navigation }) {
                     }}
                 />
             )}
-        </>
+        </SafeAreaView>
     );
 }
 

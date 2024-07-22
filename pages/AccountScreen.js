@@ -163,7 +163,7 @@ function ProfileScreen({ navigation }) {
                             `${
                                 Platform.OS == 'ios'
                                     ? 'https://apps.apple.com/in/app/amigo/id6483936159'
-                                    : 'https://play.google.com/store/apps/details?id=app.amigo.app&hl=en-US'
+                                    : 'https://play.google.com/store/apps/details?id=app.amigo.app&hl=en_IN'
                             }`,
                     });
                 }}

@@ -130,19 +130,15 @@ function TransactionActivityDetails({ transaction, createdAt, contacts, synced, 
     );
 }
 
-function TransactionActivity({ transaction, createdAt, contacts, synced, creator, highlightColor }) {
+function TransactionActivity({ transaction, createdAt, contacts, synced, creator, highlightColor, activityId }) {
     const { user } = useAuth();
     const navigation = useNavigation();
     const [isModalVisible, setModalVisible] = useState(false);
     const [selectedTransaction, setSelectedTransaction] = useState(null);
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
     const transactionId = transaction._id;
-    const { activityId, groupId } = useGroupActivitiesStore.getState();
-
-    useEffect(() => {
-        console.log('acitivty', activityId);
-        console.log('group', groupId);
-    });
+    const groupId = transaction.group;
+    const deleteActivity = useGroupActivitiesStore((state) => state.deleteActivity);
 
     // TODO : HandleDelete functionality not implemented for Offline Mode
     const handleDelete = async () => {
@@ -158,8 +154,8 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                     text: 'Yes',
                     onPress: async () => {
                         try {
-                            // await apiHelper.delete(`/transaction/${transactionId}`);
-                            console.log('ss', transaction);
+                            await apiHelper.delete(`/transaction/${transactionId}`);
+                            deleteActivity(activityId, groupId);
                             Toast.show('Transaction Deleted', {
                                 duration: Toast.durations.LONG,
                             });
@@ -220,7 +216,6 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
             onLongPress={(event) => {
                 setSelectedTransaction(transaction);
                 setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
-                console.log('id', transactionId);
                 setModalVisible(true);
             }}
             onPress={() => {
@@ -400,7 +395,6 @@ function Feed(props) {
         }
         return null;
     };
-
     return (
         <>
             {showDate && (
@@ -507,7 +501,7 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
     switch (activityType) {
         case 'transaction':
             return {
-                renderActivity: ({ relatedId: transaction, createdAt, contacts, isSynced: synced, creator }) => (
+                renderActivity: ({ relatedId: transaction, createdAt, contacts, isSynced: synced, creator, _id }) => (
                     <TransactionActivity
                         transaction={transaction}
                         createdAt={createdAt}
@@ -515,6 +509,7 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
                         synced={synced}
                         creator={creator}
                         highlightColor={isUserTheCreator ? '#9566CF' : '#4B426B'}
+                        activityId={_id}
                     />
                 ),
             };

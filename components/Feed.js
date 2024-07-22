@@ -14,7 +14,7 @@ import getDateAndMonth from '../helper/getDateAndMonth';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 
-const SELECTOR_SIZE = 4;
+const SELECTOR_SIZE = 3.4;
 
 function ActivityHeader({ icon, iconName, size, text }) {
     return (
@@ -328,7 +328,7 @@ function Feed(props) {
                     styles.activityContainer,
                     {
                         justifyContent: user._id === creator?._id ? 'flex-end' : 'flex-start',
-                        marginTop: showCreatorName && user._id !== creator?._id ? calcWidth(8) : 0,
+                        marginTop: showCreatorName && user._id !== creator?._id && !showDate ? calcWidth(8) : 0,
                     },
                 ]}
             >
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
     activityContainer: {
         flex: 1,
         flexDirection: 'row',
-        marginHorizontal: calcWidth(3),
+        marginHorizontal: calcWidth(2),
     },
     activityCard: {
         marginTop: calcWidth(2),

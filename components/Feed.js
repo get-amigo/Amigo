@@ -16,6 +16,8 @@ import { BlurView } from '@react-native-community/blur';
 import apiHelper from '../helper/apiHelper';
 import Toast from 'react-native-root-toast';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import checkConnectivity from '../helper/getNetworkStateAsync';
+import offlineMessage from '../helper/offlineMessage';
 
 const SELECTOR_SIZE = 3.4;
 
@@ -140,8 +142,13 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
     const groupId = transaction.group;
     const deleteActivity = useGroupActivitiesStore((state) => state.deleteActivity);
 
-    // TODO : HandleDelete functionality not implemented for Offline Mode
     const handleDelete = async () => {
+        const isOnline = await checkConnectivity();
+        if (!isOnline && synced !== false) {
+            // if user is offline and the message is not synced
+            offlineMessage();
+            return;
+        }
         Alert.alert(
             'Confirm Delete',
             'Are you sure you want to delete this transaction?',
@@ -153,14 +160,18 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 {
                     text: 'Yes',
                     onPress: async () => {
-                        try {
-                            await apiHelper.delete(`/transaction/${transactionId}`);
-                            deleteActivity(activityId, groupId);
-                            Toast.show('Transaction Deleted', {
-                                duration: Toast.durations.LONG,
-                            });
-                        } catch (error) {
-                            console.error('Error deleting transaction:', error);
+                        if (isOnline) {
+                            try {
+                                await apiHelper.delete(`/transaction/${transactionId}`);
+                                deleteActivity(activityId, groupId, synced);
+                                Toast.show('Transaction Deleted', {
+                                    duration: Toast.durations.LONG,
+                                });
+                            } catch (error) {
+                                console.error('Error deleting transaction:', error);
+                            }
+                        } else {
+                            deleteActivity(activityId, groupId, synced);
                         }
                     },
                     style: 'destructive',

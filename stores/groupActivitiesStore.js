@@ -310,7 +310,16 @@ const groupActivitiesStore = (set, get) => ({
         });
     },
 
-    deleteActivity: (activityId, groupId) => {
+    deleteActivity: (activityId, groupId, synced) => {
+        if (synced === false) {
+            set((state) => {
+                const newPendingActivities = state?.pendingActivities || {};
+                delete newPendingActivities[activityId];
+                return {
+                    pendingActivities: { ...newPendingActivities },
+                };
+            });
+        }
         if (!get().activities[groupId]?.activityOrder || get().activities[groupId].activityOrder.length == 0) {
             return;
         }

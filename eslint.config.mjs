@@ -21,9 +21,24 @@ export default [
     ...fixupConfigRules(...compat.extends('expo')),
     ...fixupConfigRules(...compat.extends('eslint:recommended')),
     {
-        files: ['**/*.js', '**/*.mjs'],
+        files: ['**/*.js', '**/*.mjs', '**/*.jsx', '**/*.tsx'],
         languageOptions: {
             parser: babelParser,
+            parserOptions: {
+                requireConfigFile: false,
+                babelOptions: {
+                    presets: ['module:babel-preset-expo'],
+                },
+            },
+        },
+        settings: {
+            react: {
+                version: 'detect',
+            },
+        },
+        rules: {
+            'no-unused-vars': ['warn'],
+            'no-undef': ['warn'],
         },
     },
 ];

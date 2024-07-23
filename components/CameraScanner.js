@@ -1,13 +1,14 @@
+import * as BarCodeScanner from 'expo-barcode-scanner';
+import { CameraView } from 'expo-camera';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Button } from 'react-native';
-import QRIndicator from './QRIndicator';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import QRFooterButton from './QRFooterButton';
-import { calcHeight, calcWidth } from '../helper/res';
-import * as BarCodeScanner from 'expo-barcode-scanner';
+import QRIndicator from './QRIndicator';
 import getLocalImage from '../helper/getLocalImage';
 import getQrDataFromImage from '../helper/getQrDataFromImage';
-import { CameraView } from 'expo-camera';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { calcHeight, calcWidth } from '../helper/res';
 
 const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
     const { bottom } = useSafeAreaInsets();
@@ -34,7 +35,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
         <View style={styles.container}>
             <CameraView
                 style={styles.camera}
-                facing={'back'}
+                facing="back"
                 barcodeScannerSettings={{
                     barcodeTypes: ['qr'],
                 }}

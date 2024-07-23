@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from 'react-native';
 import { MaterialIcons, Foundation } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from 'react-native';
+
+import icon from '../assets/icon.png';
 import COLOR from '../constants/Colors';
 import about from '../constants/about';
 import { calcHeight, calcWidth } from '../helper/res';
-import icon from '../assets/icon.png';
 
 const About = () => {
     const renderLink = (iconName, text, onPress = () => {}) => (

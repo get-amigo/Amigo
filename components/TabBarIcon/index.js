@@ -1,8 +1,9 @@
-import { FAB } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
-import { calcHeight, calcWidth } from '../../helper/res';
+import { FAB } from 'react-native-paper';
+
 import icon from './icon';
 import COLOR from '../../constants/Colors';
+import { calcHeight, calcWidth } from '../../helper/res';
 
 function TabBarIcon({ tabBarProps, screen }) {
     return (

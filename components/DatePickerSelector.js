@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, View, Modal, Pressable } from 'react-native';
 import { DatePickerModal } from 'react-native-paper-dates';
-import { getFontSizeByWindowWidth } from '../helper/res';
+
 import COLOR from '../constants/Colors';
-import { calcHeight } from '../helper/res';
+import { getFontSizeByWindowWidth, calcHeight } from '../helper/res';
 import { useExpense } from '../stores/expense';
 
 const getStartOfWeek = () => {
@@ -53,7 +53,7 @@ const DatePickerSelector = () => {
 
             <Modal
                 animationType="slide"
-                transparent={true}
+                transparent
                 visible={modalState === 'model'}
                 onRequestClose={() => {
                     setModalState(null);

@@ -1,16 +1,16 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
-import { FontAwesome } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
 import PAGES from '../../constants/pages';
 import { useGroup } from '../../context/GroupContext';
-import { Ionicons } from '@expo/vector-icons';
-import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import { useTransaction } from '../../context/TransactionContext';
+import apiHelper from '../../helper/apiHelper';
+import { calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
 import useNetwork from '../../hooks/useNetwork';
 import { useAuth } from '../../stores/auth';
-import apiHelper from '../../helper/apiHelper';
-import { useNavigation } from '@react-navigation/native';
+import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 
 const MessageComposer = () => {
     const { group } = useGroup();
@@ -47,7 +47,7 @@ const MessageComposer = () => {
         }
         if (isConnected) {
             const { activityId, relatedId } = addActivityToLocalDB(
-                { activityType: 'chat', relatedId: { message: message } },
+                { activityType: 'chat', relatedId: { message } },
                 group._id,
                 user,
                 false,
@@ -55,8 +55,8 @@ const MessageComposer = () => {
             );
             await apiHelper
                 .post(`/group/${group._id}/chat`, {
-                    message: message,
-                    activityId: activityId,
+                    message,
+                    activityId,
                     chatId: relatedId,
                 })
                 .then(() => {
@@ -69,7 +69,7 @@ const MessageComposer = () => {
                     console.error(err);
                 });
         } else {
-            addActivityToLocalDB({ activityType: 'chat', relatedId: { message: message } }, group._id, user, false, true);
+            addActivityToLocalDB({ activityType: 'chat', relatedId: { message } }, group._id, user, false, true);
         }
     };
 

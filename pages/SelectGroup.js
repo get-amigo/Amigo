@@ -1,14 +1,15 @@
+import { Octicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
-import PAGES from '../constants/pages';
-import { useFocusEffect } from '@react-navigation/native';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import Search from '../components/Search';
-import GroupSelectCard from '../components/GroupSelectCard';
-import { useTransaction } from '../context/TransactionContext';
+
 import GroupIcon from '../components/GroupIcon';
-import { Octicons } from '@expo/vector-icons';
+import GroupSelectCard from '../components/GroupSelectCard';
+import Search from '../components/Search';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useGroupList } from '../stores/groupList';
 
 function GroupListScreen({ navigation }) {
@@ -37,7 +38,7 @@ function GroupListScreen({ navigation }) {
                 data={filterGroups(groups)}
                 ListHeaderComponent={
                     <GroupSelectCard
-                        name={'Create new group'}
+                        name="Create new group"
                         image={
                             <View
                                 style={{

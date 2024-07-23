@@ -1,8 +1,6 @@
 import { ENV } from '@env';
 
-const logoutDev = async () => {
-    return;
-}
+const logoutDev = async () => {};
 
 const logoutProd = async () => {
     // @ts-ignore
@@ -15,6 +13,5 @@ const logoutFunc: Record<string, any> = {
     staging: logoutProd,
     production: logoutProd,
 };
-  
+
 export default logoutFunc[ENV] || logoutDev;
-  

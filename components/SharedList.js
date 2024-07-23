@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
-import COLOR from '../constants/Colors';
-import { calcWidth, getFontSizeByWindowWidth, calcHeight } from '../helper/res';
+
 import SharedItem from '../components/SharedItem';
+import COLOR from '../constants/Colors';
 import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
+import { calcWidth, getFontSizeByWindowWidth, calcHeight } from '../helper/res';
 
 const SharedList = ({ transaction, generateColor, expandNames, setExpandNames }) => {
     const visibleUsers = transaction.splitAmong.slice(0, TransactionNumberOfVisibleNames); // Display only the first 5 users

@@ -42,4 +42,4 @@ google-services.json
 GoogleService-Info.plist
 .vscode
 
-%ProgramData%
+%ProgramData%/

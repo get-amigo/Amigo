@@ -1,9 +1,10 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+
 import COLOR from '../constants/Colors';
 import faqArray from '../constants/faq';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { MaterialIcons } from '@expo/vector-icons';
 
 const FAQ = () => {
     // This state will track which FAQ is expanded

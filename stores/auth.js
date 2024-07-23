@@ -1,10 +1,11 @@
-import * as SplashScreen from 'expo-splash-screen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SplashScreen from 'expo-splash-screen';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { create, resetAllStores } from '../helper/zustand';
+
 import apiHelper from '../helper/apiHelper';
 import { clearAllLocalStoreData } from '../helper/localStorage';
 import logout from '../helper/logout';
+import { create, resetAllStores } from '../helper/zustand';
 
 const useAuthStore = create(
     persist(
@@ -16,8 +17,8 @@ const useAuthStore = create(
                 set({ user: { ...get().user, name } });
             },
             logout: async () => {
-                await logout()
-                
+                await logout();
+
                 set({ user: null });
                 resetAllStores();
                 clearAllLocalStoreData();

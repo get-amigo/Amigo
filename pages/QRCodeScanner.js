@@ -1,15 +1,16 @@
+import * as BarCodeScanner from 'expo-barcode-scanner';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Linking, Button, Image, Pressable, Text, Alert, AppState } from 'react-native';
-import * as BarCodeScanner from 'expo-barcode-scanner';
-import CameraScanner from '../components/CameraScanner';
-import { useTransaction } from '../context/TransactionContext';
 import URL from 'url-parse';
-import PAGES from '../constants/pages';
+
+import SignUpImage from '../assets/SignUp.png';
+import CameraScanner from '../components/CameraScanner';
 import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
+import getFontSize from '../helper/getFontSize';
 import openSettings from '../helper/openSettings';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import getFontSize from '../helper/getFontSize';
-import SignUpImage from '../assets/SignUp.png';
 
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
@@ -95,7 +96,6 @@ const QRCodeScanner = ({ navigation }) => {
                         onPress: () => setBarcodeScanEnabled(true),
                     },
                 ]);
-                return;
             }
         } catch (error) {
             console.error('Error processing scanned data:', error);

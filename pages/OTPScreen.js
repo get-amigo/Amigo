@@ -1,12 +1,13 @@
+import * as Haptics from 'expo-haptics';
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, StyleSheet, Image, Pressable, ScrollView, Keyboard } from 'react-native';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import OTPImage from '../assets/OTPImage.png';
+
 import OTPFilled from '../assets/OTPFilled.png';
-import { useOtp } from '../context/OtpContext';
+import OTPImage from '../assets/OTPImage.png';
 import Button from '../components/Button';
-import * as Haptics from 'expo-haptics';
+import COLOR from '../constants/Colors';
+import { useOtp } from '../context/OtpContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const OTPScreen = ({
     navigation,

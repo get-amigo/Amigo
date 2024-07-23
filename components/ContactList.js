@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, FlatList, Pressable, Alert, Keyboard } from 'react-native';
+import { Button } from 'react-native-paper';
+
+import AddMemberWithoutContact from './AddMemberWithoutContact';
 import ContactCard from './ContactCard';
 import Search from './Search';
-import { useContacts } from '../hooks/useContacts';
-import { calcHeight } from '../helper/res';
-import openSettings from '../helper/openSettings';
-import { Button } from 'react-native-paper';
 import COLOR from '../constants/Colors';
-import AddMemberWithoutContact from './AddMemberWithoutContact';
+import openSettings from '../helper/openSettings';
+import { calcHeight } from '../helper/res';
+import { useContacts } from '../hooks/useContacts';
 
 const ContactList = ({ eliminatedContacts }) => {
     const { search, setSearch, contacts, selectedContacts, handleSelectContact, setSelectedContacts, contactPermission } = useContacts();

@@ -1,23 +1,25 @@
+import NetInfo from '@react-native-community/netinfo';
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, FlatList, Pressable, Image, RefreshControl } from 'react-native';
-import apiHelper from '../helper/apiHelper';
-import PAGES from '../constants/pages';
-import FabIcon from '../components/FabIcon';
-import { useFocusEffect } from '@react-navigation/native';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import EmptyScreen from '../components/EmptyScreen';
-import NoBalance from '../assets/NoBalance.png';
-import GroupBalanceCard from '../components/GroupBalanceCard';
-import { useAuth } from '../stores/auth';
-import ScanIcon from '../assets/icons/scan.png';
-import UserAvatar from '../components/UserAvatar';
-const headerIconSize = calcHeight(1);
-import NetInfo from '@react-native-community/netinfo';
-import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
-import { useBalance } from '../stores/balance';
-import safeAreaStyle from '../constants/safeAreaStyle';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import NoBalance from '../assets/NoBalance.png';
+import ScanIcon from '../assets/icons/scan.png';
+import EmptyScreen from '../components/EmptyScreen';
+import FabIcon from '../components/FabIcon';
+import GroupBalanceCard from '../components/GroupBalanceCard';
+import UserAvatar from '../components/UserAvatar';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import apiHelper from '../helper/apiHelper';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
+import { useBalance } from '../stores/balance';
+import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
+
+const headerIconSize = calcHeight(1);
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
@@ -91,13 +93,13 @@ function BalanceScreen({ navigation }) {
                                 color: COLOR.TEXT,
                                 fontWeight: 'bold',
                             }}
-                        ></Text>
+                        />
                         <Text
                             style={{
                                 color: COLOR.TEXT,
                                 fontWeight: 'bold',
                             }}
-                        ></Text>
+                        />
                     </View>
                 </View>
                 <FlatList

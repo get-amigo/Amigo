@@ -1,20 +1,21 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, StyleSheet, FlatList, View, TextInput, Keyboard, RefreshControl } from 'react-native';
-import Loader from '../components/Loader';
-import apiHelper from '../helper/apiHelper';
-import PAGES from '../constants/pages';
-import FabIcon from '../components/FabIcon';
-import { useFocusEffect } from '@react-navigation/native';
-import EmptyScreen from '../components/EmptyScreen';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import GroupCard from '../components/GroupCard';
-import NoGroupsImage from '../assets/NoGroups.png';
-import Search from '../components/Search';
-import { useGroupList } from '../stores/groupList';
-import { useAuth } from '../stores/auth';
-import safeAreaStyle from '../constants/safeAreaStyle';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import NoGroupsImage from '../assets/NoGroups.png';
+import EmptyScreen from '../components/EmptyScreen';
+import FabIcon from '../components/FabIcon';
+import GroupCard from '../components/GroupCard';
+import Loader from '../components/Loader';
+import Search from '../components/Search';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import apiHelper from '../helper/apiHelper';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
+import { useGroupList } from '../stores/groupList';
 
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();

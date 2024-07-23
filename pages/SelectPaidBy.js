@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { Text, StyleSheet, ScrollView, Pressable, View, TextInput } from 'react-native';
+import React from 'react';
+import { ScrollView, StyleSheet } from 'react-native';
 
 import GroupSelectCard from '../components/GroupSelectCard';
 import UserAvatar from '../components/UserAvatar';

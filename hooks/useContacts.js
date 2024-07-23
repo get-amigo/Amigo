@@ -1,6 +1,6 @@
 import * as Contacts from 'expo-contacts';
-import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import generateRandomColor from '../helper/generateRandomColor';
 import getDefaultCountryCode from '../helper/getDefaultCountryCode';

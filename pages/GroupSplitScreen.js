@@ -1,8 +1,7 @@
-import { MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, Pressable } from 'react-native';
+import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import LoginImage from '../assets/Login.png';
 import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';

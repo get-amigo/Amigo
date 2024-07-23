@@ -1,6 +1,6 @@
 import * as Haptics from 'expo-haptics';
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, Pressable, ScrollView, Keyboard } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import OTPFilled from '../assets/OTPFilled.png';
 import OTPImage from '../assets/OTPImage.png';

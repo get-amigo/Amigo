@@ -1,12 +1,10 @@
 import { Image, View } from 'react-native';
 
-import AmazonPayLogo from '../assets/icons/upi/amazonPay.png';
-import BhimLogo from '../assets/icons/upi/bhim.png';
 import GPayLogo from '../assets/icons/upi/gPay.png';
 import PaytmLogo from '../assets/icons/upi/paytm.png';
 import PhonePeLogo from '../assets/icons/upi/phonePe.png';
 import UPILogo from '../assets/icons/upi/upi.png';
-import { calcHeight, calcWidth } from '../helper/res';
+import { calcHeight } from '../helper/res';
 
 const createIcon = (source) => (
     <View

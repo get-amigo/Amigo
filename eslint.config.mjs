@@ -15,13 +15,13 @@ const compat = new FlatCompat({
 
 export default [
     {
-        ignores: ['node_modules', '.gen', '.expo', '.idea', 'assets'],
+        ignores: ['**/.*', 'node_modules/', 'assets'],
     },
     ...fixupConfigRules(...compat.extends('universe/native')),
     ...fixupConfigRules(...compat.extends('expo')),
     ...fixupConfigRules(...compat.extends('eslint:recommended')),
     {
-        files: ['**/*.js', '**/*.mjs'],
+        files: ['**/*.js', '**/*.mjs', '**/*.tsx', '**/*.jsx', '**/*.ts'],
         languageOptions: {
             parser: babelParser,
         },

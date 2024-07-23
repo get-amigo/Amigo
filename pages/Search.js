@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert, Button } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Loader from '../components/Loader';

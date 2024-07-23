@@ -2,7 +2,6 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 
-import StickyDate from './StickyDate';
 import { useGroup } from '../../context/GroupContext';
 import areDatesEqual from '../../helper/areDatesEqual';
 import formatDateRelativeToToday from '../../helper/formatDateRelativeToToday';
@@ -11,6 +10,7 @@ import useActivities from '../../hooks/useActivities';
 import { useContacts } from '../../hooks/useContacts';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import Feed from '../Feed';
+import StickyDate from './StickyDate';
 
 const FeedsContainer = () => {
     const { group } = useGroup();

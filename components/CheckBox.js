@@ -1,4 +1,4 @@
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 import COLOR from '../constants/Colors';
 import { calcWidth } from '../helper/res';

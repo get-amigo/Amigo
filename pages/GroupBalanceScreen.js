@@ -1,6 +1,6 @@
-import { Ionicons, Feather } from '@expo/vector-icons';
+import { Feather, Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useState } from 'react';
-import { Text, StyleSheet, View, Pressable, FlatList, Image, RefreshControl } from 'react-native';
+import { FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Cross from '../assets/icons/cross.png';

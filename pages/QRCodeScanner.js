@@ -1,6 +1,6 @@
 import * as BarCodeScanner from 'expo-barcode-scanner';
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Linking, Button, Image, Pressable, Text, Alert, AppState } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Alert, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import URL from 'url-parse';
 
 import SignUpImage from '../assets/SignUp.png';
@@ -8,7 +8,6 @@ import CameraScanner from '../components/CameraScanner';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
-import getFontSize from '../helper/getFontSize';
 import openSettings from '../helper/openSettings';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 

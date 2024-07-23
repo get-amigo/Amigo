@@ -1,6 +1,6 @@
-import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
-import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
+import { Feather, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { Alert, Platform, Pressable, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import MenuOption from '../components/AccountPageOption';
 import UserAvatar from '../components/UserAvatar';

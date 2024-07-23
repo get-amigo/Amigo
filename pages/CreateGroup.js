@@ -1,15 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    Pressable,
-    StyleSheet,
-    Alert,
+    Keyboard,
     KeyboardAvoidingView,
     Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
     TouchableWithoutFeedback,
-    Keyboard,
+    View,
 } from 'react-native';
 import Toast from 'react-native-root-toast';
 
@@ -20,7 +19,6 @@ import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
-import editNamesAsync from '../helper/editNamesAsync';
 import checkConnectivity from '../helper/getNetworkStateAsync';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import offlineMessage from '../helper/offlineMessage';

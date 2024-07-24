@@ -1,16 +1,17 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import React from 'react';
+import { AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import PAGES from '../../constants/pages';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
-import GroupIcon from '../GroupIcon';
-import { useGroup } from '../../context/GroupContext';
+import React from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+
+import ScannerIcon from '../../assets/icons/scanner.png';
 import COLOR from '../../constants/Colors';
+import PAGES from '../../constants/pages';
+import { useGroup } from '../../context/GroupContext';
+import { useTransaction } from '../../context/TransactionContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
 import sliceText from '../../helper/sliceText';
 import getMembersString from '../../utility/getMembersString';
-import ScannerIcon from '../../assets/icons/scanner.png';
-import { useTransaction } from '../../context/TransactionContext';
-import { AntDesign } from '@expo/vector-icons';
+import GroupIcon from '../GroupIcon';
 
 const FeedScreenHeader = ({ totalBalance }) => {
     const navigation = useNavigation();

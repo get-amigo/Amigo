@@ -1,27 +1,27 @@
-import { AntDesign, EvilIcons, Octicons, MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, EvilIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
+import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, Image, Modal, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import Toast from 'react-native-root-toast';
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import apiHelper from '../helper/apiHelper';
 import editNames from '../helper/editNames';
 import formatDateRelativeToToday from '../helper/formatDateRelativeToToday';
 import formatTo12HourTime from '../helper/formatTo12HourTime';
 import getDateAndMonth from '../helper/getDateAndMonth';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { useAuth } from '../stores/auth';
-import { BlurView } from '@react-native-community/blur';
-import apiHelper from '../helper/apiHelper';
-import Toast from 'react-native-root-toast';
-import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import checkConnectivity from '../helper/getNetworkStateAsync';
 import offlineMessage from '../helper/offlineMessage';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 const SELECTOR_SIZE = 3.4;
 
-function ActivityHeader({ icon, iconName, size, text }) {
+function ActivityHeader({ icon, size, text }) {
     return (
         <View style={styles.header}>
             <Text
@@ -42,7 +42,7 @@ function ActivityHeader({ icon, iconName, size, text }) {
     );
 }
 
-function TransactionActivityDetails({ transaction, createdAt, contacts, synced, creator, highlightColor }) {
+function TransactionActivityDetails({ transaction, createdAt, synced, highlightColor }) {
     return (
         <>
             <View
@@ -587,18 +587,6 @@ const styles = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(12),
         color: 'white',
         marginTop: calcHeight(2),
-    },
-    description: {
-        fontSize: getFontSizeByWindowWidth(10),
-        color: 'white',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    headerText: {
-        color: 'white',
     },
     absolute: {
         position: 'absolute',

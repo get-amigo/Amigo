@@ -1,6 +1,6 @@
 function formatDateToDDMMYYYY(dateString) {
     // Parse the input string to a Date object
-    let date = new Date(dateString);
+    const date = new Date(dateString);
 
     // Ensure the date is valid
     if (isNaN(date.getTime())) {
@@ -8,9 +8,9 @@ function formatDateToDDMMYYYY(dateString) {
     }
 
     // Extract day, month, and year and format them
-    let day = ('0' + date.getDate()).slice(-2);
-    let month = ('0' + (date.getMonth() + 1)).slice(-2);
-    let year = date.getFullYear();
+    const day = ('0' + date.getDate()).slice(-2);
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const year = date.getFullYear();
 
     // Return the formatted date string
     return day + '-' + month + '-' + year;

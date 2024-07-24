@@ -1,6 +1,7 @@
 import { FontAwesome6 } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+
 import { useGroup } from '../../context/GroupContext';
 import areDatesEqual from '../../helper/areDatesEqual';
 import formatDateRelativeToToday from '../../helper/formatDateRelativeToToday';

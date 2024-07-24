@@ -1,8 +1,8 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { useCallback, useRef, useState } from 'react';
+
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
-
-import { useCallback, useRef, useState } from 'react';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 const useActivities = () => {
@@ -54,7 +54,7 @@ const useActivities = () => {
     const { fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery({
         queryKey: [group._id],
         queryFn: fetchActivities,
-        getNextPageParam: (lastPage, allPages) => {
+        getNextPageParam: (lastPage) => {
             if (lastPage?.length < fetchSize) {
                 return undefined;
             }

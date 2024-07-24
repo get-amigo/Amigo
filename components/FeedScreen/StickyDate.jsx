@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
 import React from 'react';
+import { Text, View } from 'react-native';
+
 import { calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
 
 const StickyDate = ({ isStickyDateVisible, stickyDate }) => {
@@ -37,5 +38,3 @@ const StickyDate = ({ isStickyDateVisible, stickyDate }) => {
 };
 
 export default StickyDate;
-
-const styles = StyleSheet.create({});

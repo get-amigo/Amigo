@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Button } from 'react-native';
-import QRIndicator from './QRIndicator';
-import QRFooterButton from './QRFooterButton';
-import { calcHeight, calcWidth } from '../helper/res';
-import * as BarCodeScanner from 'expo-barcode-scanner';
+import { CameraView } from 'expo-camera';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import getLocalImage from '../helper/getLocalImage';
 import getQrDataFromImage from '../helper/getQrDataFromImage';
-import { CameraView } from 'expo-camera';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { calcHeight, calcWidth } from '../helper/res';
+import QRFooterButton from './QRFooterButton';
+import QRIndicator from './QRIndicator';
 
 const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
     const { bottom } = useSafeAreaInsets();
@@ -18,7 +18,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
             handleBarCodeScanned(scannedResults[0]);
             return;
         }
-        alert('No QR code found in image');
+        Alert.alert('Alert', 'No QR code found in image');
     }
     const [scanned, setScanned] = useState(false);
 
@@ -34,7 +34,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
         <View style={styles.container}>
             <CameraView
                 style={styles.camera}
-                facing={'back'}
+                facing="back"
                 barcodeScannerSettings={{
                     barcodeTypes: ['qr'],
                 }}

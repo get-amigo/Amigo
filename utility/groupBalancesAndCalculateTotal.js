@@ -38,8 +38,8 @@ function groupDataItemsByGroup(dataItems) {
  * @returns {Object} An object containing balance details for the user within the group.
  */
 function calculateUserBalanceInGroup(group, userId) {
-    let borrowers = [];
-    let lenders = [];
+    const borrowers = [];
+    const lenders = [];
     let borrowerCount = 0;
     let lenderCount = 0;
     let totalBalance = 0;

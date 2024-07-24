@@ -1,17 +1,18 @@
+import { Feather, Ionicons } from '@expo/vector-icons';
 import React, { useCallback, useState } from 'react';
-import { Text, StyleSheet, View, Pressable, FlatList, Image, RefreshControl } from 'react-native';
-import { Ionicons, Feather } from '@expo/vector-icons';
-import GroupIcon from '../components/GroupIcon';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { useAuth } from '../stores/auth';
-import sliceText from '../helper/sliceText';
-import Cross from '../assets/icons/cross.png';
-import UserAvatar from '../components/UserAvatar';
-import apiHelper from '../helper/apiHelper';
-import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
-import safeAreaStyle from '../constants/safeAreaStyle';
+import { FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import Cross from '../assets/icons/cross.png';
+import GroupIcon from '../components/GroupIcon';
+import UserAvatar from '../components/UserAvatar';
+import COLOR from '../constants/Colors';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import apiHelper from '../helper/apiHelper';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import sliceText from '../helper/sliceText';
+import { useAuth } from '../stores/auth';
+import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
 function GroupBalanceScreen({ navigation, route }) {
     const { group } = route.params;
@@ -115,6 +116,7 @@ function GroupBalanceScreen({ navigation, route }) {
                         refreshing={refreshing}
                         onRefresh={onRefresh}
                         colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                        tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
                         progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
                     />
                 }

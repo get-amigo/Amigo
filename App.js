@@ -2,6 +2,7 @@ import * as Sentry from '@sentry/react-native';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAvoidingView, Platform } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './navigator/RootNavigator';
@@ -17,7 +18,7 @@ Sentry.init({
 
 function App() {
     return (
-        <>
+        <GestureHandlerRootView>
             <SafeAreaProvider>
                 <StatusBar style="auto" />
                 <KeyboardAvoidingView
@@ -30,7 +31,7 @@ function App() {
                 </KeyboardAvoidingView>
                 <FlashMessage position="top" duration={2000} />
             </SafeAreaProvider>
-        </>
+        </GestureHandlerRootView>
     );
 }
 export default Sentry.wrap(App);

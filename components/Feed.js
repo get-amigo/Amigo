@@ -45,15 +45,7 @@ function ActivityHeader({ icon, size, text }) {
 function TransactionActivityDetails({ transaction, createdAt, synced, highlightColor }) {
     return (
         <>
-            <View
-                style={{
-                    gap: calcWidth(3.8),
-                    backgroundColor: highlightColor,
-                    padding: calcWidth(2.5),
-                    borderRadius: calcWidth(2.35),
-                    width: calcWidth(54),
-                }}
-            >
+            <View style={[styles.transactionCard, { backgroundColor: highlightColor }]}>
                 <ActivityHeader
                     icon={Octicons}
                     iconName="person"
@@ -114,17 +106,7 @@ function TransactionActivityDetails({ transaction, createdAt, synced, highlightC
                         <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
                             {formatTo12HourTime(createdAt)}
                         </Text>
-                        {synced === false && (
-                            <Image
-                                source={ClockIcon}
-                                style={{
-                                    height: calcWidth(2.2),
-                                    width: calcWidth(2.2),
-                                    margin: 'auto',
-                                    marginLeft: calcWidth(1),
-                                }}
-                            />
-                        )}
+                        {synced === false && <Image source={ClockIcon} style={styles.syncIcon} />}
                     </View>
                 </View>
             </View>
@@ -169,6 +151,9 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                                 });
                             } catch (error) {
                                 console.error('Error deleting transaction:', error);
+                                Toast.show('Failed To Delete Transaction', {
+                                    duration: Toast.durations.LONG,
+                                });
                             }
                         } else {
                             deleteActivity(activityId, groupId, synced);
@@ -188,7 +173,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         <View style={styles.modalOverlay}>
                             <BlurView style={styles.absolute} blurType="regular" blurAmount={10} reducedTransparencyFallbackColor="white" />
                             <TouchableWithoutFeedback>
-                                <View style={[styles.modalContainer, { top: modalPosition.y - 140, left: calcWidth(20) }]}>
+                                <View style={[styles.modalContainer, { top: modalPosition.y - 140, left: calcWidth(40) }]}>
                                     {selectedTransaction && (
                                         <TransactionActivityDetails
                                             transaction={selectedTransaction}
@@ -241,6 +226,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         ...editedTransaction,
                         creator,
                     },
+                    handleDelete,
                 });
             }}
         >
@@ -625,7 +611,7 @@ const styles = StyleSheet.create({
     modalButtons: {
         position: 'absolute',
         top: calcHeight(16.8),
-        left: calcWidth(22),
+        left: calcWidth(8),
     },
     modalButton: {
         flexDirection: 'row',
@@ -642,6 +628,18 @@ const styles = StyleSheet.create({
     modalButtonText: {
         color: 'rgba(255, 69, 58, 1)',
         fontSize: getFontSizeByWindowWidth(14),
+    },
+    transactionCard: {
+        gap: calcWidth(3.8),
+        padding: calcWidth(2.5),
+        borderRadius: calcWidth(2.35),
+        width: calcWidth(54),
+    },
+    syncIcon: {
+        height: calcWidth(2.2),
+        width: calcWidth(2.2),
+        margin: 'auto',
+        marginLeft: calcWidth(1),
     },
 });
 

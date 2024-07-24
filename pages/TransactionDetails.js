@@ -1,5 +1,5 @@
 import { Entypo } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import CalendarIcon from '../assets/icons/calendar.png';
@@ -13,19 +13,20 @@ import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import useCustomColor from '../hooks/useCustomColor';
-import { useExpense } from '../stores/expense';
 
 const TransactionDetail = ({
-    navigation,
     route: {
         params: { transaction },
     },
 }) => {
-    const [date, setDate] = useState(new Date(transaction.date));
+    const [date, setDate] = useState();
     const [expandNames, setExpandNames] = useState(false);
-    const { deleteExpenseById } = useExpense();
 
     const generateColor = useCustomColor();
+
+    useEffect(() => {
+        setDate(new Date(transaction.date));
+    }, [transaction]);
 
     return (
         <ScrollView alwaysBounceVertical={false}>
@@ -136,12 +137,7 @@ const TransactionDetail = ({
                         <Text style={styles.userAmount}>₹ {transaction.amount}</Text>
                     </View>
                 </View>
-                <SharedList
-                    transaction={transaction}
-                    generateColor={generateColor}
-                    expandNames={expandNames}
-                    setExpandNames={setExpandNames}
-                />
+                <SharedList transaction={transaction} generateColor={generateColor} expandNames={expandNames} />
             </View>
             <View
                 style={{

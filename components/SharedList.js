@@ -6,7 +6,7 @@ import COLOR from '../constants/Colors';
 import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
-const SharedList = ({ transaction, generateColor, expandNames, setExpandNames }) => {
+const SharedList = ({ transaction, generateColor, expandNames }) => {
     const visibleUsers = transaction.splitAmong.slice(0, TransactionNumberOfVisibleNames); // Display only the first 5 users
 
     return (
@@ -16,7 +16,7 @@ const SharedList = ({ transaction, generateColor, expandNames, setExpandNames })
                 <FlatList
                     data={expandNames ? transaction.splitAmong : visibleUsers}
                     keyExtractor={(item) => item.user._id}
-                    renderItem={({ item, index }) => <SharedItem user={item.user} amount={item.amount} generateColor={generateColor} />}
+                    renderItem={({ item }) => <SharedItem user={item.user} amount={item.amount} generateColor={generateColor} />}
                 />
             </View>
         </View>

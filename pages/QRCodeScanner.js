@@ -56,11 +56,6 @@ const QRCodeScanner = ({ navigation }) => {
         };
     }, [navigation]);
 
-    const requestCameraPermission = async () => {
-        const { status } = await BarCodeScanner.requestPermissionsAsync();
-        setHasPermission(status === 'granted');
-    };
-
     const parseQueryString = (queryString) => {
         const pairs = queryString.substring(1).split('&');
         const params = {};

@@ -17,22 +17,18 @@ import ContactList from '../components/ContactList';
 import Loader from '../components/Loader';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
 import checkConnectivity from '../helper/getNetworkStateAsync';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
-import { useAuth } from '../stores/auth';
 
 const CreateGroup = ({ navigation }) => {
     const { selectedContacts } = useContacts();
     const [groupName, setGroupName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
-    const { setTransactionData } = useTransaction();
-    const { user } = useAuth();
     const nameRef = useRef();
     const MAX_LEN = 40;
 
@@ -50,7 +46,7 @@ const CreateGroup = ({ navigation }) => {
                 phoneNumber,
                 countryCode,
             }));
-            const { data } = await apiHelper.post('/group', {
+            await apiHelper.post('/group', {
                 name: groupName,
                 phoneNumbers,
             });
@@ -61,7 +57,7 @@ const CreateGroup = ({ navigation }) => {
             else {
                 navigation.goBack();
             }
-        } catch (error) {
+        } catch {
             Toast.show('Error creating group. Please try again.', {
                 duration: Toast.durations.LONG,
             });

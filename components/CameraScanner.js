@@ -1,6 +1,6 @@
 import { CameraView } from 'expo-camera';
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import getLocalImage from '../helper/getLocalImage';
@@ -18,7 +18,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
             handleBarCodeScanned(scannedResults[0]);
             return;
         }
-        alert('No QR code found in image');
+        Alert.alert('Alert', 'No QR code found in image');
     }
     const [scanned, setScanned] = useState(false);
 

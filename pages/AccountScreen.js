@@ -15,10 +15,15 @@ function ProfileScreen({ navigation }) {
     const [editMode, setEditMode] = useState(false);
     const [name, setName] = useState(user.name);
     const [originalName, setOriginalName] = useState(user.name);
-    const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
     const { totalBalances } = useBalance();
 
+    const [phoneNumber, setPhoneNumber] = useState();
+
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        setPhoneNumber(user.phoneNumber);
+    }, [user]);
 
     function submitUserData() {
         setIsSubmitting(true);
@@ -26,8 +31,8 @@ function ProfileScreen({ navigation }) {
 
     function deleteHandler() {
         if (totalBalances) {
-            if (totalBalances < 0) alert(`You have a balance of ₹${totalBalances} to settle before deleting your account`);
-            else alert(`You have a balance of ₹${totalBalances} to collect before deleting your account`);
+            if (totalBalances < 0) Alert.alert('Alert', `You have a balance of ₹${totalBalances} to settle before deleting your account`);
+            else Alert.alert('Alert', `You have a balance of ₹${totalBalances} to collect before deleting your account`);
             return;
         }
         if (Platform.OS === 'ios') {
@@ -83,7 +88,7 @@ function ProfileScreen({ navigation }) {
     useEffect(() => {
         if (isSubmitting) {
             if (!name || name === '') {
-                alert('Empty Name');
+                Alert.alert('Alert', 'Empty Name');
                 setIsSubmitting(false);
                 return;
             }

@@ -10,7 +10,6 @@ import { useOtp } from '../context/OtpContext';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const OTPScreen = ({
-    navigation,
     route: {
         params: { phoneNumber },
     },

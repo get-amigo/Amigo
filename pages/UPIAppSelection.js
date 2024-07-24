@@ -1,5 +1,5 @@
 import React from 'react';
-import { Linking, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import UPIApps from '../constants/UpiApps';
 import PAGES from '../constants/pages';
@@ -18,10 +18,10 @@ const UPIAppSelection = ({ navigation }) => {
                 Linking.openURL(deepLink);
                 navigation.navigate(PAGES.BALANCE);
             } else {
-                alert('App not found');
+                Alert.alert('Alert', 'App not found');
             }
-        } catch (e) {
-            alert('App not found');
+        } catch {
+            Alert.alert('Alert', 'App not found');
         }
     };
 

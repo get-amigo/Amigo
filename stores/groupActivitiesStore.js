@@ -218,15 +218,18 @@ const groupActivitiesStore = (set, get) => ({
 
             const activityType = activity.activityType;
 
+            const splitAmong =
+                activityType == 'transaction'
+                    ? activity.relatedId.splitAmong.map((item) => {
+                          return {
+                              amount: item.amount,
+                              user: item.user._id,
+                          };
+                      })
+                    : null;
+
             switch (activityType) {
                 case 'transaction':
-                    const splitAmong = activity.relatedId.splitAmong.map((item) => {
-                        return {
-                            amount: item.amount,
-                            user: item.user._id,
-                        };
-                    });
-
                     await apiHelper
                         .post('/transaction', {
                             amount: activity.relatedId.amount,
@@ -279,7 +282,7 @@ const groupActivitiesStore = (set, get) => ({
     },
 
     clearPendingActivities: () => {
-        set((state) => {
+        set(() => {
             return { pendingActivities: {} };
         });
     },

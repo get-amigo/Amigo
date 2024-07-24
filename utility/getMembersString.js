@@ -2,7 +2,7 @@ function getMembersString(members, numberOfCharacters) {
     const names = [];
 
     for (let i = 0; i < members.length; i++) {
-        if (members[i].hasOwnProperty('name') && members[i].name) {
+        if ('name' in members[i] && members[i].name) {
             // Split the name string by spaces and take the first part
             const namePart = members[i].name.split(' ')[0];
             names.push(namePart);

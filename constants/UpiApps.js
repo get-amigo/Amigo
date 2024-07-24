@@ -25,6 +25,7 @@ const createIcon = (source) => (
 
 const generateDeeplink = (baseURL, params) => {
     const queryParams = Object.entries(params)
+        // eslint-disable-next-line no-unused-vars
         .filter(([_, value]) => value !== undefined)
         .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
         .join('&');

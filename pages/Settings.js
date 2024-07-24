@@ -5,7 +5,7 @@ import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { calcHeight } from '../helper/res';
 import { useAuth } from '../stores/auth';
 
-function Settings({ navigation }) {
+function Settings() {
     const { logout } = useAuth();
     const settingsOptions = [
         {

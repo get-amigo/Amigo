@@ -7,12 +7,13 @@ import Search from '../components/Search';
 import safeAreaStyle from '../constants/safeAreaStyle';
 import apiHelper from '../helper/apiHelper';
 
-const SearchScreen = ({ navigation }) => {
+const size = 10; // api page fetch size
+
+const SearchScreen = () => {
     const [loading, setLoading] = useState(false);
     const [searchString, setSearchString] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [page, setPage] = useState(1);
-    const [size, setSize] = useState(10); // Set default page size
 
     // Debounce function
     const debounce = (func, delay) => {
@@ -34,12 +35,12 @@ const SearchScreen = ({ navigation }) => {
                     params: { searchString, size, page },
                 });
                 setSearchResults(response.data.groups); // Assuming the API returns an array of groups
-            } catch (e) {
+            } catch {
                 Alert.alert('Error', 'Failed to fetch search results.');
             }
             setLoading(false);
         }, 500),
-        [page, size],
+        [page],
     ); // 500ms delay, re-run on page/size change
 
     useEffect(() => {

@@ -35,8 +35,6 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
         });
 };
 
-const handleLoadContactsError = (error) => {};
-
 const fetchContactsData = async () => {
     try {
         const { data } = await Contacts.getContactsAsync({
@@ -105,7 +103,7 @@ export const ContactsProvider = ({ children }) => {
                     setContactPermission(false);
                 }
             } catch (error) {
-                handleLoadContactsError(error);
+                console.log(error);
             } finally {
                 setLoading(false);
             }

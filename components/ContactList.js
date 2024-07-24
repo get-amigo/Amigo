@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Alert, FlatList, Keyboard, Pressable, Text, View } from 'react-native';
+import { FlatList, Keyboard, Pressable, Text, View } from 'react-native';
 
 import COLOR from '../constants/Colors';
 import openSettings from '../helper/openSettings';
@@ -21,19 +21,6 @@ const ContactList = ({ eliminatedContacts }) => {
         if (!eliminatedContacts) return contacts;
 
         return contacts.filter((contact) => !eliminatedContacts.map((member) => member.phoneNumber).includes(contact.phoneNumber));
-    }
-
-    function askPermission() {
-        Alert.alert('Permission Required', 'We need permission to access your contacts to add people to the group', [
-            {
-                text: 'Cancel',
-                style: 'cancel',
-            },
-            {
-                text: 'Open Settings',
-                onPress: openSettings,
-            },
-        ]);
     }
 
     const handleScroll = () => {

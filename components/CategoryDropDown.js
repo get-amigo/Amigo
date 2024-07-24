@@ -10,10 +10,10 @@ function CategoryDropDown({ selectedCategory, setSelectedCategory }) {
         <View style={styles.container}>
             <SelectDropdown
                 data={categories}
-                onSelect={(selectedItem, index) => {
+                onSelect={(selectedItem) => {
                     setSelectedCategory(selectedItem);
                 }}
-                buttonTextAfterSelection={(selectedItem, index) => {
+                buttonTextAfterSelection={(selectedItem) => {
                     // You can include an icon as part of the text by returning a component
                     return (
                         <View style={styles.dropdownItem}>
@@ -22,7 +22,7 @@ function CategoryDropDown({ selectedCategory, setSelectedCategory }) {
                         </View>
                     );
                 }}
-                rowTextForSelection={(item, index) => {
+                rowTextForSelection={(item) => {
                     return (
                         <View style={styles.dropdownItem}>
                             <Icon name="check-circle" size={18} color="#6e6e6e" />

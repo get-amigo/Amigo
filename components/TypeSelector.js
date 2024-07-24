@@ -1,6 +1,5 @@
-import { AntDesign } from '@expo/vector-icons';
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, Text, Image, Modal, View, FlatList, Pressable, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { FlatList, Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import typeIcon from '../assets/icons/type.png';
 import CheckBox from '../components/CheckBox';

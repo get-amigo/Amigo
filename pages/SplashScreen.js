@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, Image, StyleSheet } from 'react-native';
+import { Image, SafeAreaView, StyleSheet } from 'react-native';
 
 import SplashImage from '../assets/SplashScreen.gif';
 import { calcHeight, calcWidth } from '../helper/res';

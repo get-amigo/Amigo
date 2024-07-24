@@ -1,6 +1,6 @@
-import { Ionicons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'; // Make sure to install expo-icons or another icon library
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'; // Make sure to install expo-icons or another icon library
 import React from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 // Helper functions for responsive layout
 import COLOR from '../constants/Colors';

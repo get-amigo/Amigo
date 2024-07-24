@@ -16,7 +16,7 @@ import { useAuth } from '../stores/auth';
 
 const SELECTOR_SIZE = 3.4;
 
-function ActivityHeader({ icon, iconName, size, text }) {
+function ActivityHeader({ icon, size, text }) {
     return (
         <View style={styles.header}>
             <Text
@@ -70,12 +70,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         borderRadius: calcWidth(2.35),
                     }}
                 >
-                    <ActivityHeader
-                        icon={Octicons}
-                        iconName="person"
-                        size={getFontSizeByWindowWidth(10.5)}
-                        text={`${transaction.splitAmong?.length}`}
-                    />
+                    <ActivityHeader icon={Octicons} size={getFontSizeByWindowWidth(10.5)} text={`${transaction.splitAmong?.length}`} />
                     <View style={styles.flexContainer}>
                         <View>
                             <Text style={styles.amount}>₹ {transaction.amount}</Text>

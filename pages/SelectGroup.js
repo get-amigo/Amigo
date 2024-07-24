@@ -1,7 +1,7 @@
 import { Octicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 
 import GroupIcon from '../components/GroupIcon';
 import GroupSelectCard from '../components/GroupSelectCard';

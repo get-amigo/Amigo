@@ -1,8 +1,7 @@
 import { useRef } from 'react';
-import { StyleSheet, Pressable, TextInput as DefaultInput } from 'react-native';
-import { FAB } from 'react-native-paper';
+import { TextInput as DefaultInput, Pressable, StyleSheet } from 'react-native';
 
-import { calcHeight, calcWidth } from '../helper/res';
+import { calcWidth } from '../helper/res';
 
 function TextInput(propsOverwrite) {
     const textRef = useRef();

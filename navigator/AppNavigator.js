@@ -1,8 +1,6 @@
-import NetInfo from '@react-native-community/netinfo';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useEffect } from 'react';
+import React from 'react';
 
-import TabNavigator from './TabNavigator';
 import TabBarIcon from '../components/TabBarIcon';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
@@ -18,17 +16,18 @@ import GroupBalance from '../pages/GroupBalanceScreen';
 import GroupSettings from '../pages/GroupSettings';
 import GroupSplitScreen from '../pages/GroupSplitScreen';
 import InvitationLandingScreen from '../pages/InvitationLandingScreen';
+import LoginScreen from '../pages/LoginScreen';
 import PaymentScreen from '../pages/PaymentScreen';
+import QRCodeScanner from '../pages/QRCodeScanner';
+import SearchScreen from '../pages/Search';
 import SelectGroup from '../pages/SelectGroup';
+import SelectPaidBy from '../pages/SelectPaidBy';
 import SignUpScreen from '../pages/SignUpScreen';
 import TransactionDetail from '../pages/TransactionDetails';
-import SelectPaidBy from '../pages/SelectPaidBy';
-import SearchScreen from '../pages/Search';
-import QRCodeScanner from '../pages/QRCodeScanner';
 import TransactionFormScreen from '../pages/TransactionForm';
 import UPIAppSelection from '../pages/UPIAppSelection';
-import LoginScreen from '../pages/LoginScreen';
 import { useAuth } from '../stores/auth';
+import TabNavigator from './TabNavigator';
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
     const { user } = useAuth();
@@ -255,7 +254,6 @@ const AppNavigator = () => {
                                 },
                                 headerTintColor: '#fff',
                                 title: null,
-                                headerTintColor: '#fff',
                                 animation: 'ios',
                             }}
                         />

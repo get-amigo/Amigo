@@ -1,10 +1,9 @@
 import { AntDesign } from '@expo/vector-icons';
-import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet, Text, Image, Pressable } from 'react-native';
+import React from 'react';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import FabIcon from './FabIcon';
 import COLOR from '../constants/Colors';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 function EmptyScreen({ onPress, image, title }) {
     return (

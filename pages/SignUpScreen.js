@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import {
-    View,
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
     Text,
     TextInput,
-    StyleSheet,
-    SafeAreaView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
     TouchableWithoutFeedback,
-    Keyboard,
+    View,
 } from 'react-native';
 
 import SignUpImage from '../assets/SignUp.png'; // Make sure you have an image for the sign-up

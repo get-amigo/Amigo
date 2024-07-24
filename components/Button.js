@@ -1,8 +1,8 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import COLOR from '../constants/Colors';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const Button = ({ onPress, title, styleOverwrite = {}, disabled, loading }) => {
     return (

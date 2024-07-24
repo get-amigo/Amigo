@@ -2,8 +2,8 @@ import React from 'react';
 import { Image, Text, View } from 'react-native'; // Added View component
 import { showMessage } from 'react-native-flash-message';
 
-import { getFontSizeByWindowWidth, calcHeight } from './res';
 import OfflineIcon from '../assets/icons/offline.png';
+import { calcHeight, getFontSizeByWindowWidth } from './res';
 const offlineMessage = () => {
     showMessage({
         message: '',

@@ -51,7 +51,7 @@ export const verifyOtpDev = async ({ phoneNumber }: { phoneNumber: string }) => 
 
         return { user, token };
     } catch (error) {
-        console.log('Invalid code.');
+        console.log('Invalid code.', error);
 
         return null;
     }

@@ -1,6 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 // Assuming this is the path to your image
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,7 +9,7 @@ import Button from '../components/Button';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import safeAreaStyle from '../constants/safeAreaStyle';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const OnboardingScreen = ({ navigation }) => {
     return (

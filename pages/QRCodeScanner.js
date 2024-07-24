@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Linking, Button, Image, Pressable, Text, Alert, AppState } from 'react-native';
 import * as BarCodeScanner from 'expo-barcode-scanner';
-import CameraScanner from '../components/CameraScanner';
-import { useTransaction } from '../context/TransactionContext';
+import React, { useEffect, useState } from 'react';
+import { Alert, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import URL from 'url-parse';
-import PAGES from '../constants/pages';
+
+import SignUpImage from '../assets/SignUp.png';
+import CameraScanner from '../components/CameraScanner';
 import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
 import openSettings from '../helper/openSettings';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import getFontSize from '../helper/getFontSize';
-import SignUpImage from '../assets/SignUp.png';
 
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
@@ -56,11 +56,6 @@ const QRCodeScanner = ({ navigation }) => {
         };
     }, [navigation]);
 
-    const requestCameraPermission = async () => {
-        const { status } = await BarCodeScanner.requestPermissionsAsync();
-        setHasPermission(status === 'granted');
-    };
-
     const parseQueryString = (queryString) => {
         const pairs = queryString.substring(1).split('&');
         const params = {};
@@ -75,15 +70,12 @@ const QRCodeScanner = ({ navigation }) => {
         if (!barcodeScanEnabled) return;
         try {
             const url = new URL(data);
-
             const params = parseQueryString(url.query);
-
             // Initialize an object to store extracted parameters
             const extractedParams = {
                 receiverId: '',
-                // Add other common parameters here
+                description: params['tn'] || '',
             };
-
             // Check the URL scheme to identify UPI and extract relevant data
             if (url.protocol === 'upi:') {
                 extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
@@ -98,7 +90,6 @@ const QRCodeScanner = ({ navigation }) => {
                         onPress: () => setBarcodeScanEnabled(true),
                     },
                 ]);
-                return;
             }
         } catch (error) {
             console.error('Error processing scanned data:', error);

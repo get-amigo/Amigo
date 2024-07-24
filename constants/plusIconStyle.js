@@ -1,5 +1,5 @@
-import COLOR from './Colors';
 import { calcHeight } from '../helper/res';
+import COLOR from './Colors';
 const size = 6;
 export default {
     backgroundColor: COLOR.BUTTON,

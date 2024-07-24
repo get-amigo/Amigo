@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, Image, Pressable, TouchableOpacity, ActivityIndicator } from 'react-native';
-import COLOR from '../constants/Colors';
-import Button from '../components/Button';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import OTPImage from '../assets/OTPImage.png';
-import Loader from '../components/Loader';
-import OTPFilled from '../assets/OTPFilled.png';
-import { useOtp } from '../context/OtpContext';
 import * as Haptics from 'expo-haptics';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+
+import OTPFilled from '../assets/OTPFilled.png';
+import OTPImage from '../assets/OTPImage.png';
+import Button from '../components/Button';
+import COLOR from '../constants/Colors';
+import { useOtp } from '../context/OtpContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const OTPScreen = ({
-    navigation,
     route: {
         params: { phoneNumber },
     },
@@ -23,7 +22,6 @@ const OTPScreen = ({
     const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
 
     useEffect(() => {
-        // Function to handle the countdown logic
         const interval = setInterval(() => {
             if (seconds > 0) {
                 setSeconds(seconds - 1);
@@ -37,6 +35,12 @@ const OTPScreen = ({
             clearInterval(interval);
         };
     }, [seconds]);
+
+    useEffect(() => {
+        if (isAuthStateLoading) {
+            Keyboard.dismiss();
+        }
+    }, [isAuthStateLoading]);
 
     const resendOTP = () => {
         setSeconds(30);
@@ -59,6 +63,7 @@ const OTPScreen = ({
                 setLoading(false);
             })
             .catch(() => {
+                inputRef.current.focus();
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
                 setLoading(false);
                 setError(true);
@@ -84,73 +89,73 @@ const OTPScreen = ({
         );
     });
 
-    return loading ? (
-        <Loader />
-    ) : (
-        <View style={styles.innerContainer}>
-            <View style={styles.header}>
-                <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
-                <View style={styles.textContainer}>
-                    <Text style={styles.headerText}>OTP Verification</Text>
-                    <Text style={styles.promptText}>Enter the code sent to {phoneNumber}</Text>
+    return (
+        <ScrollView style={{ flex: 1 }} keyboardDismissMode="none" keyboardShouldPersistTaps="always">
+            <View style={styles.innerContainer}>
+                <View style={styles.header}>
+                    <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
+                    <View style={styles.textContainer}>
+                        <Text style={styles.headerText}>OTP Verification</Text>
+                        <Text style={styles.promptText}>Enter the code sent to {phoneNumber}</Text>
+                    </View>
+                </View>
+                <View
+                    style={{
+                        alignItems: 'center',
+                    }}
+                >
+                    <View style={styles.otpContainer}>{otpBoxes}</View>
+
+                    <TextInput
+                        ref={inputRef}
+                        style={styles.hiddenInput}
+                        keyboardType="number-pad"
+                        value={otp}
+                        onChangeText={handleOTPChange}
+                        maxLength={6}
+                        autoFocus
+                        blurOnSubmit={false}
+                        onSubmitEditing={handleVerifyOTP}
+                    />
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.resendText}>Didn't get the OTP? </Text>
+
+                        <Pressable
+                            disabled={seconds > 0}
+                            style={{
+                                color: seconds >= 0 ? '#808080' : 'red',
+                            }}
+                            onPress={() => seconds === 0 && resendOTP()}
+                        >
+                            {seconds > 0 ? (
+                                <Text
+                                    style={{
+                                        color: '#808080',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'normal',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend SMS in {seconds.toString().padStart(2, '0')}s
+                                </Text>
+                            ) : (
+                                <Text
+                                    style={{
+                                        color: '#FFFFFF',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'bold',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend
+                                </Text>
+                            )}
+                        </Pressable>
+                    </View>
+                    <Button loading={loading || isAuthStateLoading} title="Verify OTP" onPress={handleVerifyOTP} />
                 </View>
             </View>
-            <View
-                style={{
-                    alignItems: 'center',
-                }}
-            >
-                <View style={styles.otpContainer}>{otpBoxes}</View>
-
-                <TextInput
-                    ref={inputRef}
-                    style={styles.hiddenInput}
-                    keyboardType="number-pad"
-                    value={otp}
-                    onChangeText={handleOTPChange}
-                    maxLength={6}
-                    autoFocus
-                />
-                <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.resendText}>Didn't get the OTP? </Text>
-
-                    <Pressable
-                        disabled={seconds > 0}
-                        style={{
-                            color: seconds >= 0 ? '#808080' : 'red',
-                        }}
-                        onPress={() => seconds === 0 && resendOTP()}
-                    >
-                        {seconds > 0 ? (
-                            <Text
-                                style={{
-                                    color: '#808080',
-                                    fontSize: getFontSizeByWindowWidth(10.5),
-                                    fontWeight: 'normal',
-                                    marginLeft: calcWidth(1),
-                                }}
-                            >
-                                Resend SMS in {seconds.toString().padStart(2, '0')}s
-                            </Text>
-                        ) : (
-                            <Text
-                                style={{
-                                    color: '#FFFFFF',
-                                    fontSize: getFontSizeByWindowWidth(10.5),
-                                    fontWeight: 'bold',
-                                    marginLeft: calcWidth(1),
-                                }}
-                            >
-                                Resend
-                            </Text>
-                        )}
-                    </Pressable>
-                </View>
-                <View style={{}}>
-                    <Button title="Verify" onPress={handleVerifyOTP} />
-                </View>
-            </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -200,7 +205,7 @@ const styles = StyleSheet.create({
         height: calcHeight(7),
     },
     indicator: {
-        marginTop: calcHeight(-1),
+        marginTop: calcHeight(3),
         paddingHorizontal: calcWidth(2),
     },
     highlightedBox: {

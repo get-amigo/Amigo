@@ -1,83 +1,35 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
-import { AntDesign, Entypo } from '@expo/vector-icons';
-import COLOR from '../constants/Colors';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
-import { getCategoryIcon } from '../constants/Categories';
-import apiHelper from '../helper/apiHelper';
-import useCustomColor from '../hooks/useCustomColor';
-import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
-import SharedList from '../components/SharedList';
-import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
-import TransactionDetailsButton from '../components/TransactionDetailsButton';
-import sliceText from '../helper/sliceText';
+import { Entypo } from '@expo/vector-icons';
+import React, { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
+
 import CalendarIcon from '../assets/icons/calendar.png';
 import AmountInput from '../components/AmountInput';
-import { useExpense } from '../stores/expense';
+import SharedList from '../components/SharedList';
+import TransactionDetailsButton from '../components/TransactionDetailsButton';
+import { getCategoryIcon } from '../constants/Categories';
+import COLOR from '../constants/Colors';
+import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
+import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import sliceText from '../helper/sliceText';
+import useCustomColor from '../hooks/useCustomColor';
 
 const TransactionDetail = ({
-    navigation,
     route: {
         params: { transaction },
     },
 }) => {
-    const [date, setDate] = useState(new Date(transaction.date));
+    const [date, setDate] = useState();
     const [expandNames, setExpandNames] = useState(false);
-    const { deleteExpenseById } = useExpense();
 
     const generateColor = useCustomColor();
 
-    // const handleDeleteTransaction = async () => {
-    //     Alert.alert(
-    //         'Delete Transaction',
-    //         'Are you sure you want to delete this transaction?',
-    //         [
-    //             {
-    //                 text: 'Cancel',
-    //                 onPress: () => {},
-    //                 style: 'cancel',
-    //             },
-    //             {
-    //                 text: 'Delete',
-    //                 onPress: async () => {
-    //                     try {
-    //                         navigation.goBack();
-    //                         deleteExpenseById(transaction._id);
-    //                     } catch (error) {
-    //                         // Handle errors
-    //                         console.log(
-    //                             'An error occurred while deleting the transaction.',
-    //                         );
-    //                     }
-    //                 },
-    //             },
-    //         ],
-    //         { cancelable: false },
-    //     );
-    // };
-
-    // useLayoutEffect(() => {
-    //     navigation.setOptions({
-    //         headerRight: () => (
-    //             <View
-    //                 style={{
-    //                     flexDirection: 'row',
-    //                 }}
-    //             >
-    //                 <TouchableOpacity onPress={handleDeleteTransaction}>
-    //                     <AntDesign
-    //                         name="delete"
-    //                         size={calcWidth(6)}
-    //                         color={COLOR.BUTTON}
-    //                     />
-    //                 </TouchableOpacity>
-    //             </View>
-    //         ),
-    //     });
-    // }, [navigation]);
+    useEffect(() => {
+        setDate(new Date(transaction.date));
+    }, [transaction]);
 
     return (
-        <ScrollView>
+        <ScrollView alwaysBounceVertical={false}>
             <View
                 style={{
                     alignItems: 'center',
@@ -100,7 +52,7 @@ const TransactionDetail = ({
                         fontSize: getFontSizeByWindowWidth(12),
                     }}
                 >
-                    Create By {transaction.creator.name}
+                    Created By {transaction.creator.name}
                 </Text>
                 <View
                     style={{
@@ -185,12 +137,7 @@ const TransactionDetail = ({
                         <Text style={styles.userAmount}>₹ {transaction.amount}</Text>
                     </View>
                 </View>
-                <SharedList
-                    transaction={transaction}
-                    generateColor={generateColor}
-                    expandNames={expandNames}
-                    setExpandNames={setExpandNames}
-                />
+                <SharedList transaction={transaction} generateColor={generateColor} expandNames={expandNames} />
             </View>
             <View
                 style={{

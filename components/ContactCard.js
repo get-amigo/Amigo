@@ -1,10 +1,10 @@
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'; // Make sure to install expo-icons or another icon library
 import React from 'react';
-import { StyleSheet, View, Text, Image } from 'react-native';
-import { Ionicons, MaterialCommunityIcons, AntDesign } from '@expo/vector-icons'; // Make sure to install expo-icons or another icon library
+import { Image, StyleSheet, Text, View } from 'react-native';
 
 // Helper functions for responsive layout
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 function ContactCard({ selected, color, name, phoneNumber, imageURI, countryCode }) {
     return (

@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import {
-    View,
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    Platform,
+    SafeAreaView,
+    StyleSheet,
     Text,
     TextInput,
-    StyleSheet,
-    SafeAreaView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
     TouchableWithoutFeedback,
-    Keyboard,
+    View,
 } from 'react-native';
+
 import SignUpImage from '../assets/SignUp.png'; // Make sure you have an image for the sign-up
+import Button from '../components/Button'; // Replace with your actual button component
 import COLOR from '../constants/Colors'; // Replace with your actual colors
 import PAGES from '../constants/pages'; // Replace with your actual page constants
-import Button from '../components/Button'; // Replace with your actual button component
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res'; // Replace with your actual responsive helpers
 import { useAuth } from '../stores/auth';
 

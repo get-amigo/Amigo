@@ -1,6 +1,6 @@
-import { useAuth } from '../stores/auth';
 import COLOR from '../constants/Colors';
 import getAvatarColor from '../constants/getAvatarColor';
+import { useAuth } from '../stores/auth';
 function useCustomColor() {
     const { user } = useAuth();
 

@@ -1,8 +1,9 @@
 import * as Sentry from '@sentry/react-native';
 import { StatusBar } from 'expo-status-bar';
-import { KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
+import { KeyboardAvoidingView, Platform } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
-import COLOR from './constants/Colors';
+import 'react-native-get-random-values';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import RootNavigator from './navigator/RootNavigator';
 
 Sentry.init({
@@ -17,12 +18,7 @@ Sentry.init({
 function App() {
     return (
         <>
-            <SafeAreaView
-                style={{
-                    flex: 1,
-                    backgroundColor: COLOR.APP_BACKGROUND,
-                }}
-            >
+            <SafeAreaProvider>
                 <StatusBar style="auto" />
                 <KeyboardAvoidingView
                     style={{ flex: 1 }}
@@ -33,7 +29,7 @@ function App() {
                     <RootNavigator />
                 </KeyboardAvoidingView>
                 <FlashMessage position="top" duration={2000} />
-            </SafeAreaView>
+            </SafeAreaProvider>
         </>
     );
 }

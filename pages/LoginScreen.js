@@ -1,27 +1,16 @@
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    FlatList,
-    Modal,
-    Button as RNButton,
-    KeyboardAvoidingView,
-} from 'react-native';
+import { FlatList, Image, KeyboardAvoidingView, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 import LoginImage from '../assets/Login.png';
-import COLOR from '../constants/Colors';
-import PAGES from '../constants/pages';
-import Button from '../components/Button';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { useOtp } from '../context/OtpContext';
-import COUNTRY from '../constants/Countries';
-import BackImage from '../assets/back.png';
+import ArrowDown2 from '../assets/icons/Arrow-bottom.png';
 import ArrowDown from '../assets/icons/Arrow-down.png';
 import SearchIcon from '../assets/icons/Search.png';
-import ArrowDown2 from '../assets/icons/Arrow-bottom.png';
+import Button from '../components/Button';
+import COLOR from '../constants/Colors';
+import COUNTRY from '../constants/Countries';
+import PAGES from '../constants/pages';
+import { useOtp } from '../context/OtpContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const LoginScreen = ({ navigation }) => {
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -129,7 +118,7 @@ const LoginScreen = ({ navigation }) => {
             </View>
             <Modal
                 animationType="slide"
-                transparent={true}
+                transparent
                 visible={isModalVisible}
                 onRequestClose={() => {
                     setIsModalVisible(false);

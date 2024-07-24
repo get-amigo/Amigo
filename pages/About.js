@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from 'react-native';
-import { MaterialIcons, Foundation } from '@expo/vector-icons';
+import { Foundation } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
+import React from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import icon from '../assets/icon.png';
 import COLOR from '../constants/Colors';
 import about from '../constants/about';
 import { calcHeight, calcWidth } from '../helper/res';
-import icon from '../assets/icon.png';
 
 const About = () => {
     const renderLink = (iconName, text, onPress = () => {}) => (
@@ -16,7 +17,7 @@ const About = () => {
     );
 
     return (
-        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <ScrollView contentContainerStyle={styles.scrollViewContent} alwaysBounceVertical={false}>
             <View style={styles.header}>
                 <Image source={icon} style={styles.icon} />
                 <Text style={styles.headerText}>What's Amigo</Text>

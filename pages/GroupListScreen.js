@@ -1,18 +1,16 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Text, StyleSheet, FlatList, View, TextInput, Keyboard, RefreshControl } from 'react-native';
+import { FlatList, Keyboard, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import NoGroupsImage from '../assets/NoGroups.png';
 import EmptyScreen from '../components/EmptyScreen';
 import FabIcon from '../components/FabIcon';
 import GroupCard from '../components/GroupCard';
-import Loader from '../components/Loader';
 import Search from '../components/Search';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import safeAreaStyle from '../constants/safeAreaStyle';
-import apiHelper from '../helper/apiHelper';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';

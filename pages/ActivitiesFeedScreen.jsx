@@ -26,7 +26,6 @@ const ActivitiesFeedScreen = () => {
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
-    const hasHydrated = useGroupActivitiesStore((state) => state._hasHydrated);
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const syncAllPendingActivities = useGroupActivitiesStore((state) => state.syncAllPendingActivities);
 

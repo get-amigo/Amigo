@@ -1,14 +1,12 @@
-import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import GroupIcon from './GroupIcon';
-import LoginImage from '../assets/Login.png';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
+import GroupIcon from './GroupIcon';
 function GroupBalanceCard({ group, loading }) {
     if (loading)
         return (

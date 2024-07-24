@@ -1,13 +1,13 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-import AppNavigator from './AppNavigator';
-import AuthNavigator from './AuthNavigator';
 import COLOR from '../constants/Colors';
 import { GroupProvider } from '../context/GroupContext';
 import { TransactionProvider } from '../context/TransactionContext';
 import linking from '../helper/linking';
 import { useAuth } from '../stores/auth';
+import AppNavigator from './AppNavigator';
+import AuthNavigator from './AuthNavigator';
 
 const queryClient = new QueryClient();
 

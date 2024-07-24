@@ -6,8 +6,8 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Animated, KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
-import 'react-native-get-random-values';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-get-random-values';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import RootNavigator from './navigator/RootNavigator';

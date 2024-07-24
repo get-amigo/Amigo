@@ -1,7 +1,7 @@
-import { MaterialIcons, Foundation } from '@expo/vector-icons';
+import { Foundation } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, Linking } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import icon from '../assets/icon.png';
 import COLOR from '../constants/Colors';

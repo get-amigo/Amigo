@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
-import {
-    View,
-    Text,
-    TextInput,
-    StyleSheet,
-    Image,
-    TouchableOpacity,
-    FlatList,
-    Modal,
-    Button as RNButton,
-    KeyboardAvoidingView,
-} from 'react-native';
+import { FlatList, Image, KeyboardAvoidingView, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import LoginImage from '../assets/Login.png';
-import BackImage from '../assets/back.png';
 import ArrowDown2 from '../assets/icons/Arrow-bottom.png';
 import ArrowDown from '../assets/icons/Arrow-down.png';
 import SearchIcon from '../assets/icons/Search.png';

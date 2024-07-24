@@ -1,12 +1,11 @@
 import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { StackActions } from '@react-navigation/native';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
 import Button from '../components/Button';
-import Loader from '../components/Loader';
 import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
@@ -20,7 +19,6 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 function TransactionFormScreen({ navigation }) {
-    const [loading, setIsLoading] = useState(false);
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
@@ -88,17 +86,17 @@ function TransactionFormScreen({ navigation }) {
 
     const handleSubmit = async () => {
         if (!transactionData.amount) {
-            alert('Amount Missing');
+            Alert.alert('Amount Missing');
             return;
         }
 
         if (Object.keys(transactionData.group).length === 0) {
-            alert('Group not added');
+            Alert.alert('Group not added');
             return;
         }
 
         if (!transactionData.type) {
-            alert('Category Missing');
+            Alert.alert('Category Missing');
             return;
         }
 
@@ -137,7 +135,7 @@ function TransactionFormScreen({ navigation }) {
 
                 apiHelper
                     .post('/transaction', newTransactionWithId)
-                    .then((res) => {
+                    .then(() => {
                         setUpiParams({});
                         //                         setActivitiesHash(newTransaction.group, [
                         //                             {
@@ -182,9 +180,7 @@ function TransactionFormScreen({ navigation }) {
         }
     };
 
-    return loading ? (
-        <Loader />
-    ) : (
+    return (
         <ScrollView style={styles.container} alwaysBounceVertical={false}>
             <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
@@ -349,9 +345,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly',
         marginTop: calcHeight(2),
         width: calcWidth(40),
-    },
-    buttonText: {
-        color: 'white',
     },
     submitBtnContainer: {
         alignItems: 'center',

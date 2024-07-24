@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import React from 'react';
+import { Image, View } from 'react-native';
 
 import COLOR from '../constants/Colors';
 import groupIcons from '../constants/groupIcons';
 import generateRandomNumberBasedOnUUIDAndRange from '../helper/generateRandomNumberBasedOnUUIDAndRange';
-import { calcHeight, calcWidth } from '../helper/res';
+import { calcHeight } from '../helper/res';
 
 const defaultSize = 5;
 

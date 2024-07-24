@@ -1,8 +1,7 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import COLOR from '../constants/Colors';
 import faqArray from '../constants/faq';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 

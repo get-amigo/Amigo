@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 
 import ContactList from '../components/ContactList';
 import Loader from '../components/Loader';
@@ -12,11 +12,11 @@ import { useContacts } from '../hooks/useContacts';
 
 const AddPeople = ({ navigation }) => {
     const { selectedContacts } = useContacts();
-    const { group, setGroup } = useGroup();
+    const { group } = useGroup();
     const [loading, setLoading] = useState(false);
     async function addMembers() {
         setLoading(true);
-        const { data } = await apiHelper.patch(
+        await apiHelper.patch(
             `/group/${group._id}`,
             selectedContacts.map((contact) => ({
                 phoneNumber: contact.phoneNumber,

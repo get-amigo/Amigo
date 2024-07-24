@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, Text, View, Modal, Pressable } from 'react-native';
+import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { DatePickerModal } from 'react-native-paper-dates';
 
 import COLOR from '../constants/Colors';
-import { getFontSizeByWindowWidth, calcHeight } from '../helper/res';
+import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import { useExpense } from '../stores/expense';
 
 const getStartOfWeek = () => {
@@ -139,9 +139,7 @@ const styles = {
         borderTopLeftRadius: 20,
         borderTopRightRadius: 20,
         padding: calcHeight(4),
-        backgroundColor: 'white',
         paddingBottom: calcHeight(7),
-        backgroundColor: COLOR.APP_BACKGROUND,
     },
     dateTypeText: {
         fontSize: getFontSizeByWindowWidth(15),

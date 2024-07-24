@@ -2,11 +2,11 @@ import { ENV } from '@env';
 import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import * as Sentry from '@sentry/react-native';
-import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import React, { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 
 import PAGES from '../constants/pages';
 import apiHelper from '../helper/apiHelper';
-import { sendOtp, verifyOtp, sendOtpDev, verifyOtpDev, onAuthStateChanged } from '../helper/otp';
+import { onAuthStateChanged, sendOtp, sendOtpDev, verifyOtp, verifyOtpDev } from '../helper/otp';
 import { useAuth } from '../stores/auth';
 
 type OtpContextType = {

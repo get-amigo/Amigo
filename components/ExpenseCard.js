@@ -1,7 +1,7 @@
 // React Native Components and Utilities
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, Text, FlatList, Image, Pressable, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 // Custom Components and Utility Functions
 import GroupIcon from '../components/GroupIcon';

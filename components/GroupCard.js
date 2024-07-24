@@ -1,15 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import GroupIcon from './GroupIcon';
-import LoginImage from '../assets/Login.png';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import getMembersString from '../utility/getMembersString';
+import GroupIcon from './GroupIcon';
 function GroupCard({ group, loading }) {
     if (loading)
         return (

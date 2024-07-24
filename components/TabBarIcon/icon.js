@@ -1,6 +1,4 @@
-import { EvilIcons } from '@expo/vector-icons';
-import { Octicons, Foundation } from '@expo/vector-icons'; // Example color, replace with actual color needed.
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Foundation, MaterialCommunityIcons, Octicons } from '@expo/vector-icons'; // Example color, replace with actual color needed.
 import React from 'react';
 import { Image } from 'react-native';
 

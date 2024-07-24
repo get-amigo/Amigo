@@ -1,7 +1,6 @@
-import NetInfo from '@react-native-community/netinfo';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, Pressable, Image, RefreshControl } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import NoBalance from '../assets/NoBalance.png';
@@ -13,11 +12,9 @@ import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import safeAreaStyle from '../constants/safeAreaStyle';
-import apiHelper from '../helper/apiHelper';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { calcHeight, calcWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
-import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
 const headerIconSize = calcHeight(1);
 

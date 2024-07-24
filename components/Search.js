@@ -1,9 +1,9 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useRef } from 'react';
-import { StyleSheet, View, Pressable, TextInput } from 'react-native';
+import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth } from '../helper/res';
+import { calcWidth } from '../helper/res';
 function Search({ search, setSearch, loading }) {
     if (loading)
         return (

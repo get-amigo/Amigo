@@ -1,15 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    Pressable,
-    StyleSheet,
-    Alert,
+    Keyboard,
     KeyboardAvoidingView,
     Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
     TouchableWithoutFeedback,
-    Keyboard,
+    View,
 } from 'react-native';
 import Toast from 'react-native-root-toast';
 
@@ -18,23 +17,18 @@ import ContactList from '../components/ContactList';
 import Loader from '../components/Loader';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
-import editNamesAsync from '../helper/editNamesAsync';
 import checkConnectivity from '../helper/getNetworkStateAsync';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
-import { useAuth } from '../stores/auth';
 
 const CreateGroup = ({ navigation }) => {
     const { selectedContacts } = useContacts();
     const [groupName, setGroupName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
-    const { setTransactionData } = useTransaction();
-    const { user } = useAuth();
     const nameRef = useRef();
     const MAX_LEN = 40;
 
@@ -52,7 +46,7 @@ const CreateGroup = ({ navigation }) => {
                 phoneNumber,
                 countryCode,
             }));
-            const { data } = await apiHelper.post('/group', {
+            await apiHelper.post('/group', {
                 name: groupName,
                 phoneNumbers,
             });
@@ -63,7 +57,7 @@ const CreateGroup = ({ navigation }) => {
             else {
                 navigation.goBack();
             }
-        } catch (error) {
+        } catch {
             Toast.show('Error creating group. Please try again.', {
                 duration: Toast.durations.LONG,
             });

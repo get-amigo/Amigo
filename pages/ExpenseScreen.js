@@ -1,17 +1,21 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
-import { useAuth } from '../stores/auth';
-import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
-import ExpenseCard from '../components/ExpenseCard';
-import DatePickerSelector from '../components/DatePickerSelector'; // Separate component for date picker
-import TypeSelector from '../components/TypeSelector';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
+import React, { useState, useCallback } from 'react';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, RefreshControl } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import DatePickerSelector from '../components/DatePickerSelector'; // Separate component for date picker
+import ExpenseCard from '../components/ExpenseCard';
+import TypeSelector from '../components/TypeSelector';
+import COLOR from '../constants/Colors';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
+import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
 
 function ExpenseScreen() {
-    const { expense, resetParams, loading, type, range } = useExpense();
+    const { expense, resetParams, loading, fetchExpense, type, range } = useExpense();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -19,9 +23,15 @@ function ExpenseScreen() {
         }, []),
     );
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchExpense();
+        setRefreshing(false);
+    }, []);
+
     if (loading)
         return (
-            <>
+            <SafeAreaView style={safeAreaStyle}>
                 <Text style={styles.header}>Expense Summary</Text>
                 <View
                     style={{
@@ -56,10 +66,10 @@ function ExpenseScreen() {
                     </View>
                 </View>
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
-            </>
+            </SafeAreaView>
         );
     return (
-        <>
+        <SafeAreaView style={safeAreaStyle}>
             <Text style={styles.header}>Expense Summary</Text>
             <View
                 style={{
@@ -106,9 +116,18 @@ function ExpenseScreen() {
                     keyExtractor={(item, index) => item.id || index.toString()}
                     renderItem={({ item }) => <ExpenseCard item={item} />}
                     style={styles.list}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                            progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                        />
+                    }
                 />
             )}
-        </>
+        </SafeAreaView>
     );
 }
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
+
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 function AccountPageOption({ iconName, label, IconComponent, additionalStyle, onPress, color = 'white' }) {

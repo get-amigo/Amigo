@@ -1,16 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, FlatList, Pressable, Alert, Keyboard } from 'react-native';
+import { Button } from 'react-native-paper';
+
+import AddMemberWithoutContact from './AddMemberWithoutContact';
 import ContactCard from './ContactCard';
 import Search from './Search';
+import COLOR from '../constants/Colors';
+import openSettings from '../helper/openSettings';
 import { useContacts } from '../hooks/useContacts';
 import { calcHeight, calcWidth } from '../helper/res';
-import openSettings from '../helper/openSettings';
-import { Button } from 'react-native-paper';
-import COLOR from '../constants/Colors';
 
 const ContactList = ({ eliminatedContacts }) => {
     const { search, setSearch, contacts, selectedContacts, handleSelectContact, setSelectedContacts, contactPermission } = useContacts();
-
     const flatListRef = useRef(null);
 
     useEffect(() => {
@@ -44,6 +45,9 @@ const ContactList = ({ eliminatedContacts }) => {
     return (
         <View>
             <Search search={search} setSearch={setSearch} />
+            <View>
+                <AddMemberWithoutContact />
+            </View>
             {contactPermission ? (
                 <FlatList
                     ref={flatListRef}

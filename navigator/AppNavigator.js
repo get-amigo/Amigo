@@ -1,51 +1,45 @@
-import React, { useEffect } from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from '../stores/auth';
-import PAGES from '../constants/pages';
-const Stack = createNativeStackNavigator();
-import SignUpScreen from '../pages/SignUpScreen';
-import COLOR from '../constants/Colors';
-import TabBarIcon from '../components/TabBarIcon';
-import TransactionDetail from '../pages/TransactionDetails';
-import SelectGroup from '../pages/SelectGroup';
-import GroupSplitScreen from '../pages/GroupSplitScreen';
-import SelectPaidBy from '../pages/SelectPaidBy';
-import GroupBalance from '../pages/GroupBalanceScreen';
-import PaymentScreen from '../pages/PaymentScreen';
-import SearchScreen from '../pages/Search';
-import AccountScreen from '../pages/AccountScreen';
-import QRCodeScanner from '../pages/QRCodeScanner';
-import UPIAppSelection from '../pages/UPIAppSelection';
-import TabNavigator from './TabNavigator';
-import Group from '../pages/Group';
-import CreateGroup from '../pages/CreateGroup';
-import { getFontSizeByWindowWidth } from '../helper/res';
-import TransactionFormScreen from '../pages/TransactionForm';
-import InvitationLandingScreen from '../pages/InvitationLandingScreen';
-import GroupSettings from '../pages/GroupSettings';
-import FAQ from '../pages/FAQ';
-import About from '../pages/About';
-import AddPeople from '../pages/AddPeople';
-import LoginScreen from '../pages/LoginScreen';
-import { ContactsProvider } from '../hooks/useContacts';
 import NetInfo from '@react-native-community/netinfo';
-import syncAllChat from '../utility/syncAllChat';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
+
+import TabNavigator from './TabNavigator';
+import TabBarIcon from '../components/TabBarIcon';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { getFontSizeByWindowWidth } from '../helper/res';
+import { ContactsProvider } from '../hooks/useContacts';
+import About from '../pages/About';
+import AccountScreen from '../pages/AccountScreen';
+import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
+import AddPeople from '../pages/AddPeople';
+import CreateGroup from '../pages/CreateGroup';
+import FAQ from '../pages/FAQ';
+import GroupBalance from '../pages/GroupBalanceScreen';
+import GroupSettings from '../pages/GroupSettings';
+import GroupSplitScreen from '../pages/GroupSplitScreen';
+import InvitationLandingScreen from '../pages/InvitationLandingScreen';
+import PaymentScreen from '../pages/PaymentScreen';
+import SelectGroup from '../pages/SelectGroup';
+import SignUpScreen from '../pages/SignUpScreen';
+import TransactionDetail from '../pages/TransactionDetails';
+import SelectPaidBy from '../pages/SelectPaidBy';
+import SearchScreen from '../pages/Search';
+import QRCodeScanner from '../pages/QRCodeScanner';
+import TransactionFormScreen from '../pages/TransactionForm';
+import UPIAppSelection from '../pages/UPIAppSelection';
+import LoginScreen from '../pages/LoginScreen';
+import { useAuth } from '../stores/auth';
+const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
     const { user } = useAuth();
-    useEffect(() => {
-        const unsubscribe = NetInfo.addEventListener((state) => {
-            if (state.isConnected) {
-                syncAllChat();
-            }
-        });
 
-        return () => {
-            unsubscribe();
-        };
-    }, []);
     return (
         <ContactsProvider>
-            <Stack.Navigator screenOptions={{ headerBackTitleVisible: false }}>
+            <Stack.Navigator
+                screenOptions={{
+                    headerBackTitleVisible: false,
+                }}
+            >
                 {user.name ? (
                     <Stack.Group>
                         <Stack.Screen
@@ -53,6 +47,7 @@ const AppNavigator = () => {
                             options={{
                                 headerShown: false,
                                 tabBarIcon: (tabBarProps) => <TabBarIcon tabBarProps={tabBarProps} screen={PAGES.BALANCE} />,
+                                animation: 'fade',
                             }}
                             component={TabNavigator}
                         />
@@ -63,8 +58,15 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'ios',
                                 title: null,
                                 headerTintColor: '#fff',
+                                headerTitle: 'Paid By',
+                                headerTitleStyle: {
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: getFontSizeByWindowWidth(19),
+                                },
                             }}
                         />
                         <Stack.Screen
@@ -74,6 +76,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'ios',
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -84,6 +87,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'fade',
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -91,17 +95,17 @@ const AppNavigator = () => {
                             name={PAGES.GROUP_BALANCE}
                             component={GroupBalance}
                             options={{
+                                animation: 'ios',
                                 headerShown: false,
                             }}
                         />
                         <Stack.Screen
                             name={PAGES.SEARCH}
                             component={SearchScreen}
-                            options={
-                                {
-                                    // headerShown: false,
-                                }
-                            }
+                            options={{
+                                // headerShown: false,
+                                animation: 'fade',
+                            }}
                         />
                         <Stack.Screen
                             name={PAGES.ACCOUNT}
@@ -110,6 +114,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'fade',
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -120,6 +125,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'ios',
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -131,6 +137,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'ios',
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -165,6 +172,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'ios',
                                 headerTitleAlign: 'left', // Aligns the title to the left
                                 headerTintColor: '#fff', // Sets the title color to white
                             }}
@@ -172,9 +180,10 @@ const AppNavigator = () => {
 
                         <Stack.Screen
                             name={PAGES.GROUP}
-                            component={Group}
+                            component={ActivitiesFeedScreen}
                             options={{
                                 headerShown: false,
+                                animation: 'ios',
                             }}
                         />
                         <Stack.Screen
@@ -184,6 +193,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'ios',
                                 title: null,
                                 headerTintColor: '#fff',
                             }}
@@ -202,6 +212,7 @@ const AppNavigator = () => {
                                     fontSize: getFontSizeByWindowWidth(20),
                                 },
                                 headerTintColor: '#fff',
+                                animation: 'ios',
                             }}
                         />
 
@@ -212,8 +223,15 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'fade',
                                 title: null,
                                 headerTintColor: '#fff',
+                                headerTitle: 'Add Transaction',
+                                headerTitleStyle: {
+                                    color: 'white',
+                                    fontWeight: 'bold',
+                                    fontSize: getFontSizeByWindowWidth(19),
+                                },
                             }}
                         />
                         <Stack.Screen
@@ -225,6 +243,7 @@ const AppNavigator = () => {
                                 },
                                 title: 'New group',
                                 headerTintColor: '#fff',
+                                animation: 'ios',
                                 headerTitleStyle: {
                                     color: 'white',
                                 },
@@ -237,8 +256,10 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                headerTintColor: '#fff',
                                 title: null,
                                 headerTintColor: '#fff',
+                                animation: 'ios',
                             }}
                         />
                         <Stack.Screen
@@ -255,6 +276,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                animation: 'fade',
                                 title: null,
                                 headerTintColor: '#fff',
                             }}
@@ -265,6 +287,7 @@ const AppNavigator = () => {
                         name={PAGES.SIGN_UP}
                         options={{
                             headerShown: false,
+                            animation: 'fade',
                         }}
                         component={SignUpScreen}
                     />

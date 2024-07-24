@@ -1,12 +1,15 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import SplashImage from '../assets/splash.png';
+import { Image, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import SplashImage from '../assets/Loader.gif';
+import { calcHeight, calcWidth } from '../helper/res';
 
 function Loader() {
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
             <Image source={SplashImage} style={styles.image} />
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -18,8 +21,8 @@ const styles = StyleSheet.create({
     },
     image: {
         flex: 1,
-        width: '100%',
-        height: '100%',
+        width: calcWidth(100),
+        height: calcHeight(100),
         resizeMode: 'cover', // or 'contain' depending on your preference
     },
 });

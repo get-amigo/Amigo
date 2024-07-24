@@ -1,13 +1,14 @@
 import React, { useLayoutEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import COLOR from '../constants/Colors';
-import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+
 import ContactList from '../components/ContactList';
-import { useContacts } from '../hooks/useContacts';
+import Loader from '../components/Loader';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
-import PAGES from '../constants/pages';
-import Loader from '../components/Loader';
+import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import { useContacts } from '../hooks/useContacts';
 
 const AddPeople = ({ navigation }) => {
     const { selectedContacts } = useContacts();

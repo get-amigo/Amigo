@@ -1,15 +1,20 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React from 'react';
-import PAGES from '../constants/pages';
-const Tab = createMaterialTopTabNavigator();
-import COLOR from '../constants/Colors';
-import TabBarIcon from '../components/TabBarIcon';
-import tabBarStyle from '../constants/tabBarStyle';
-import GroupListScreen from '../pages/GroupListScreen';
-import ExpenseScreen from '../pages/ExpenseScreen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import TabBarIcon from '../components/TabBarIcon';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import tabBarStyle from '../constants/tabBarStyle';
+import { calcWidth } from '../helper/res';
 import BalanceScreen from '../pages/BalanceScreen';
+import ExpenseScreen from '../pages/ExpenseScreen';
+import GroupListScreen from '../pages/GroupListScreen';
+
+const Tab = createMaterialTopTabNavigator();
+
 const TabNavigator = () => {
+    const insets = useSafeAreaInsets();
     return (
         <Tab.Navigator
             screenOptions={{
@@ -18,8 +23,14 @@ const TabNavigator = () => {
                 tabBarIndicatorStyle: {
                     backgroundColor: 'transparent', // Set transparent to hide the default indicator
                 },
+                tabBarIconStyle: {
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: calcWidth(13) + insets.bottom,
+                    width: calcWidth(13),
+                },
             }}
-            tabBarPosition={'bottom'}
+            tabBarPosition="bottom"
         >
             <Tab.Group>
                 <Tab.Screen

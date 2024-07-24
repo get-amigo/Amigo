@@ -1,9 +1,10 @@
 import * as Contacts from 'expo-contacts';
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import generateRandomColor from '../helper/generateRandomColor';
-import { useAuth } from '../stores/auth';
 import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+
+import generateRandomColor from '../helper/generateRandomColor';
 import getDefaultCountryCode from '../helper/getDefaultCountryCode';
+import { useAuth } from '../stores/auth';
 
 const ContactsContext = createContext();
 

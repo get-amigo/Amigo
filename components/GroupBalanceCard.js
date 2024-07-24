@@ -1,12 +1,13 @@
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View, Text, Image, Pressable } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import COLOR from '../constants/Colors';
-import LoginImage from '../assets/Login.png';
-import { useNavigation } from '@react-navigation/native';
-import PAGES from '../constants/pages';
+
 import GroupIcon from './GroupIcon';
+import LoginImage from '../assets/Login.png';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 function GroupBalanceCard({ group, loading }) {
     if (loading)
@@ -33,7 +34,7 @@ function GroupBalanceCard({ group, loading }) {
                                     borderRadius: 10,
                                 },
                             ]}
-                        ></Text>
+                        />
                         <Text
                             style={[
                                 styles.memberText,
@@ -43,7 +44,7 @@ function GroupBalanceCard({ group, loading }) {
                                     borderRadius: 10,
                                 },
                             ]}
-                        ></Text>
+                        />
                     </View>
                 </View>
             </Pressable>

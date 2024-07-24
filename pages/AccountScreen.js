@@ -1,12 +1,13 @@
+import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
-import { useAuth } from '../stores/auth';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import UserAvatar from '../components/UserAvatar';
-import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+
 import MenuOption from '../components/AccountPageOption';
+import UserAvatar from '../components/UserAvatar';
+import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
 
 function ProfileScreen({ navigation }) {
@@ -162,8 +163,8 @@ function ProfileScreen({ navigation }) {
                             'Download our App: ' +
                             `${
                                 Platform.OS == 'ios'
-                                    ? 'https://apps.apple.com/us/app/qr-generator-app/id6469707187'
-                                    : 'https://play.google.com/store/apps/details?id=com.devonetech.android.qrguru&hl=en_IN&gl=US'
+                                    ? 'https://apps.apple.com/in/app/amigo/id6483936159'
+                                    : 'https://play.google.com/store/apps/details?id=app.amigo.app&hl=en_IN'
                             }`,
                     });
                 }}

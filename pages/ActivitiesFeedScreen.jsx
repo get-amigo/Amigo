@@ -1,6 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import BalanceGroupPin from '../components/BalanceGroupPin';
+import FeedsContainer from '../components/FeedScreen/FeedsContainer';
+import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
+import MessageComposer from '../components/FeedScreen/MessageComposer';
+import safeAreaStyle from '../constants/safeAreaStyle';
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
 import { calcWidth } from '../helper/res';
@@ -10,11 +16,6 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import FeedsContainer from '../components/FeedScreen/FeedsContainer';
-import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
-import MessageComposer from '../components/FeedScreen/MessageComposer';
-import safeAreaStyle from '../constants/safeAreaStyle';
 import { MESSAGE_COMPOSER_PADDING } from '../constants/constants';
 
 const ActivitiesFeedScreen = () => {
@@ -28,7 +29,6 @@ const ActivitiesFeedScreen = () => {
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
-    const hasHydrated = useGroupActivitiesStore((state) => state._hasHydrated);
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const syncAllPendingActivities = useGroupActivitiesStore((state) => state.syncAllPendingActivities);
 

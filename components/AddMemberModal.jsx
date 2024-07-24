@@ -2,6 +2,7 @@ import { parsePhoneNumber } from 'libphonenumber-js';
 import React from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Modal from 'react-native-modal';
+
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';

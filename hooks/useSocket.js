@@ -1,6 +1,6 @@
+import { API_URL } from '@env';
 import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
-import { API_URL } from '@env';
 
 const useSocket = (eventName, listener) => {
     const socket = useRef(null);

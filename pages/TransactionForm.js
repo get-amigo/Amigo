@@ -1,26 +1,24 @@
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
-import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, ScrollView, Alert, Pressable } from 'react-native';
-import Toast from 'react-native-root-toast';
+import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { StackActions } from '@react-navigation/native';
+import React, { useEffect, useRef } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
 import Button from '../components/Button';
-import Loader from '../components/Loader';
 import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import { useGroup } from '../context/GroupContext';
 import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { useAuth } from '../stores/auth';
-import { useGroup } from '../context/GroupContext';
-import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import useNetwork from '../hooks/useNetwork';
+import { useAuth } from '../stores/auth';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 function TransactionFormScreen({ navigation }) {
-    const [loading, setIsLoading] = useState(false);
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
@@ -88,17 +86,17 @@ function TransactionFormScreen({ navigation }) {
 
     const handleSubmit = async () => {
         if (!transactionData.amount) {
-            alert('Amount Missing');
+            Alert.alert('Amount Missing');
             return;
         }
 
         if (Object.keys(transactionData.group).length === 0) {
-            alert('Group not added');
+            Alert.alert('Group not added');
             return;
         }
 
         if (!transactionData.type) {
-            alert('Category Missing');
+            Alert.alert('Category Missing');
             return;
         }
 
@@ -133,25 +131,23 @@ function TransactionFormScreen({ navigation }) {
 
             if (isConnected) {
                 const { activityId, relatedId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
-                const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: relatedId };
+                const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
 
                 apiHelper
                     .post('/transaction', newTransactionWithId)
-                    .then((res) => {
-
+                    .then(() => {
                         setUpiParams({});
-//                         setActivitiesHash(newTransaction.group, [
-//                             {
-//                                 ...newActivity,
-//                                 synced: true,
-//                             },
-//                             ...activities,
-//                         ]);
+                        //                         setActivitiesHash(newTransaction.group, [
+                        //                             {
+                        //                                 ...newActivity,
+                        //                                 synced: true,
+                        //                             },
+                        //                             ...activities,
+                        //                         ]);
                         updateIsSynced({
                             _id: activityId,
                             group: newActivity.relatedId.group._id,
                         });
-
                     })
                     .catch((err) => {
                         console.log('error in api post', err);
@@ -184,158 +180,78 @@ function TransactionFormScreen({ navigation }) {
         }
     };
 
-    return loading ? (
-        <Loader />
-    ) : (
+    return (
         <ScrollView style={styles.container} alwaysBounceVertical={false}>
             <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
             <View style={styles.rowCentered}>
                 <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
                     <TextInput
+                        ref={descriptionRef}
                         style={styles.description}
                         onChangeText={(text) => handleInputChange('description', text)}
                         value={transactionData.description}
                         placeholder="Description"
-                        placeholderTextColor="#ccc"
-                        ref={descriptionRef}
-                        textAlign="center"
+                        placeholderTextColor="gray"
+                        textAlign={transactionData?.description?.length === 0 ? 'left' : 'center'}
                         maxLength={100}
-                        multiline={true}
+                        multiline
+                        scrollEnabled
                     />
                 </Pressable>
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                    marginVertical: calcHeight(3),
-                }}
-            >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.verticalScrollView}>
                 {Categories.map((item, index) => (
                     <Pressable
                         key={index}
-                        style={[
-                            styles.categoryItem,
-                            transactionData.type === item.name && styles.selectedCategory,
-                            {
-                                borderColor: '#4D426C',
-                                borderWidth: 1,
-                                borderRadius: 10,
-                                marginHorizontal: calcWidth(1),
-                            },
-                        ]}
+                        style={[styles.categoryItem, transactionData.type === item.name && styles.selectedCategory]}
                         onPress={() => handleCategorySelect(item.name)}
                     >
                         {item.icon}
-                        <Text style={[styles.categoryText]}>{item.name}</Text>
+                        <Text style={styles.categoryText}>{item.name}</Text>
                     </Pressable>
                 ))}
             </ScrollView>
             {getPreviousPageName(navigation) != PAGES.GROUP && (
                 <View>
                     <Pressable
-                        style={{
-                            backgroundColor: '#302B49',
-                            padding: calcWidth(4),
-                            borderRadius: 8,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}
+                        style={styles.addGroupBtn}
                         onPress={() => {
                             navigation.navigate(PAGES.SELECT_GROUP);
                         }}
                     >
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}
-                        >
+                        <View style={styles.buttonWrapper}>
                             <MaterialIcons name="group-add" size={calcWidth(8)} color="white" />
-                            <Text
-                                style={{
-                                    color: 'white',
-                                    paddingLeft: calcWidth(2),
-                                }}
-                            >
-                                {transactionData.group?.name || 'Add Group'}
-                            </Text>
+                            <Text style={styles.buttonText}>{transactionData.group?.name || 'Add Group'}</Text>
                         </View>
                         <AntDesign name="right" size={calcWidth(5)} color="white" />
                     </Pressable>
                 </View>
             )}
             {transactionData.group?.members?.length > 0 && (
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                    }}
-                >
+                <View style={styles.paidByAndSplitContainer}>
                     <Pressable
-                        style={{
-                            backgroundColor: '#302B49',
-                            padding: calcWidth(4),
-                            borderRadius: 8,
-                            flexDirection: 'row',
-                            justifyContent: 'space-evenly',
-                            marginTop: calcHeight(2),
-                            width: calcWidth(40),
-                        }}
+                        style={styles.button}
                         onPress={() => {
                             navigation.navigate(PAGES.SELECT_PAID_BY);
                         }}
                     >
-                        <Text
-                            style={{
-                                color: 'white',
-                            }}
-                        >
-                            Paid By {transactionData.paidBy?.name}
-                        </Text>
+                        <Text style={styles.buttonText}>Paid By {transactionData.paidBy?.name}</Text>
                     </Pressable>
                     <Pressable
-                        style={{
-                            backgroundColor: '#302B49',
-                            padding: calcWidth(4),
-                            borderRadius: 8,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-evenly',
-                            marginTop: calcHeight(2),
-                            width: calcWidth(40),
-                        }}
+                        style={styles.button}
                         onPress={() => {
                             navigation.navigate(PAGES.GROUP_SPLIT_SCREEN);
                         }}
                     >
-                        <Text
-                            style={{
-                                color: 'white',
-                            }}
-                        >
-                            Split Equally
-                        </Text>
+                        <Text style={styles.buttonText}>Split Equally</Text>
                     </Pressable>
                 </View>
             )}
-            <View
-                style={{
-                    alignItems: 'center',
-                }}
-            >
-                <Button
-                    styleOverwrite={{
-                        width: calcWidth(90),
-                        marginTop: calcHeight(2),
-                    }}
-                    onPress={handleSubmit}
-                    title="Submit"
-                />
+            <View style={styles.submitBtnContainer}>
+                <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
             </View>
         </ScrollView>
     );
@@ -358,6 +274,7 @@ const styles = StyleSheet.create({
     },
     description: {
         color: 'white',
+        paddingHorizontal: calcWidth(3),
     },
     descriptionContainer: {
         alignSelf: 'center',
@@ -365,9 +282,11 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
-        maxWidth: calcWidth(80),
-        maxHeight: calcWidth(20),
-        marginTop: calcWidth(2),
+        minWidth: calcWidth(30),
+        maxWidth: calcWidth(65),
+        maxHeight: calcWidth(25),
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     remainingCharacters: {
         color: COLOR.BUTTON,
@@ -380,6 +299,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: calcWidth(3),
         paddingVertical: calcHeight(0.5),
+        borderColor: COLOR.CATEGORY_BORDER_AND_HIGHLIGHT_COLOR,
+        borderWidth: 1,
+        borderRadius: 10,
+        marginHorizontal: calcWidth(1),
     },
     categoryText: {
         color: COLOR.TEXT,
@@ -387,9 +310,48 @@ const styles = StyleSheet.create({
         paddingHorizontal: calcWidth(1),
     },
     selectedCategory: {
-        backgroundColor: '#4D426C', // Highlight color for selected category,
+        backgroundColor: COLOR.CATEGORY_BORDER_AND_HIGHLIGHT_COLOR,
         borderRadius: 10,
         color: COLOR.TEXT,
+    },
+    verticalScrollView: {
+        marginVertical: calcHeight(3),
+    },
+    addGroupBtn: {
+        backgroundColor: COLOR.PRESSABLE_BACKGROUND,
+        padding: calcWidth(4),
+        borderRadius: 8,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    buttonWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    buttonText: {
+        color: 'white',
+        paddingLeft: calcWidth(2),
+    },
+    paidByAndSplitContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    },
+    button: {
+        backgroundColor: COLOR.PRESSABLE_BACKGROUND,
+        padding: calcWidth(4),
+        borderRadius: 8,
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        marginTop: calcHeight(2),
+        width: calcWidth(40),
+    },
+    submitBtnContainer: {
+        alignItems: 'center',
+    },
+    submitBtn: {
+        width: calcWidth(90),
+        marginTop: calcHeight(2),
     },
 });
 

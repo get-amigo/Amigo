@@ -1,5 +1,5 @@
-import { create as _create } from 'zustand';
 import type { StateCreator } from 'zustand';
+import { create as _create } from 'zustand';
 
 const storeResetFns = new Set<() => void>();
 

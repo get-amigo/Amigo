@@ -1,14 +1,13 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, TextInput, Pressable } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { useTransaction } from '../context/TransactionContext';
+import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
+import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
-import LoginImage from '../assets/Login.png';
-import { FontAwesome5 } from '@expo/vector-icons';
-import UserAvatar from '../components/UserAvatar';
 
 const GroupSplitScreen = ({ navigation }) => {
     const { transactionData, setTransactionData } = useTransaction();
@@ -30,7 +29,7 @@ const GroupSplitScreen = ({ navigation }) => {
     useEffect(() => {
         const parsedMembers = [];
 
-        for (i of transactionData.group.members) {
+        for (const i of transactionData.group.members) {
             const memberAmount = transactionData.splitAmong.find(({ user }) => user._id == i._id)?.amount;
             parsedMembers.push({
                 amount: memberAmount || 0,
@@ -63,7 +62,7 @@ const GroupSplitScreen = ({ navigation }) => {
 
         // Compare with the total transaction amount
         if (totalSplitAmount != transactionData.amount) {
-            alert('The split amounts do not sum up to the total transaction amount.');
+            Alert.alert('Alert', 'The split amounts do not sum up to the total transaction amount.');
             return; // Stop the function execution
         }
 
@@ -129,18 +128,18 @@ const GroupSplitScreen = ({ navigation }) => {
     };
 
     const redistributeAmounts = (updatedMembers) => {
-        let totalAmount = transactionData.amount || 0;
+        const totalAmount = transactionData.amount || 0;
 
         // Calculate total amount already manually entered by included members
-        let manuallyEnteredTotal = updatedMembers.reduce((acc, member) => {
+        const manuallyEnteredTotal = updatedMembers.reduce((acc, member) => {
             return member.isAmountManuallyEntered && member.included ? acc + member.amount : acc;
         }, 0);
 
         // Calculate remaining amount to distribute
-        let amountToDistribute = totalAmount - manuallyEnteredTotal;
+        const amountToDistribute = totalAmount - manuallyEnteredTotal;
 
         // Distribute the remaining amount among the members who haven't manually entered their amounts and are included
-        let membersNotEntered = updatedMembers.filter((m) => !m.isAmountManuallyEntered && m.included);
+        const membersNotEntered = updatedMembers.filter((m) => !m.isAmountManuallyEntered && m.included);
         const perUserPayment = Math.max(Math.floor(amountToDistribute / membersNotEntered.length), 0);
         const remainder = amountToDistribute % membersNotEntered.length;
 
@@ -159,7 +158,7 @@ const GroupSplitScreen = ({ navigation }) => {
 
     const handleAmountChange = (amount, id) => {
         const newAmount = Math.max(parseInt(amount) || 0, 0);
-        let totalAmount = transactionData.amount || 0;
+        const totalAmount = transactionData.amount || 0;
 
         let manuallyEnteredTotal = newAmount;
         members.forEach((member) => {
@@ -175,8 +174,8 @@ const GroupSplitScreen = ({ navigation }) => {
         }
 
         setMembers((prevMembers) => {
-            let amountToDistribute = totalAmount - manuallyEnteredTotal;
-            let membersNotEntered = prevMembers.filter((m) => !m.isAmountManuallyEntered && m.user._id !== id && m.included);
+            const amountToDistribute = totalAmount - manuallyEnteredTotal;
+            const membersNotEntered = prevMembers.filter((m) => !m.isAmountManuallyEntered && m.user._id !== id && m.included);
             const perUserPayment = Math.max(Math.floor(amountToDistribute / membersNotEntered.length), 0);
             const remainder = amountToDistribute % membersNotEntered.length;
 

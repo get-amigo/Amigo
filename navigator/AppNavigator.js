@@ -1,34 +1,33 @@
-import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useAuth } from '../stores/auth';
-import PAGES from '../constants/pages';
-import SignUpScreen from '../pages/SignUpScreen';
-import COLOR from '../constants/Colors';
-import TabBarIcon from '../components/TabBarIcon';
-import TransactionDetail from '../pages/TransactionDetails';
-import SelectGroup from '../pages/SelectGroup';
-import GroupSplitScreen from '../pages/GroupSplitScreen';
-import SelectPaidBy from '../pages/SelectPaidBy';
-import GroupBalance from '../pages/GroupBalanceScreen';
-import PaymentScreen from '../pages/PaymentScreen';
-import SearchScreen from '../pages/Search';
-import AccountScreen from '../pages/AccountScreen';
-import QRCodeScanner from '../pages/QRCodeScanner';
-import UPIAppSelection from '../pages/UPIAppSelection';
-import TabNavigator from './TabNavigator';
-import CreateGroup from '../pages/CreateGroup';
-import { getFontSizeByWindowWidth } from '../helper/res';
-import TransactionFormScreen from '../pages/TransactionForm';
-import InvitationLandingScreen from '../pages/InvitationLandingScreen';
-import GroupSettings from '../pages/GroupSettings';
-import FAQ from '../pages/FAQ';
-import About from '../pages/About';
-import AddPeople from '../pages/AddPeople';
-import LoginScreen from '../pages/LoginScreen';
-import { ContactsProvider } from '../hooks/useContacts';
-import NetInfo from '@react-native-community/netinfo';
+import React from 'react';
 
+import TabBarIcon from '../components/TabBarIcon';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { getFontSizeByWindowWidth } from '../helper/res';
+import { ContactsProvider } from '../hooks/useContacts';
+import About from '../pages/About';
+import AccountScreen from '../pages/AccountScreen';
 import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
+import AddPeople from '../pages/AddPeople';
+import CreateGroup from '../pages/CreateGroup';
+import FAQ from '../pages/FAQ';
+import GroupBalance from '../pages/GroupBalanceScreen';
+import GroupSettings from '../pages/GroupSettings';
+import GroupSplitScreen from '../pages/GroupSplitScreen';
+import InvitationLandingScreen from '../pages/InvitationLandingScreen';
+import LoginScreen from '../pages/LoginScreen';
+import PaymentScreen from '../pages/PaymentScreen';
+import QRCodeScanner from '../pages/QRCodeScanner';
+import SearchScreen from '../pages/Search';
+import SelectGroup from '../pages/SelectGroup';
+import SelectPaidBy from '../pages/SelectPaidBy';
+import SignUpScreen from '../pages/SignUpScreen';
+import TransactionDetail from '../pages/TransactionDetails';
+import TransactionFormScreen from '../pages/TransactionForm';
+import UPIAppSelection from '../pages/UPIAppSelection';
+import { useAuth } from '../stores/auth';
+import TabNavigator from './TabNavigator';
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
     const { user } = useAuth();
@@ -255,7 +254,6 @@ const AppNavigator = () => {
                                 },
                                 headerTintColor: '#fff',
                                 title: null,
-                                headerTintColor: '#fff',
                                 animation: 'ios',
                             }}
                         />

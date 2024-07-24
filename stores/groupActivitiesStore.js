@@ -1,8 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, devtools, persist } from 'zustand/middleware';
-import generateUniqueId from '../helper/generateUniqueId';
+
 import apiHelper from '../helper/apiHelper';
+import generateUniqueId from '../helper/generateUniqueId';
 
 const groupActivitiesStore = (set, get) => ({
     _hasHydrated: false,
@@ -37,8 +38,8 @@ const groupActivitiesStore = (set, get) => ({
             let high = newActivityOrder.length - 1;
 
             while (low <= high) {
-                let mid = Math.floor(low + (high - low) / 2);
-                let midDate = new Date(
+                const mid = Math.floor(low + (high - low) / 2);
+                const midDate = new Date(
                     state.activities[groupId]?.activitiesById[state.activities[groupId]?.activityOrder[mid]]?.createdAt ??
                         '2000-06-19T09:08:12.155Z',
                 );
@@ -217,15 +218,18 @@ const groupActivitiesStore = (set, get) => ({
 
             const activityType = activity.activityType;
 
+            const splitAmong =
+                activityType == 'transaction'
+                    ? activity.relatedId.splitAmong.map((item) => {
+                          return {
+                              amount: item.amount,
+                              user: item.user._id,
+                          };
+                      })
+                    : null;
+
             switch (activityType) {
                 case 'transaction':
-                    const splitAmong = activity.relatedId.splitAmong.map((item) => {
-                        return {
-                            amount: item.amount,
-                            user: item.user._id,
-                        };
-                    });
-
                     await apiHelper
                         .post('/transaction', {
                             amount: activity.relatedId.amount,
@@ -233,7 +237,7 @@ const groupActivitiesStore = (set, get) => ({
                             description: activity.relatedId.description,
                             group: activity.group,
                             paidBy: activity.relatedId.paidBy._id,
-                            splitAmong: splitAmong,
+                            splitAmong,
                             type: activity.relatedId.type,
                             activityId: activity._id,
                             transactionId: activity.relatedId._id,
@@ -278,7 +282,7 @@ const groupActivitiesStore = (set, get) => ({
     },
 
     clearPendingActivities: () => {
-        set((state) => {
+        set(() => {
             return { pendingActivities: {} };
         });
     },

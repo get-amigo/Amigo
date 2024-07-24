@@ -14,9 +14,9 @@ import getDateAndMonth from '../helper/getDateAndMonth';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 
-const SELECTOR_SIZE = 4;
+const SELECTOR_SIZE = 3.4;
 
-function ActivityHeader({ icon, iconName, size, text }) {
+function ActivityHeader({ icon, size, text }) {
     return (
         <View style={styles.header}>
             <Text
@@ -70,12 +70,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         borderRadius: calcWidth(2.35),
                     }}
                 >
-                    <ActivityHeader
-                        icon={Octicons}
-                        iconName="person"
-                        size={getFontSizeByWindowWidth(10.5)}
-                        text={`${transaction.splitAmong?.length}`}
-                    />
+                    <ActivityHeader icon={Octicons} size={getFontSizeByWindowWidth(10.5)} text={`${transaction.splitAmong?.length}`} />
                     <View style={styles.flexContainer}>
                         <View>
                             <Text style={styles.amount}>₹ {transaction.amount}</Text>
@@ -313,7 +308,7 @@ function Feed(props) {
                     styles.activityContainer,
                     {
                         justifyContent: user._id === creator?._id ? 'flex-end' : 'flex-start',
-                        marginTop: showCreatorName && user._id !== creator?._id ? calcWidth(8) : 0,
+                        marginTop: showCreatorName && user._id !== creator?._id && !showDate ? calcWidth(8) : 0,
                     },
                 ]}
             >
@@ -429,7 +424,7 @@ const styles = StyleSheet.create({
     activityContainer: {
         flex: 1,
         flexDirection: 'row',
-        marginHorizontal: calcWidth(3),
+        marginHorizontal: calcWidth(2),
     },
     activityCard: {
         marginTop: calcWidth(2),

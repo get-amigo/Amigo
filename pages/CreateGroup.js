@@ -106,8 +106,7 @@ const CreateGroup = ({ navigation }) => {
                         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                         keyboardVerticalOffset={40}
                     >
-                        <View style={{ marginHorizontal: calcWidth(5) }}>
-                            <Text style={styles.heading}>New group</Text>
+                        <View style={styles.container}>
                             <Pressable
                                 style={[styles.inputContainer, isError ? { borderColor: '#b0160b' } : { borderColor: 'gray' }]}
                                 onPress={() => nameRef.current.focus()}
@@ -136,7 +135,11 @@ const CreateGroup = ({ navigation }) => {
                                 <Button
                                     title="Create Group"
                                     onPress={handleCreateGroup}
-                                    styleOverwrite={selectedContacts.length === 0 || groupName === '' ? { opacity: 0.57 } : {}}
+                                    styleOverwrite={
+                                        selectedContacts.length === 0 || groupName === ''
+                                            ? { opacity: 0.57, marginTop: 8 }
+                                            : { marginTop: 8 }
+                                    }
                                 />
                             </View>
                         </View>
@@ -148,11 +151,11 @@ const CreateGroup = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    heading: {
-        color: COLOR.PRIMARY,
-        marginVertical: calcHeight(2),
-        fontSize: getFontSizeByWindowWidth(20),
-        fontWeight: 'bold',
+    container: {
+        marginHorizontal: calcWidth(5),
+        flex: 1,
+        marginBottom: calcWidth(3),
+        marginTop: calcWidth(5),
     },
     inputContainer: {
         flexDirection: 'row',
@@ -174,9 +177,9 @@ const styles = StyleSheet.create({
         marginVertical: calcHeight(2),
     },
     contactListContainer: {
-        margin: calcWidth(5),
+        marginTop: calcWidth(3),
         alignItems: 'center',
-        height: calcHeight(50),
+        flex: 1,
     },
     button: {
         alignItems: 'center',

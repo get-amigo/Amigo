@@ -1,16 +1,16 @@
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import DatePickerSelector from '../components/DatePickerSelector'; // Separate component for date picker
+import DatePickerSelector from '../components/DatePickerSelector';
 import ExpenseCard from '../components/ExpenseCard';
 import TypeSelector from '../components/TypeSelector';
 import COLOR from '../constants/Colors';
 import safeAreaStyle from '../constants/safeAreaStyle';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
+import { useExpense } from '../stores/expense';
 
 function ExpenseScreen() {
     const { expense, resetParams, loading, fetchExpense, type, range } = useExpense();
@@ -28,7 +28,7 @@ function ExpenseScreen() {
         setRefreshing(false);
     }, []);
 
-    if (loading)
+    if (loading) {
         return (
             <SafeAreaView style={safeAreaStyle}>
                 <Text style={styles.header}>Expense Summary</Text>
@@ -67,6 +67,10 @@ function ExpenseScreen() {
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
             </SafeAreaView>
         );
+    }
+
+    const isFilterApplied = type || (range.endDate && range.startDate);
+
     return (
         <SafeAreaView style={safeAreaStyle}>
             <Text style={styles.header}>Expense Summary</Text>
@@ -83,7 +87,7 @@ function ExpenseScreen() {
                 </View>
 
                 <TouchableOpacity
-                    disabled={!(type || (range.endDate && range.startDate))}
+                    disabled={!isFilterApplied}
                     onPress={resetParams}
                     style={{
                         flexDirection: 'row',
@@ -91,14 +95,8 @@ function ExpenseScreen() {
                         gap: calcWidth(1),
                     }}
                 >
-                    <FontAwesome5
-                        name="redo"
-                        size={calcWidth(3)}
-                        color={type || (range.endDate && range.startDate) ? COLOR.TEXT : COLOR.BUTTON_DISABLED}
-                    />
-                    <Text style={type || (range.endDate && range.startDate) ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>
-                        Reset
-                    </Text>
+                    <FontAwesome5 name="redo" size={calcWidth(3)} color={isFilterApplied ? COLOR.TEXT : COLOR.BUTTON_DISABLED} />
+                    <Text style={isFilterApplied ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>Reset</Text>
                 </TouchableOpacity>
             </View>
 
@@ -146,8 +144,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
     },
-    list: {
-        // Add styles for your FlatList if needed
-    },
-    // Add other styles that you might have used in your component
+    list: {},
 });

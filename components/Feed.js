@@ -122,6 +122,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
     const transactionId = transaction._id;
     const groupId = transaction.group;
+    const [isEditing, setIsEditing] = useState(false);
     const deleteActivity = useGroupActivitiesStore((state) => state.deleteActivity);
 
     const handleDelete = async () => {
@@ -165,7 +166,17 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
             { cancelable: false },
         );
     };
-    const renderDeleteModal = () => {
+
+    const handleEdit = async () => {
+        try {
+            const response = await apiHelper.get(`/transaction/${transactionId}`);
+            const transactionData = response.data;
+            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing });
+        } catch (error) {
+            console.error('Error fetching transaction:', error);
+        }
+    };
+    const renderModal = () => {
         if (user._id === creator._id) {
             return (
                 <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
@@ -185,6 +196,16 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                                         />
                                     )}
                                     <View style={styles.modalButtons}>
+                                        <Pressable
+                                            style={styles.modalButton}
+                                            onPress={() => {
+                                                setModalVisible(false);
+                                                handleEdit();
+                                            }}
+                                        >
+                                            <Text style={[styles.modalButtonText, { color: COLOR.PRIMARY }]}>Edit</Text>
+                                            <MaterialIcons name="edit" size={calcWidth(6)} color="white" />
+                                        </Pressable>
                                         <Pressable
                                             style={styles.modalButton}
                                             onPress={() => {
@@ -227,6 +248,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         creator,
                     },
                     handleDelete,
+                    handleEdit,
                 });
             }}
         >
@@ -238,7 +260,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 creator={creator}
                 highlightColor={highlightColor}
             />
-            {renderDeleteModal()}
+            {renderModal()}
         </Pressable>
     );
 }

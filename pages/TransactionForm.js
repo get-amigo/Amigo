@@ -18,7 +18,7 @@ import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
-function TransactionFormScreen({ navigation }) {
+function TransactionFormScreen({ navigation, route }) {
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
@@ -27,6 +27,18 @@ function TransactionFormScreen({ navigation }) {
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
+    const { transaction, isEditing, setIsEditing } = route.params || {};
+
+    useEffect(() => {
+        if (transaction) {
+            setTransactionData({
+                ...transaction,
+                paidBy: { _id: user?._id, name: 'You' },
+                group: { _id: transaction.group._id, name: transaction.group.name, members: transaction.group.members },
+                amount: transaction.amount.toString(),
+            });
+        }
+    }, [transaction]);
 
     useEffect(() => {
         const { group } = transactionData;
@@ -99,7 +111,6 @@ function TransactionFormScreen({ navigation }) {
             Alert.alert('Category Missing');
             return;
         }
-
         try {
             // Create a new object with modifications, leaving original transactionData unchanged
             const newTransaction = {
@@ -133,26 +144,40 @@ function TransactionFormScreen({ navigation }) {
                 const { activityId, relatedId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
                 const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
 
-                apiHelper
-                    .post('/transaction', newTransactionWithId)
-                    .then(() => {
-                        setUpiParams({});
-                        //                         setActivitiesHash(newTransaction.group, [
-                        //                             {
-                        //                                 ...newActivity,
-                        //                                 synced: true,
-                        //                             },
-                        //                             ...activities,
-                        //                         ]);
-                        updateIsSynced({
-                            _id: activityId,
-                            group: newActivity.relatedId.group._id,
+                if (isEditing) {
+                    // Update existing transaction
+                    apiHelper
+                        .put(`/transaction/${transactionData._id}`, newTransactionWithId)
+                        .then(() => {
+                            setUpiParams({});
+                            updateIsSynced({
+                                _id: activityId,
+                                group: newActivity.relatedId.group._id,
+                            });
+                            Toast.show('Transaction Updated', {
+                                duration: Toast.durations.LONG,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log('error in api put', err);
+                            Alert.alert('Error', JSON.stringify(err));
                         });
-                    })
-                    .catch((err) => {
-                        console.log('error in api post', err);
-                        Alert.alert('Error', JSON.stringify(err));
-                    });
+                } else {
+                    // Create new transaction
+                    apiHelper
+                        .post('/transaction', newTransactionWithId)
+                        .then(() => {
+                            setUpiParams({});
+                            updateIsSynced({
+                                _id: activityId,
+                                group: newActivity.relatedId.group._id,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log('error in api post', err);
+                            Alert.alert('Error', JSON.stringify(err));
+                        });
+                }
             } else {
                 addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
             }
@@ -177,6 +202,8 @@ function TransactionFormScreen({ navigation }) {
         } catch (error) {
             console.log('error', error);
             Alert.alert('Error', JSON.stringify(error));
+        } finally {
+            setTransactionData({});
         }
     };
 
@@ -214,7 +241,7 @@ function TransactionFormScreen({ navigation }) {
                     </Pressable>
                 ))}
             </ScrollView>
-            {getPreviousPageName(navigation) != PAGES.GROUP && (
+            {getPreviousPageName(navigation) !== PAGES.GROUP && getPreviousPageName(navigation) !== PAGES.TRANSACTION_DETAIL && (
                 <View>
                     <Pressable
                         style={styles.addGroupBtn}

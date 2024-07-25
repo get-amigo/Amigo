@@ -1,29 +1,26 @@
-import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import {
     StyleSheet,
     SafeAreaView,
     View,
     Text,
-    Image,
-    Pressable,
     TextInput,
     TouchableOpacity,
+    Pressable,
     Platform,
-    Share,
     Alert,
-    Dimensions,
+    Share,
 } from 'react-native';
 import { useAuth } from '../stores/auth';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import SignUpImage from '../assets/SignUp.png';
 import UserAvatar from '../components/UserAvatar';
-import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Feather, Octicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import MenuOption from '../components/AccountPageOption';
 import PAGES from '../constants/pages';
 import { useBalance } from '../stores/balance';
 import { MotiView } from 'moti';
-import { BounceIn, BounceInDown, BounceOut, Easing, FadeInLeft, FadeOutUp } from 'react-native-reanimated';
 import Animated from 'react-native-reanimated';
 
 function ProfileScreen({ navigation }) {
@@ -31,10 +28,27 @@ function ProfileScreen({ navigation }) {
     const [editMode, setEditMode] = useState(false);
     const [name, setName] = useState(user.name);
     const [originalName, setOriginalName] = useState(user.name);
-    const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
     const { totalBalances } = useBalance();
-
+    const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        setPhoneNumber(user.phoneNumber);
+    }, [user]);
+
+    useEffect(() => {
+        if (isSubmitting) {
+            if (!name || name === '') {
+                Alert.alert('Alert', 'Empty Name');
+                setIsSubmitting(false);
+                return;
+            }
+            editUser({ name });
+            setOriginalName(name);
+            setEditMode(false);
+            setIsSubmitting(false);
+        }
+    }, [isSubmitting, name, phoneNumber]);
 
     function submitUserData() {
         setIsSubmitting(true);
@@ -42,8 +56,7 @@ function ProfileScreen({ navigation }) {
 
     function deleteHandler() {
         if (totalBalances) {
-            if (totalBalances < 0) alert(`You have a balance of ₹${totalBalances} to settle before deleting your account`);
-            else alert(`You have a balance of ₹${totalBalances} to collect before deleting your account`);
+            Alert.alert('Alert', `You have a balance of ₹${totalBalances} ${totalBalances < 0 ? 'to settle' : 'to collect'} before deleting your account`);
             return;
         }
         if (Platform.OS === 'ios') {
@@ -96,20 +109,6 @@ function ProfileScreen({ navigation }) {
         ]);
     }
 
-    useEffect(() => {
-        if (isSubmitting) {
-            if (!name || name === '') {
-                alert('Empty Name');
-                setIsSubmitting(false);
-                return;
-            }
-            editUser({ name });
-            setOriginalName(name);
-            setEditMode(false);
-            setIsSubmitting(false);
-        }
-    }, [isSubmitting, name, phoneNumber]);
-
     const menuOptions = [
         {
             label: 'FAQ',
@@ -126,7 +125,7 @@ function ProfileScreen({ navigation }) {
     ];
 
     return (
-        <Animated.View style={[styles.container]}>
+        <Animated.View style={styles.container}>
             <SafeAreaView style={styles.container}>
                 <MotiView
                     from={{ opacity: 1, scale: 0.3 }}
@@ -138,9 +137,7 @@ function ProfileScreen({ navigation }) {
                     style={styles.pulsatingCircle}
                 />
                 <MotiView
-                    style={{
-                        marginVertical: calcHeight(4),
-                    }}
+                    style={{ marginVertical: calcHeight(4) }}
                     from={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ type: 'timing', duration: 800, delay: 100 }}
@@ -157,9 +154,7 @@ function ProfileScreen({ navigation }) {
                     ) : (
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: calcWidth(4), gap: calcWidth(8) }}>
                             <TouchableOpacity
-                                onPress={() => {
-                                    navigation.navigate(PAGES.BALANCE);
-                                }}
+                                onPress={() => navigation.navigate(PAGES.BALANCE)}
                             >
                                 <MaterialIcons name="arrow-back" size={24} color={'#FFF'} />
                             </TouchableOpacity>
@@ -199,9 +194,7 @@ function ProfileScreen({ navigation }) {
                             <Text style={styles.userPhone}>{phoneNumber}</Text>
                         </View>
                         <Pressable
-                            onPress={() => {
-                                setEditMode((prev) => !prev);
-                            }}
+                            onPress={() => setEditMode((prev) => !prev)}
                             style={{ marginLeft: calcWidth(20) }}
                         >
                             <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} />
@@ -216,9 +209,9 @@ function ProfileScreen({ navigation }) {
                                 message:
                                     'Download our App: ' +
                                     `${
-                                        Platform.OS == 'ios'
-                                            ? 'https://apps.apple.com/us/app/qr-generator-app/id6469707187'
-                                            : 'https://play.google.com/store/apps/details?id=com.devonetech.android.qrguru&hl=en_IN&gl=US'
+                                        Platform.OS === 'ios'
+                                            ? 'https://apps.apple.com/in/app/amigo/id6483936159'
+                                            : 'https://play.google.com/store/apps/details?id=app.amigo.app&hl=en_IN'
                                     }`,
                             });
                         }}
@@ -227,7 +220,6 @@ function ProfileScreen({ navigation }) {
                         <Text style={styles.menuText}>Invite Friends</Text>
                     </Pressable>
                 </MotiView>
-
                 {menuOptions.map((option, index) => (
                     <MotiView
                         key={index}
@@ -243,7 +235,6 @@ function ProfileScreen({ navigation }) {
                         />
                     </MotiView>
                 ))}
-
                 <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 800, delay: 100 }}>
                     <MenuOption
                         label="Logout"
@@ -253,7 +244,6 @@ function ProfileScreen({ navigation }) {
                         onPress={logoutHandler}
                     />
                 </MotiView>
-
                 <MotiView from={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ type: 'timing', duration: 800, delay: 130 }}>
                     <MenuOption
                         label="Delete"

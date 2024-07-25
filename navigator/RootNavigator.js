@@ -1,13 +1,13 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+import COLOR from '../constants/Colors';
+import { GroupProvider } from '../context/GroupContext';
+import { TransactionProvider } from '../context/TransactionContext';
+import linking from '../helper/linking';
+import { useAuth } from '../stores/auth';
 import AppNavigator from './AppNavigator';
 import AuthNavigator from './AuthNavigator';
-import { useAuth } from '../stores/auth';
-import linking from '../helper/linking';
-import { TransactionProvider } from '../context/TransactionContext';
-import { GroupProvider } from '../context/GroupContext';
-import COLOR from '../constants/Colors';
 
 const queryClient = new QueryClient();
 

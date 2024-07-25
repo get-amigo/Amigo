@@ -1,18 +1,19 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, Text, TouchableOpacity, Button } from 'react-native';
-import QRIndicator from './QRIndicator';
-import QRFooterButton from './QRFooterButton';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import * as BarCodeScanner from 'expo-barcode-scanner';
-import getLocalImage from '../helper/getLocalImage';
-import getQrDataFromImage from '../helper/getQrDataFromImage';
-import { CameraView } from 'expo-camera';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { CameraView } from 'expo-camera';
 import COLOR from '../constants/Colors';
+import getLocalImage from '../helper/getLocalImage';
+import getQrDataFromImage from '../helper/getQrDataFromImage';
+import { calcHeight, calcWidth } from '../helper/res';
+import QRFooterButton from './QRFooterButton';
+import QRIndicator from './QRIndicator';
 
 const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
     const { bottom } = useSafeAreaInsets();
+    const [scanned, setScanned] = useState(false);
+
     async function getImage() {
         const image = await getLocalImage();
         const scannedResults = await getQrDataFromImage(image);
@@ -20,9 +21,8 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
             handleBarCodeScanned(scannedResults[0]);
             return;
         }
-        alert('No QR code found in image');
+        Alert.alert('Alert', 'No QR code found in image');
     }
-    const [scanned, setScanned] = useState(false);
 
     const handleBarCode = (event) => {
         setScanned(true);
@@ -36,7 +36,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
         <View style={styles.container}>
             <CameraView
                 style={styles.camera}
-                facing={'back'}
+                facing="back"
                 barcodeScannerSettings={{
                     barcodeTypes: ['qr'],
                 }}
@@ -71,27 +71,6 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         backgroundColor: 'transparent',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    button: {
-        flex: 1,
-        alignSelf: 'flex-end',
-        alignItems: 'center',
-    },
-    text: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    scannerContainer: {
-        width: calcWidth(100),
-
-        height: calcHeight(100),
-        overflow: 'hidden',
-        zIndex: 1,
-        flex: 1,
-        backgroundColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
     },

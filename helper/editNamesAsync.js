@@ -1,6 +1,5 @@
-import sliceText from './sliceText';
-import getNamesFromContacts from './getNamesFromContacts';
 import editNames from './editNames';
+import getNamesFromContacts from './getNamesFromContacts';
 /**
  * Updates the names of users in the given array based on certain conditions.
  * @param {Array} usersArray - Array of user objects to update.

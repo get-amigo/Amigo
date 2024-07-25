@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, Linking } from 'react-native';
-import COLOR from '../constants/Colors';
+import React from 'react';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity } from 'react-native';
+
 import UPIApps from '../constants/UpiApps';
+import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
 import { getFontSizeByWindowWidth } from '../helper/res';
-import PAGES from '../constants/pages';
 
 const UPIAppSelection = ({ navigation }) => {
     const { upiParams } = useTransaction();
@@ -18,10 +18,10 @@ const UPIAppSelection = ({ navigation }) => {
                 Linking.openURL(deepLink);
                 navigation.navigate(PAGES.BALANCE);
             } else {
-                alert('App not found');
+                Alert.alert('Alert', 'App not found');
             }
-        } catch (e) {
-            alert('App not found');
+        } catch {
+            Alert.alert('Alert', 'App not found');
         }
     };
 

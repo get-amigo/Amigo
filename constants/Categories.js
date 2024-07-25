@@ -1,12 +1,12 @@
-import { MaterialIcons, FontAwesome5, Ionicons, Entypo, AntDesign } from '@expo/vector-icons';
 import { Image } from 'react-native';
-import { calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import GeneralIcon from '../assets/icons/categoryIcon/general.png';
-import TransportIcon from '../assets/icons/categoryIcon/transport.png';
-import ShoppingIcon from '../assets/icons/categoryIcon/shopping.png';
+
 import DinningIcon from '../assets/icons/categoryIcon/dinning.png';
-import UtilitiesIcon from '../assets/icons/categoryIcon/utilities.png';
+import GeneralIcon from '../assets/icons/categoryIcon/general.png';
 import GroceriesIcon from '../assets/icons/categoryIcon/groceries.png';
+import ShoppingIcon from '../assets/icons/categoryIcon/shopping.png';
+import TransportIcon from '../assets/icons/categoryIcon/transport.png';
+import UtilitiesIcon from '../assets/icons/categoryIcon/utilities.png';
+import { calcWidth } from '../helper/res';
 const size = calcWidth(3);
 
 const createIcon = (source) => (

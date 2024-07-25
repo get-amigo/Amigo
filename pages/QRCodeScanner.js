@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Linking, Button, Image, Pressable, Text, Alert, TouchableOpacity, AppState } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Alert, Text, Pressable, AppState } from 'react-native';
 import * as BarCodeScanner from 'expo-barcode-scanner';
-import CameraScanner from '../components/CameraScanner';
-import { useTransaction } from '../context/TransactionContext';
-import URL from 'url-parse';
-import PAGES from '../constants/pages';
-import COLOR from '../constants/Colors';
-import openSettings from '../helper/openSettings';
 import { MotiView } from 'moti';
-import { calcHeight, calcWidth } from '../helper/res';
-import { MaterialIcons } from '@expo/vector-icons';
-import { getFontSizeByWindowWidth } from '../helper/res';
+import URL from 'url-parse';
+
+import SignUpImage from '../assets/SignUp.png';
+import CameraScanner from '../components/CameraScanner';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
+import openSettings from '../helper/openSettings';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
@@ -29,18 +29,17 @@ const QRCodeScanner = ({ navigation }) => {
                 checkCameraPermission();
             }
         };
-        checkCameraPermission();
 
+        checkCameraPermission();
         AppState.addEventListener('change', handleAppStateChange);
 
         return () => {
-            AppState;
+            AppState.removeEventListener('change', handleAppStateChange);
         };
     }, []);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            setHasPermission(false);
             (async () => {
                 const { status } = await BarCodeScanner.requestPermissionsAsync();
                 setHasPermission(status === 'granted');
@@ -57,11 +56,6 @@ const QRCodeScanner = ({ navigation }) => {
         };
     }, [navigation]);
 
-    const requestCameraPermission = async () => {
-        const { status } = await BarCodeScanner.requestPermissionsAsync();
-        setHasPermission(status === 'granted');
-    };
-
     const parseQueryString = (queryString) => {
         const pairs = queryString.substring(1).split('&');
         const params = {};
@@ -77,17 +71,15 @@ const QRCodeScanner = ({ navigation }) => {
         try {
             const url = new URL(data);
             const params = parseQueryString(url.query);
-            // Initialize an object to store extracted parameters
             const extractedParams = {
                 receiverId: '',
                 description: params['tn'] || '',
             };
-            // Check the URL scheme to identify UPI and extract relevant data
             if (url.protocol === 'upi:') {
-                extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
+                extractedParams.receiverId = params['pa'] || '';
                 Object.assign(extractedParams, params);
-                setUpiParams(extractedParams); // Ensure setUpiParams is defined and available
-                navigation.navigate(PAGES.ADD_TRANSACTION); // Ensure navigation and PAGES are defined and available
+                setUpiParams(extractedParams);
+                navigation.navigate(PAGES.ADD_TRANSACTION);
             } else {
                 setBarcodeScanEnabled(false);
                 Alert.alert('Not a valid UPI URL', null, [
@@ -96,11 +88,9 @@ const QRCodeScanner = ({ navigation }) => {
                         onPress: () => setBarcodeScanEnabled(true),
                     },
                 ]);
-                return;
             }
         } catch (error) {
             console.error('Error processing scanned data:', error);
-            // Handle error (e.g., show an error message)
         }
     };
 
@@ -121,37 +111,21 @@ const QRCodeScanner = ({ navigation }) => {
             />
             <MotiView
                 style={styles.container}
-                from={{
-                    opacity: 0.3,
-                    zIndex: 1,
-                }}
-                animate={{
-                    opacity: 1,
-                    scale: 1,
-                }}
+                from={{ opacity: 0.3, zIndex: 1 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ type: 'timing', duration: 800 }}
             >
                 {!hasPermission ? (
                     <Pressable onPress={openSettings}>
-                        <Text
-                            style={{
-                                color: COLOR.TEXT,
-                            }}
-                        >
+                        <Text style={{ color: COLOR.TEXT }}>
                             Allow Camera Permission
                         </Text>
                     </Pressable>
                 ) : (
                     <MotiView
                         style={styles.container}
-                        from={{
-                            opacity: 0,
-                            zIndex: 1,
-                        }}
-                        animate={{
-                            opacity: 1,
-                            scale: 1,
-                        }}
+                        from={{ opacity: 0, zIndex: 1 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ type: 'timing', duration: 800 }}
                     >
                         <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} back={handleBack} />

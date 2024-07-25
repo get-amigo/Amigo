@@ -1,8 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Platform, Text, TextInput, StyleSheet } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+
 import COLOR from '../constants/Colors';
 import getFontSize from '../helper/getFontSize';
-import { getFontSizeByWindowWidth, calcHeight, calcWidth } from '../helper/res';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const AmountInput = ({ amount = '', handleInputChange, isTextInput = false }) => {
     const baseFontSize = getFontSizeByWindowWidth(40);
@@ -21,7 +22,7 @@ const AmountInput = ({ amount = '', handleInputChange, isTextInput = false }) =>
     }, []);
 
     const commonStyles = {
-        fontSize: fontSize,
+        fontSize,
         lineHeight: fontSize * (Platform.OS === 'ios' ? 1.2 : 1.5),
         paddingVertical: (baseFontSize * 1.2 - fontSize * 1.2) / 2,
     };

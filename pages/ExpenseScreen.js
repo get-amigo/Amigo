@@ -81,30 +81,25 @@ function ExpenseScreen() {
                     <TypeSelector />
                     <DatePickerSelector />
                 </View>
-                {type || (range.endDate && range.startDate) ? (
-                    <TouchableOpacity
-                        onPress={resetParams}
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: calcWidth(1),
-                        }}
-                    >
-                        <FontAwesome5 name="redo" size={calcWidth(3)} color="rgba(255,255,255,0.66)" />
-                        <Text style={{ color: COLOR.TEXT }}>Reset</Text>
-                    </TouchableOpacity>
-                ) : (
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: calcWidth(1),
-                        }}
-                    >
-                        <FontAwesome5 name="redo" size={calcWidth(3)} color="#595957" />
-                        <Text style={{ color: '#595957' }}>Reset</Text>
-                    </View>
-                )}
+
+                <TouchableOpacity
+                    disabled={!(type || (range.endDate && range.startDate))}
+                    onPress={resetParams}
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: calcWidth(1),
+                    }}
+                >
+                    <FontAwesome5
+                        name="redo"
+                        size={calcWidth(3)}
+                        color={type || (range.endDate && range.startDate) ? COLOR.TEXT : COLOR.BUTTON_DISABLED}
+                    />
+                    <Text style={type || (range.endDate && range.startDate) ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>
+                        Reset
+                    </Text>
+                </TouchableOpacity>
             </View>
 
             {expense.length === 0 ? (

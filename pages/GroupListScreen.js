@@ -83,13 +83,7 @@ function GroupListScreen({ navigation }) {
                 />
             ) : (
                 <>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            marginTop: calcHeight(2),
-                            marginBottom: calcWidth(1.5),
-                        }}
-                    >
+                    <View style={styles.searchContainer}>
                         <Search search={search} setSearch={setSearch} />
                     </View>
                     <FlatList
@@ -125,6 +119,11 @@ function GroupListScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+    searchContainer: {
+        alignItems: 'center',
+        marginTop: calcHeight(2),
+        marginBottom: calcWidth(1.5),
+    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,

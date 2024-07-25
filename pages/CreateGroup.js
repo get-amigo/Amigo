@@ -106,7 +106,7 @@ const CreateGroup = ({ navigation }) => {
                         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                         keyboardVerticalOffset={40}
                     >
-                        <View style={{ marginHorizontal: calcWidth(5), flex: 1, marginBottom: calcWidth(3), marginTop: calcWidth(5) }}>
+                        <View style={styles.container}>
                             <Pressable
                                 style={[styles.inputContainer, isError ? { borderColor: '#b0160b' } : { borderColor: 'gray' }]}
                                 onPress={() => nameRef.current.focus()}
@@ -151,6 +151,12 @@ const CreateGroup = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+    container: {
+        marginHorizontal: calcWidth(5),
+        flex: 1,
+        marginBottom: calcWidth(3),
+        marginTop: calcWidth(5),
+    },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',

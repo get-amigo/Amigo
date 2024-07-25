@@ -3,6 +3,7 @@ import { FlatList, Keyboard, Pressable, Text, View } from 'react-native';
 
 import COLOR from '../constants/Colors';
 import openSettings from '../helper/openSettings';
+import { calcWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
 import AddMemberWithoutContact from './AddMemberWithoutContact';
 import ContactCard from './ContactCard';
@@ -36,6 +37,9 @@ const ContactList = ({ eliminatedContacts }) => {
             {contactPermission ? (
                 <FlatList
                     ref={flatListRef}
+                    style={{
+                        marginTop: calcWidth(1.5),
+                    }}
                     data={eliminateContacts()}
                     keyExtractor={(item) => item.phoneNumber}
                     renderItem={({ item }) => (

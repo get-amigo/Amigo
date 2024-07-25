@@ -11,7 +11,7 @@ import Search from '../components/Search';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import safeAreaStyle from '../constants/safeAreaStyle';
-import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
 
@@ -83,13 +83,7 @@ function GroupListScreen({ navigation }) {
                 />
             ) : (
                 <>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            marginTop: calcHeight(2),
-                            marginBottom: calcHeight(4),
-                        }}
-                    >
+                    <View style={styles.searchContainer}>
                         <Search search={search} setSearch={setSearch} />
                     </View>
                     <FlatList
@@ -125,6 +119,11 @@ function GroupListScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+    searchContainer: {
+        alignItems: 'center',
+        marginTop: calcHeight(2),
+        marginBottom: calcWidth(1.5),
+    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,

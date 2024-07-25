@@ -240,9 +240,12 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
-                                title: null,
+                                title: 'New group',
                                 headerTintColor: '#fff',
                                 animation: 'ios',
+                                headerTitleStyle: {
+                                    color: 'white',
+                                },
                             }}
                         />
                         <Stack.Screen

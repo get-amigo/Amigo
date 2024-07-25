@@ -190,9 +190,6 @@ function BalanceScreen({ navigation }) {
                     data={balances}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => <GroupBalanceCard group={item} />}
-                    style={{
-                        marginTop: calcHeight(5),
-                    }}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}

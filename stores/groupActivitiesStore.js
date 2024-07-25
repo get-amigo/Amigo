@@ -313,6 +313,41 @@ const groupActivitiesStore = (set, get) => ({
             };
         });
     },
+
+    deleteActivity: (activityId, groupId, synced) => {
+        if (synced === false) {
+            set((state) => {
+                const newPendingActivities = state?.pendingActivities || {};
+                delete newPendingActivities[activityId];
+                return {
+                    pendingActivities: { ...newPendingActivities },
+                };
+            });
+        }
+        if (!get().activities[groupId]?.activityOrder || get().activities[groupId].activityOrder.length == 0) {
+            return;
+        }
+        set((state) => {
+            const newActivitiesById = {
+                ...(state.activities[groupId]?.activitiesById || {}),
+            };
+
+            delete newActivitiesById[activityId];
+
+            const newActivityOrder = state.activities[groupId].activityOrder.filter((elem) => elem != activityId);
+
+            return {
+                activities: {
+                    ...state.activities,
+                    [groupId]: {
+                        ...state.activities[groupId],
+                        activitiesById: newActivitiesById,
+                        activityOrder: newActivityOrder,
+                    },
+                },
+            };
+        });
+    },
 });
 
 const useGroupActivitiesStore = create(

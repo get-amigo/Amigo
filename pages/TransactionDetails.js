@@ -11,10 +11,13 @@ import TransactionDetailsButton from '../components/TransactionDetailsButton';
 import { getCategoryIcon } from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
+import PAGES from '../constants/pages';
+import apiHelper from '../helper/apiHelper';
 import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import useCustomColor from '../hooks/useCustomColor';
+
 const TransactionDetail = ({
     navigation,
     route: {
@@ -24,6 +27,8 @@ const TransactionDetail = ({
     const [date, setDate] = useState();
     const [expandNames, setExpandNames] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const transactionId = transaction._id;
 
     const generateColor = useCustomColor();
 
@@ -42,6 +47,17 @@ const TransactionDetail = ({
     useEffect(() => {
         setDate(new Date(transaction.date));
     }, [transaction]);
+
+    const handleEdit = async () => {
+        try {
+            const response = await apiHelper.get(`/transaction/${transactionId}`);
+            const transactionData = response.data;
+            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing });
+            setModalVisible(!modalVisible);
+        } catch (error) {
+            console.error('Error fetching transaction:', error);
+        }
+    };
 
     return (
         <ScrollView alwaysBounceVertical={false}>
@@ -190,7 +206,17 @@ const TransactionDetail = ({
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalBackground}>
                         <View style={styles.modalView}>
-                            <TouchableOpacity style={[styles.button, styles.editButton]}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.editButton]}
+                                onPress={async () => {
+                                    try {
+                                        await handleEdit();
+                                        // navigation.goBack();
+                                    } catch (error) {
+                                        console.error('Error deleting transaction:', error);
+                                    }
+                                }}
+                            >
                                 <Image source={editIcon} />
                                 <Text style={styles.textStyle}>Edit</Text>
                             </TouchableOpacity>
@@ -206,7 +232,7 @@ const TransactionDetail = ({
                                 }}
                             >
                                 <Image source={deleteIcon} />
-                                <Text style={styles.textStyle}>Delete</Text>
+                                <Text style={[styles.textStyle, { color: COLOR.ERROR_BORDER }]}>Delete</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

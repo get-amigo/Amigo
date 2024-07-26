@@ -235,7 +235,7 @@ const GroupSplitScreen = ({ navigation }) => {
                         }}
                     >
                         <UserAvatar user={item.user} />
-                        <Text style={styles.memberName}>{item.user.name}</Text>
+                        <Text style={styles.memberName}>{item.user.name? item.user.name: item.user.phoneNumber}</Text>
                     </View>
                 </View>
 
@@ -260,6 +260,7 @@ const GroupSplitScreen = ({ navigation }) => {
                     style={{
                         flexDirection: 'row',
                         alignItems: 'center',
+                        gap:calcWidth(1),
                         borderWidth: 1,
                         padding: calcHeight(0.5),
                         borderColor: '#D9D9D9',
@@ -275,7 +276,7 @@ const GroupSplitScreen = ({ navigation }) => {
                             fontSize: getFontSizeByWindowWidth(12),
                         }}
                     >
-                        {sliceText(transactionData.paidBy.name, 7)}
+                        {sliceText(transactionData.paidBy.name? transactionData.paidBy.name : transactionData.paidBy.phoneNumber, 10)}
                     </Text>
                 </Pressable>
             </View>

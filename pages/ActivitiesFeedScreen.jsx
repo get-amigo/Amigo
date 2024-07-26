@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { ImageBackground, KeyboardAvoidingView, Platform, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BalanceGroupPin from '../components/BalanceGroupPin';
-import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import FeedsContainer from '../components/FeedScreen/FeedsContainer';
+import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import MessageComposer from '../components/FeedScreen/MessageComposer';
 import safeAreaStyle from '../constants/safeAreaStyle';
 import { useGroup } from '../context/GroupContext';
@@ -16,7 +16,10 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
+import { MESSAGE_COMPOSER_PADDING } from '../constants/constants';
+
 const ActivitiesFeedScreen = () => {
+    const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
     const isConnected = useNetwork();
@@ -69,13 +72,13 @@ const ActivitiesFeedScreen = () => {
     }, [isConnected]);
 
     return (
-        <SafeAreaView style={safeAreaStyle}>
+        <SafeAreaView style={safeAreaStyle} edges={['top', 'left', 'right']}>
             <ImageBackground
                 source={require('../assets/chatBackground_new.png')}
                 style={{
                     width: calcWidth(100),
                     height: '100%',
-                    marginTop: StatusBar.currentHeight,
+                    marginTop: insets.top,
                     position: 'absolute',
                 }}
             />
@@ -84,7 +87,7 @@ const ActivitiesFeedScreen = () => {
                     flex: 1,
                 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={40}
+                keyboardVerticalOffset={insets.bottom > MESSAGE_COMPOSER_PADDING ? MESSAGE_COMPOSER_PADDING - insets.bottom : 0}
             >
                 <FeedScreenHeader totalBalance={totalBalance} />
 

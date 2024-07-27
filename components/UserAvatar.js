@@ -1,9 +1,8 @@
-import { StyleSheet, View, Text } from 'react-native';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import COLOR from '../constants/Colors';
-import uuidToColor from '../helper/uuidToColor';
-const selectorSize = 5;
+import { Text, View } from 'react-native';
+
 import getAvatarColor from '../constants/getAvatarColor';
+import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+const selectorSize = 5;
 
 function UserAvar({ user: { name, _id }, size = selectorSize }) {
     return (

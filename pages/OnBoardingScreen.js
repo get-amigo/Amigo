@@ -1,44 +1,42 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, Image, Pressable } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import React from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 // Assuming this is the path to your image
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import OnboardingImage from '../assets/Onboarding.png'; // Update the image path if necessary
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import Button from '../components/Button';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import Button from '../components/Button';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+
 const OnboardingScreen = ({ navigation }) => {
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.innerContainer}>
-                <Image source={OnboardingImage} style={styles.image} resizeMode="contain" />
-                <Text style={styles.title}>Group payments made easy</Text>
-                <Text style={styles.subtitle}>Keep track of your shared expenses and balances</Text>
-                <Button title="Continue with Phone number" onPress={() => navigation.navigate(PAGES.LOGIN)} />
-                <Text
-                    style={{
-                        marginVertical: calcHeight(2),
-                        color: '#8c89a1',
-                        fontSize: getFontSizeByWindowWidth(8),
-                    }}
-                >
-                    By Pressing on "Continue with Phone Number" you agree to our{' '}
+        <SafeAreaView style={safeAreaStyle}>
+            <View style={styles.container}>
+                <View style={styles.innerContainer}>
+                    <Image source={OnboardingImage} style={styles.image} resizeMode="contain" />
+                    <Text style={styles.title}>Group payments made easy</Text>
+                    <Text style={styles.subtitle}>Keep track of your shared expenses and balances</Text>
+                    <Button title="Continue with Phone number" onPress={() => navigation.navigate(PAGES.LOGIN)} />
                     <Text
-                        style={{ color: 'white' }}
-                        onPress={() => WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/')}
+                        style={{
+                            marginVertical: calcHeight(2),
+                            color: '#8c89a1',
+                            fontSize: getFontSizeByWindowWidth(8),
+                        }}
                     >
-                        Privacy Policy
-                    </Text>{' '}
-                    and{' '}
-                    <Text
-                        style={{ color: 'white' }}
-                        onPress={() =>
-                            WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/terms-and-conditions')
-                        }
-                    >
-                        Terms and Conditions
+                        By Pressing on "Continue with Phone Number" you agree to our{' '}
+                        <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy')}>
+                            Privacy Policy
+                        </Text>{' '}
+                        and{' '}
+                        <Text style={{ color: 'white' }} onPress={() => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms')}>
+                            Terms and Conditions
+                        </Text>
                     </Text>
-                </Text>
+                </View>
             </View>
         </SafeAreaView>
     );
@@ -46,10 +44,9 @@ const OnboardingScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND, // Changed to the dark background color
         alignItems: 'center', // Centers content horizontally
         justifyContent: 'flex-end',
+        flex: 1,
     },
     innerContainer: {
         width: calcWidth(80), // 80% of the screen width

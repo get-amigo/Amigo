@@ -1,233 +1,222 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
-import { AntDesign, Entypo } from '@expo/vector-icons';
-import COLOR from '../constants/Colors';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
-import { getCategoryIcon } from '../constants/Categories';
-import apiHelper from '../helper/apiHelper';
-import useCustomColor from '../hooks/useCustomColor';
-import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
-import SharedList from '../components/SharedList';
-import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
-import TransactionDetailsButton from '../components/TransactionDetailsButton';
-import sliceText from '../helper/sliceText';
+import { Entypo } from '@expo/vector-icons';
+import { React, useEffect, useLayoutEffect, useState } from 'react';
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import CalendarIcon from '../assets/icons/calendar.png';
+import deleteIcon from '../assets/icons/deleteIcon.png';
+import dots from '../assets/icons/dots.png';
+import editIcon from '../assets/icons/editIcon.png';
 import AmountInput from '../components/AmountInput';
-import { useExpense } from '../stores/expense';
-
+import SharedList from '../components/SharedList';
+import TransactionDetailsButton from '../components/TransactionDetailsButton';
+import { getCategoryIcon } from '../constants/Categories';
+import COLOR from '../constants/Colors';
+import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
+import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import sliceText from '../helper/sliceText';
+import useCustomColor from '../hooks/useCustomColor';
 const TransactionDetail = ({
     navigation,
     route: {
-        params: { transaction },
+        params: { transaction, handleDelete },
     },
 }) => {
-    const [date, setDate] = useState(new Date(transaction.date));
+    const [date, setDate] = useState();
     const [expandNames, setExpandNames] = useState(false);
-    const { deleteExpenseById } = useExpense();
+    const [modalVisible, setModalVisible] = useState(false);
 
     const generateColor = useCustomColor();
 
-    // const handleDeleteTransaction = async () => {
-    //     Alert.alert(
-    //         'Delete Transaction',
-    //         'Are you sure you want to delete this transaction?',
-    //         [
-    //             {
-    //                 text: 'Cancel',
-    //                 onPress: () => {},
-    //                 style: 'cancel',
-    //             },
-    //             {
-    //                 text: 'Delete',
-    //                 onPress: async () => {
-    //                     try {
-    //                         navigation.goBack();
-    //                         deleteExpenseById(transaction._id);
-    //                     } catch (error) {
-    //                         // Handle errors
-    //                         console.log(
-    //                             'An error occurred while deleting the transaction.',
-    //                         );
-    //                     }
-    //                 },
-    //             },
-    //         ],
-    //         { cancelable: false },
-    //     );
-    // };
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Image source={dots} />
+                    </TouchableOpacity>
+                </View>
+            ),
+        });
+    }, [navigation, handleDelete, transaction._id]);
 
-    // useLayoutEffect(() => {
-    //     navigation.setOptions({
-    //         headerRight: () => (
-    //             <View
-    //                 style={{
-    //                     flexDirection: 'row',
-    //                 }}
-    //             >
-    //                 <TouchableOpacity onPress={handleDeleteTransaction}>
-    //                     <AntDesign
-    //                         name="delete"
-    //                         size={calcWidth(6)}
-    //                         color={COLOR.BUTTON}
-    //                     />
-    //                 </TouchableOpacity>
-    //             </View>
-    //         ),
-    //     });
-    // }, [navigation]);
+    useEffect(() => {
+        setDate(new Date(transaction.date));
+    }, [transaction]);
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView>
-                <View
+        <ScrollView alwaysBounceVertical={false}>
+            <View
+                style={{
+                    alignItems: 'center',
+                    marginTop: calcHeight(5),
+                }}
+            >
+                <AmountInput amount={transaction.amount} isTextInput={false} />
+                <Text
                     style={{
-                        alignItems: 'center',
-                        marginTop: calcHeight(5),
+                        fontSize: getFontSizeByWindowWidth(14),
+                        color: COLOR.TEXT,
                     }}
                 >
-                    <AmountInput amount={transaction.amount} isTextInput={false} />
-                    <Text
-                        style={{
-                            fontSize: getFontSizeByWindowWidth(14),
-                            color: COLOR.TEXT,
-                        }}
-                    >
-                        {sliceText(transaction.description, 40)}
-                    </Text>
-                    <Text
-                        style={{
-                            color: 'grey',
-                            marginVertical: calcHeight(3),
-                            fontSize: getFontSizeByWindowWidth(12),
-                        }}
-                    >
-                        Create By {transaction.creator.name}
-                    </Text>
+                    {sliceText(transaction.description, 40)}
+                </Text>
+                <Text
+                    style={{
+                        color: 'grey',
+                        marginVertical: calcHeight(3),
+                        fontSize: getFontSizeByWindowWidth(12),
+                    }}
+                >
+                    Created By {transaction.creator.name}
+                </Text>
+                <View
+                    style={{
+                        width: '50%',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        gap: calcWidth(5),
+                        marginBottom: calcHeight(4),
+                    }}
+                >
                     <View
                         style={{
-                            width: '50%',
+                            backgroundColor: '#4D426C',
                             flexDirection: 'row',
-                            justifyContent: 'center',
-                            gap: calcWidth(5),
-                            marginBottom: calcHeight(4),
+                            borderRadius: 10,
+                            paddingVertical: calcWidth(1),
+                            paddingHorizontal: calcWidth(4),
+                            gap: calcWidth(1),
+                            alignItems: 'center',
                         }}
                     >
-                        <View
+                        <Image
                             style={{
-                                backgroundColor: '#4D426C',
-                                flexDirection: 'row',
-                                borderRadius: 10,
-                                paddingVertical: calcWidth(1),
-                                paddingHorizontal: calcWidth(4),
-                                gap: calcWidth(1),
-                                alignItems: 'center',
+                                width: calcWidth(3),
+                                height: calcWidth(3),
+                            }}
+                            source={CalendarIcon}
+                        />
+                        <Text
+                            style={{
+                                fontSize: getFontSizeByWindowWidth(10),
+                                color: 'white',
                             }}
                         >
-                            <Image
-                                style={{
-                                    width: calcWidth(3),
-                                    height: calcWidth(3),
-                                }}
-                                source={CalendarIcon}
-                            />
-                            <Text
-                                style={{
-                                    fontSize: getFontSizeByWindowWidth(10),
-                                    color: 'white',
-                                }}
-                            >
-                                {formatDateToDDMMYYYY(date)}
-                            </Text>
-                        </View>
-                        <View
-                            style={{
-                                backgroundColor: '#4D426C',
-                                flexDirection: 'row',
-                                borderRadius: 10,
-                                paddingVertical: calcWidth(2),
-                                paddingHorizontal: calcWidth(4),
-                                gap: calcWidth(1),
-                                alignItems: 'center',
-                            }}
-                        >
-                            {getCategoryIcon(transaction.type)}
-                            <Text
-                                style={{
-                                    fontSize: getFontSizeByWindowWidth(10),
-                                    color: 'white',
-                                }}
-                            >
-                                {transaction.type}
-                            </Text>
-                        </View>
+                            {formatDateToDDMMYYYY(date)}
+                        </Text>
                     </View>
-                </View>
-                <View style={styles.boxContainer}>
                     <View
                         style={{
-                            borderTopLeftRadius: calcWidth(5),
-                            borderTopRightRadius: calcWidth(5),
-                            backgroundColor: COLOR.BUTTON,
+                            backgroundColor: '#4D426C',
+                            flexDirection: 'row',
+                            borderRadius: 10,
+                            paddingVertical: calcWidth(2),
+                            paddingHorizontal: calcWidth(4),
+                            gap: calcWidth(1),
+                            alignItems: 'center',
                         }}
                     >
-                        <Text style={styles.headerLabel}>Paid by</Text>
+                        {getCategoryIcon(transaction.type)}
+                        <Text
+                            style={{
+                                fontSize: getFontSizeByWindowWidth(10),
+                                color: 'white',
+                            }}
+                        >
+                            {transaction.type}
+                        </Text>
                     </View>
-                    <View style={styles.headerContainer}>
-                        <View style={styles.userDetail}>
-                            <View
-                                style={[
-                                    styles.circle,
-                                    {
-                                        backgroundColor: generateColor(transaction.paidBy._id),
-                                    },
-                                ]}
-                            />
-                            <Text style={styles.userName}>{transaction.paidBy.name}</Text>
-                            <Text style={styles.userAmount}>₹ {transaction.amount}</Text>
-                        </View>
-                    </View>
-                    <SharedList
-                        transaction={transaction}
-                        generateColor={generateColor}
-                        expandNames={expandNames}
-                        setExpandNames={setExpandNames}
-                    />
                 </View>
+            </View>
+            <View style={styles.boxContainer}>
                 <View
                     style={{
-                        alignItems: 'center',
+                        borderTopLeftRadius: calcWidth(5),
+                        borderTopRightRadius: calcWidth(5),
+                        backgroundColor: COLOR.BUTTON,
                     }}
                 >
-                    {transaction.splitAmong.length > TransactionNumberOfVisibleNames && (
-                        <TransactionDetailsButton
-                            onPress={() => {
-                                setExpandNames((prev) => !prev);
-                            }}
-                            title={
-                                <>
-                                    {expandNames ? (
-                                        <Text>Show Less</Text>
-                                    ) : (
-                                        <Text>
-                                            {transaction.splitAmong.length - TransactionNumberOfVisibleNames} more participants{'\t'}
-                                        </Text>
-                                    )}
-                                    <Entypo name={expandNames ? 'chevron-up' : 'chevron-down'} size={calcHeight(2.1)} color="white" />
-                                </>
-                            }
-                        />
-                    )}
+                    <Text style={styles.headerLabel}>Paid by</Text>
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+                <View style={styles.headerContainer}>
+                    <View style={styles.userDetail}>
+                        <View
+                            style={[
+                                styles.circle,
+                                {
+                                    backgroundColor: generateColor(transaction.paidBy._id),
+                                },
+                            ]}
+                        />
+                        <Text style={styles.userName}>{transaction.paidBy.name}</Text>
+                        <Text style={styles.userAmount}>₹ {transaction.amount}</Text>
+                    </View>
+                </View>
+                <SharedList transaction={transaction} generateColor={generateColor} expandNames={expandNames} />
+            </View>
+            <View
+                style={{
+                    alignItems: 'center',
+                }}
+            >
+                {transaction.splitAmong.length > TransactionNumberOfVisibleNames && (
+                    <TransactionDetailsButton
+                        onPress={() => {
+                            setExpandNames((prev) => !prev);
+                        }}
+                        title={
+                            <>
+                                {expandNames ? (
+                                    <Text>Show Less</Text>
+                                ) : (
+                                    <Text>
+                                        {transaction.splitAmong.length - TransactionNumberOfVisibleNames} more participants{'\t'}
+                                    </Text>
+                                )}
+                                <Entypo name={expandNames ? 'chevron-up' : 'chevron-down'} size={calcHeight(2.1)} color="white" />
+                            </>
+                        }
+                    />
+                )}
+            </View>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                    <View style={styles.modalBackground}>
+                        <View style={styles.modalView}>
+                            <TouchableOpacity style={[styles.button, styles.editButton]}>
+                                <Image source={editIcon} />
+                                <Text style={styles.textStyle}>Edit</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.button, styles.deleteButton]}
+                                onPress={async () => {
+                                    try {
+                                        await handleDelete(transaction._id);
+                                        navigation.goBack();
+                                    } catch (error) {
+                                        console.error('Error deleting transaction:', error);
+                                    }
+                                }}
+                            >
+                                <Image source={deleteIcon} />
+                                <Text style={styles.textStyle}>Delete</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     boxContainer: {
         backgroundColor: COLOR.PAYMENT_BACKGROUND,
         margin: calcWidth(5),
@@ -293,6 +282,55 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(12),
         padding: calcWidth(3),
+    },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalView: {
+        position: 'absolute',
+        top: calcHeight(6),
+        right: calcWidth(2),
+        flexDirection: 'column',
+        alignItems: 'center',
+        backgroundColor: COLOR.PAYMENT_BACKGROUND,
+        borderRadius: calcHeight(1),
+        paddingHorizontal: calcHeight((20 / 390) * 100),
+        width: calcWidth((165 / 390) * 100),
+        paddingVertical: calcHeight((20 / 844) * 100),
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    button: {
+        width: calcWidth(30),
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: calcWidth(2),
+    },
+    textStyle: {
+        color: 'white',
+        fontSize: getFontSizeByWindowWidth(14),
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    editButton: {
+        paddingBottom: calcHeight(2),
+        borderBottomColor: COLOR.BORDER_COLOR,
+        borderBottomWidth: calcHeight(0.2),
+    },
+    deleteButton: {
+        paddingTop: calcHeight(2),
     },
 });
 

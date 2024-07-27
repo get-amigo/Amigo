@@ -1,4 +1,5 @@
 import * as Linking from 'expo-linking';
+
 import PAGES from '../constants/pages';
 const prefix = Linking.createURL('/');
 const linking = {
@@ -12,9 +13,11 @@ const linking = {
     },
     subscribe(listener) {
         const onReceiveURL = ({ url }) => listener(url);
-        Linking.addEventListener('url', onReceiveURL);
+
+        const subscription = Linking.addEventListener('url', onReceiveURL);
+
         return () => {
-            Linking.removeEventListener('url', onReceiveURL);
+            subscription.remove();
         };
     },
     config: {

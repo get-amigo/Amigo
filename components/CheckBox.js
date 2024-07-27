@@ -1,7 +1,7 @@
-import { calcWidth } from '../helper/res';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
 import COLOR from '../constants/Colors';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
+import { calcWidth } from '../helper/res';
 
 function CheckBox({ selected }) {
     return selected ? (

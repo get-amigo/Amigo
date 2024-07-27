@@ -1,15 +1,17 @@
-import React, { useCallback, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, FlatList } from 'react-native';
-import PAGES from '../constants/pages';
-import { useFocusEffect } from '@react-navigation/native';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import Search from '../components/Search';
-import GroupSelectCard from '../components/GroupSelectCard';
-import { useTransaction } from '../context/TransactionContext';
-import GroupIcon from '../components/GroupIcon';
 import { Octicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+
+import GroupIcon from '../components/GroupIcon';
+import GroupSelectCard from '../components/GroupSelectCard';
+import Search from '../components/Search';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useGroupList } from '../stores/groupList';
+
 function GroupListScreen({ navigation }) {
     const [search, setSearch] = useState('');
     const { setTransactionData } = useTransaction();
@@ -24,7 +26,7 @@ function GroupListScreen({ navigation }) {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <View
                 style={{
                     marginVertical: calcHeight(2),
@@ -36,7 +38,7 @@ function GroupListScreen({ navigation }) {
                 data={filterGroups(groups)}
                 ListHeaderComponent={
                     <GroupSelectCard
-                        name={'Create new group'}
+                        name="Create new group"
                         image={
                             <View
                                 style={{
@@ -67,14 +69,12 @@ function GroupListScreen({ navigation }) {
                     />
                 )}
             />
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
         alignItems: 'center',
     },
     header: {

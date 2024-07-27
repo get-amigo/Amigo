@@ -1,20 +1,20 @@
 // React Native Components and Utilities
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, SafeAreaView, View, Text, FlatList, Image, Pressable, TouchableOpacity } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 // Custom Components and Utility Functions
 import GroupIcon from '../components/GroupIcon';
-import convertISODateToCustomFormat from '../helper/convertISODateToCustomFormat'; // Assuming you move this function to a utils.js file
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import COLOR from '../constants/Colors';
-import sliceText from '../helper/sliceText';
-import { useNavigation } from '@react-navigation/native';
-import apiHelper from '../helper/apiHelper';
-import { useAuth } from '../stores/auth';
-import PAGES from '../constants/pages';
-import getNamesFromContacts from '../helper/getNamesFromContacts';
-import editNames from '../helper/editNames';
 import { getCategoryIcon } from '../constants/Categories';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import apiHelper from '../helper/apiHelper';
+import convertISODateToCustomFormat from '../helper/convertISODateToCustomFormat'; // Assuming you move this function to a utils.js file
+import editNames from '../helper/editNames';
+import getNamesFromContacts from '../helper/getNamesFromContacts';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import sliceText from '../helper/sliceText';
+import { useAuth } from '../stores/auth';
 // ExpenseCard Component
 function ExpenseCard({ item, loading }) {
     if (loading) {
@@ -44,7 +44,7 @@ function ExpenseCard({ item, loading }) {
                                     borderRadius: 10,
                                 },
                             ]}
-                        ></Text>
+                        />
                         <Text style={[styles.dateText, { opacity: 0 }]}>Ramdom</Text>
                     </View>
                 </View>

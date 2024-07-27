@@ -1,15 +1,14 @@
+import { Foundation, MaterialCommunityIcons, Octicons } from '@expo/vector-icons'; // Example color, replace with actual color needed.
 import React from 'react';
-import { EvilIcons } from '@expo/vector-icons';
-import PAGES from '../../constants/pages';
-import COLOR from '../../constants/Colors';
-import { Octicons, Foundation } from '@expo/vector-icons';
-const color = COLOR.BUTTON; // Example color, replace with actual color needed.
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Image } from 'react-native';
+
 import Expense from '../../assets/icons/expense.png';
 import SelectedExpense from '../../assets/icons/selectedExpense.png';
-import { Image } from 'react-native';
-import { calcHeight } from '../../helper/res';
-const size = calcHeight(3);
+import COLOR from '../../constants/Colors';
+import PAGES from '../../constants/pages';
+import { calcWidth } from '../../helper/res';
+const color = COLOR.BUTTON;
+const size = calcWidth(6.5);
 export default ({ focused, screen }) => {
     const icons = {
         [PAGES.BALANCE]: focused ? (

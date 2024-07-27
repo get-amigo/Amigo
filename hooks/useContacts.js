@@ -1,29 +1,38 @@
 import * as Contacts from 'expo-contacts';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import generateRandomColor from '../helper/generateRandomColor';
+import getDefaultCountryCode from '../helper/getDefaultCountryCode';
+import { useAuth } from '../stores/auth';
+
 const ContactsContext = createContext();
 
-const filterUniqueContacts = (contactsData) => {
+const filterUniqueContacts = (contactsData, userPhoneNumber) => {
     const seenPhoneNumbers = new Set();
     return contactsData.filter((contact) => {
         const phoneNumber = contact.phoneNumbers?.[0].number.replace(/\D/g, '');
-        return phoneNumber && !seenPhoneNumbers.has(phoneNumber) && seenPhoneNumbers.add(phoneNumber);
+        return phoneNumber && phoneNumber !== userPhoneNumber && !seenPhoneNumbers.has(phoneNumber) && seenPhoneNumbers.add(phoneNumber);
     });
 };
 
 const mapToSimplifiedContacts = (uniqueContacts) => {
-    return uniqueContacts.map((contact) => ({
-        id: contact.id,
-        name: contact.name || '',
-        phoneNumber: contact.phoneNumbers[0].number.replace(/\D/g, '').slice(-10),
-        imageURI: contact.imageAvailable ? contact.image.uri : '',
-        color: generateRandomColor(),
-    }));
-};
+    const defaultCountryCode = getDefaultCountryCode();
 
-const handleLoadContactsError = (error) => {
-    console.error('Error loading contacts:', error);
+    return uniqueContacts
+        .filter((contact) => isValidPhoneNumber(contact.phoneNumbers[0].number))
+        .map((contact) => {
+            const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
+
+            return {
+                id: contact.id,
+                name: contact.name || '',
+                phoneNumber: phoneNumber.nationalNumber,
+                countryCode: `+${phoneNumber.countryCallingCode}`,
+                imageURI: contact.imageAvailable ? contact.image.uri : '',
+                color: generateRandomColor(),
+            };
+        });
 };
 
 const fetchContactsData = async () => {
@@ -73,6 +82,7 @@ export const ContactsProvider = ({ children }) => {
     const [selectedContacts, setSelectedContacts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [contactPermission, setContactPermission] = useState(false);
+    const { user } = useAuth();
 
     useEffect(() => {
         const loadContacts = async () => {
@@ -83,7 +93,7 @@ export const ContactsProvider = ({ children }) => {
                     const contactsData = await fetchContactsData();
 
                     if (contactsData.length > 0) {
-                        const uniqueContacts = filterUniqueContacts(contactsData);
+                        const uniqueContacts = filterUniqueContacts(contactsData, user.phoneNumber);
                         const simplifiedContacts = mapToSimplifiedContacts(uniqueContacts);
 
                         setAllContacts(simplifiedContacts);
@@ -93,7 +103,7 @@ export const ContactsProvider = ({ children }) => {
                     setContactPermission(false);
                 }
             } catch (error) {
-                handleLoadContactsError(error);
+                console.log(error);
             } finally {
                 setLoading(false);
             }
@@ -111,7 +121,7 @@ export const ContactsProvider = ({ children }) => {
         };
 
         loadContacts();
-    }, []);
+    }, [user.phoneNumber]);
 
     useEffect(() => {
         // Update filtered contacts whenever search changes

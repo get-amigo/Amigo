@@ -1,23 +1,29 @@
-import React, { useLayoutEffect, useEffect, useRef, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, Image, Pressable, TextInput, TouchableOpacity, Platform, Share, Alert } from 'react-native';
-import { useAuth } from '../stores/auth';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import SignUpImage from '../assets/SignUp.png';
-import UserAvatar from '../components/UserAvatar';
-import { Feather, Octicons, AntDesign, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
+import { Alert, Platform, Pressable, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 import MenuOption from '../components/AccountPageOption';
+import UserAvatar from '../components/UserAvatar';
+import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
 
 function ProfileScreen({ navigation }) {
     const { user, logout, editUser, deleteAccount } = useAuth();
     const [editMode, setEditMode] = useState(false);
     const [name, setName] = useState(user.name);
-    const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
+    const [originalName, setOriginalName] = useState(user.name);
     const { totalBalances } = useBalance();
 
+    const [phoneNumber, setPhoneNumber] = useState();
+
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    useEffect(() => {
+        setPhoneNumber(user.phoneNumber);
+    }, [user]);
 
     function submitUserData() {
         setIsSubmitting(true);
@@ -25,8 +31,8 @@ function ProfileScreen({ navigation }) {
 
     function deleteHandler() {
         if (totalBalances) {
-            if (totalBalances < 0) alert(`You have a balance of ₹${totalBalances} to settle before deleting your account`);
-            else alert(`You have a balance of ₹${totalBalances} to collect before deleting your account`);
+            if (totalBalances < 0) Alert.alert('Alert', `You have a balance of ₹${totalBalances} to settle before deleting your account`);
+            else Alert.alert('Alert', `You have a balance of ₹${totalBalances} to collect before deleting your account`);
             return;
         }
         if (Platform.OS === 'ios') {
@@ -82,11 +88,12 @@ function ProfileScreen({ navigation }) {
     useEffect(() => {
         if (isSubmitting) {
             if (!name || name === '') {
-                alert('Empty Name');
+                Alert.alert('Alert', 'Empty Name');
                 setIsSubmitting(false);
                 return;
             }
             editUser({ name });
+            setOriginalName(name);
             setEditMode(false);
             setIsSubmitting(false);
         }
@@ -109,9 +116,15 @@ function ProfileScreen({ navigation }) {
 
     useLayoutEffect(() => {
         navigation.setOptions({
+            headerTitle: editMode ? '' : 'Account',
             headerLeft: () =>
                 editMode ? (
-                    <TouchableOpacity onPress={() => setEditMode(false)}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            setName(originalName);
+                            setEditMode(false);
+                        }}
+                    >
                         <Text style={[styles.bottomBarText, { fontWeight: 'bold' }]}>Cancel</Text>
                     </TouchableOpacity>
                 ) : undefined,
@@ -125,12 +138,14 @@ function ProfileScreen({ navigation }) {
     }, [navigation, editMode]);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             <View style={styles.userInfo}>
                 <UserAvatar user={user} size={7} />
-                <View>
+                <View style={styles.userDetails}>
                     {editMode ? (
-                        <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus />
+                        <View style={styles.editContainer}>
+                            <TextInput style={styles.userName} value={name} onChangeText={setName} autoFocus maxLength={25} multiline />
+                        </View>
                     ) : (
                         <Text style={styles.userName}>{name}</Text>
                     )}
@@ -141,7 +156,7 @@ function ProfileScreen({ navigation }) {
                         setEditMode((prev) => !prev);
                     }}
                 >
-                    <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} />
+                    <Feather name="edit-3" size={calcHeight(3)} color={COLOR.BUTTON} style={{ display: editMode ? 'none' : null }} />
                 </Pressable>
             </View>
 
@@ -153,8 +168,8 @@ function ProfileScreen({ navigation }) {
                             'Download our App: ' +
                             `${
                                 Platform.OS == 'ios'
-                                    ? 'https://apps.apple.com/us/app/qr-generator-app/id6469707187'
-                                    : 'https://play.google.com/store/apps/details?id=com.devonetech.android.qrguru&hl=en_IN&gl=US'
+                                    ? 'https://apps.apple.com/in/app/amigo/id6483936159'
+                                    : 'https://play.google.com/store/apps/details?id=app.amigo.app&hl=en_IN'
                             }`,
                     });
                 }}
@@ -188,19 +203,23 @@ function ProfileScreen({ navigation }) {
                 onPress={deleteHandler}
                 color={COLOR.DELETION_COLOR}
             />
-        </SafeAreaView>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
+    characterCount: {
+        fontWeight: 'bold',
+        color: COLOR.BUTTON,
+        fontSize: getFontSizeByWindowWidth(8),
+        alignSelf: 'flex-end',
+        marginRight: calcWidth(1),
+        paddingTop: calcWidth(4),
     },
     userInfo: {
         flexDirection: 'row',
         margin: calcHeight(3),
-        // alignItems: 'center',
+        alignItems: 'center',
         justifyContent: 'space-between',
     },
     userImage: {
@@ -214,12 +233,14 @@ const styles = StyleSheet.create({
     userName: {
         fontWeight: 'bold',
         color: 'white',
-        fontSize: getFontSizeByWindowWidth(18),
+        fontSize: getFontSizeByWindowWidth(16),
+        paddingHorizontal: calcWidth(2),
     },
     userPhone: {
         color: 'white',
         fontSize: getFontSizeByWindowWidth(10),
         paddingTop: calcHeight(1),
+        paddingHorizontal: calcWidth(2),
     },
     inviteFriends: {
         alignItems: 'center',
@@ -243,6 +264,13 @@ const styles = StyleSheet.create({
     },
     bottomBarText: {
         color: COLOR.BUTTON,
+    },
+    userDetails: {
+        flex: 1,
+        marginLeft: calcWidth(2),
+    },
+    editContainer: {
+        flexDirection: 'column',
     },
 });
 

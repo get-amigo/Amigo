@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView, Image, Linking } from 'react-native';
-import COLOR from '../constants/Colors';
+import React from 'react';
+import { Alert, Linking, StyleSheet, Text, TouchableOpacity } from 'react-native';
+
 import UPIApps from '../constants/UpiApps';
+import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
 import { getFontSizeByWindowWidth } from '../helper/res';
-import PAGES from '../constants/pages';
 
 const UPIAppSelection = ({ navigation }) => {
     const { upiParams } = useTransaction();
@@ -18,30 +18,26 @@ const UPIAppSelection = ({ navigation }) => {
                 Linking.openURL(deepLink);
                 navigation.navigate(PAGES.BALANCE);
             } else {
-                alert('App not found');
+                Alert.alert('Alert', 'App not found');
             }
-        } catch (e) {
-            alert('App not found');
+        } catch {
+            Alert.alert('Alert', 'App not found');
         }
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <>
             {UPIApps.map((app, index) => (
                 <TouchableOpacity key={index} style={styles.button} onPress={() => handleSelectApp(app.name, app.generateDeeplink)}>
                     {app.icon}
                     <Text style={styles.text}>{app.name}</Text>
                 </TouchableOpacity>
             ))}
-        </SafeAreaView>
+        </>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     button: {
         flexDirection: 'row',
         alignItems: 'center',

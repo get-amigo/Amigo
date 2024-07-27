@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, Image, Pressable, TouchableOpacity } from 'react-native';
-import COLOR from '../constants/Colors';
-import Button from '../components/Button';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import OTPImage from '../assets/OTPImage.png';
-import Loader from '../components/Loader';
+import * as Haptics from 'expo-haptics';
+import React, { useEffect, useRef, useState } from 'react';
+import { Image, Keyboard, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+
 import OTPFilled from '../assets/OTPFilled.png';
+import OTPImage from '../assets/OTPImage.png';
+import Button from '../components/Button';
+import COLOR from '../constants/Colors';
 import { useOtp } from '../context/OtpContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const OTPScreen = ({
-    navigation,
     route: {
         params: { phoneNumber },
     },
@@ -18,8 +18,34 @@ const OTPScreen = ({
     const inputRef = useRef();
     const [error, setError] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [seconds, setSeconds] = useState(30);
+    const { verifyOtp, loginWithPhoneNumber, loading: isAuthStateLoading } = useOtp();
 
-    const { verifyOtp, loginWithPhoneNumber } = useOtp();
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (seconds > 0) {
+                setSeconds(seconds - 1);
+            }
+
+            if (seconds === 0) {
+                clearInterval(interval);
+            }
+        }, 1000);
+        return () => {
+            clearInterval(interval);
+        };
+    }, [seconds]);
+
+    useEffect(() => {
+        if (isAuthStateLoading) {
+            Keyboard.dismiss();
+        }
+    }, [isAuthStateLoading]);
+
+    const resendOTP = () => {
+        setSeconds(30);
+        loginWithPhoneNumber(phoneNumber);
+    };
 
     const handleOTPChange = (text) => {
         setError(false);
@@ -31,8 +57,19 @@ const OTPScreen = ({
             setError(true);
             return;
         }
-        verifyOtp(otp);
-    }
+        setLoading(true);
+        verifyOtp(otp)
+            .then(() => {
+                setLoading(false);
+            })
+            .catch(() => {
+                inputRef.current.focus();
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                setLoading(false);
+                setError(true);
+            });
+    };
+
     const otpBoxes = Array.from({ length: 6 }).map((_, index) => {
         const digit = otp[index] || '';
         const isFocused = index === otp.length;
@@ -52,10 +89,8 @@ const OTPScreen = ({
         );
     });
 
-    return loading ? (
-        <Loader />
-    ) : (
-        <SafeAreaView style={styles.container}>
+    return (
+        <ScrollView style={{ flex: 1 }} keyboardDismissMode="none" keyboardShouldPersistTaps="always">
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
                     <Image source={otp.length != 6 ? OTPImage : OTPFilled} style={styles.image} resizeMode="contain" />
@@ -79,35 +114,52 @@ const OTPScreen = ({
                         onChangeText={handleOTPChange}
                         maxLength={6}
                         autoFocus
+                        blurOnSubmit={false}
+                        onSubmitEditing={handleVerifyOTP}
                     />
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.resendText}>Didn't receive the code? </Text>
-                        <TouchableOpacity
-                            onPress={() => loginWithPhoneNumber(phoneNumber)}
-                        >
-                            <Text
-                                style={{
-                                    fontWeight: 'bold',
-                                    ...styles.resendText,
-                                }}
-                            >
-                                Resend
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+                        <Text style={styles.resendText}>Didn't get the OTP? </Text>
 
-                    <Button title="Verify" onPress={handleVerifyOTP} />
+                        <Pressable
+                            disabled={seconds > 0}
+                            style={{
+                                color: seconds >= 0 ? '#808080' : 'red',
+                            }}
+                            onPress={() => seconds === 0 && resendOTP()}
+                        >
+                            {seconds > 0 ? (
+                                <Text
+                                    style={{
+                                        color: '#808080',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'normal',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend SMS in {seconds.toString().padStart(2, '0')}s
+                                </Text>
+                            ) : (
+                                <Text
+                                    style={{
+                                        color: '#FFFFFF',
+                                        fontSize: getFontSizeByWindowWidth(10.5),
+                                        fontWeight: 'bold',
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                >
+                                    Resend
+                                </Text>
+                            )}
+                        </Pressable>
+                    </View>
+                    <Button loading={loading || isAuthStateLoading} title="Verify OTP" onPress={handleVerifyOTP} />
                 </View>
             </View>
-        </SafeAreaView>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     innerContainer: {
         paddingHorizontal: calcWidth(5),
         marginTop: calcHeight(5),
@@ -148,9 +200,13 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(10),
         color: COLOR.TEXT,
-        justifyContent: 'center', // Center content vertically
-        alignItems: 'center', // Center content horizontally
-        height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: calcHeight(7),
+    },
+    indicator: {
+        marginTop: calcHeight(3),
+        paddingHorizontal: calcWidth(2),
     },
     highlightedBox: {
         width: calcWidth(11),
@@ -159,9 +215,9 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: getFontSizeByWindowWidth(15),
         color: COLOR.TEXT,
-        justifyContent: 'center', // Center content vertically
-        alignItems: 'center', // Center content horizontally
-        height: calcHeight(7), // Make sure to set a fixed height for vertical alignment to work
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: calcHeight(7),
     },
     otpText: {
         fontSize: getFontSizeByWindowWidth(15),
@@ -175,7 +231,7 @@ const styles = StyleSheet.create({
     },
     resendText: {
         color: COLOR.PRIMARY,
-        fontSize: getFontSizeByWindowWidth(12),
+        fontSize: getFontSizeByWindowWidth(10.5),
     },
 });
 

@@ -1,17 +1,20 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
-import { useAuth } from '../stores/auth';
-import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import DatePickerSelector from '../components/DatePickerSelector';
 import ExpenseCard from '../components/ExpenseCard';
-import DatePickerSelector from '../components/DatePickerSelector'; // Separate component for date picker
 import TypeSelector from '../components/TypeSelector';
 import COLOR from '../constants/Colors';
+import safeAreaStyle from '../constants/safeAreaStyle';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
+import { useExpense } from '../stores/expense';
 
 function ExpenseScreen() {
-    const { expense, resetParams, loading } = useExpense();
+    const { expense, resetParams, loading, fetchExpense, type, range } = useExpense();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -19,9 +22,15 @@ function ExpenseScreen() {
         }, []),
     );
 
-    if (loading)
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchExpense();
+        setRefreshing(false);
+    }, []);
+
+    if (loading) {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={safeAreaStyle}>
                 <Text style={styles.header}>Expense Summary</Text>
                 <View
                     style={{
@@ -58,8 +67,12 @@ function ExpenseScreen() {
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
             </SafeAreaView>
         );
+    }
+
+    const isFilterApplied = type || (range.endDate && range.startDate);
+
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={safeAreaStyle}>
             <Text style={styles.header}>Expense Summary</Text>
             <View
                 style={{
@@ -72,7 +85,9 @@ function ExpenseScreen() {
                     <TypeSelector />
                     <DatePickerSelector />
                 </View>
+
                 <TouchableOpacity
+                    disabled={!isFilterApplied}
                     onPress={resetParams}
                     style={{
                         flexDirection: 'row',
@@ -80,8 +95,8 @@ function ExpenseScreen() {
                         gap: calcWidth(1),
                     }}
                 >
-                    <FontAwesome5 name="redo" size={calcWidth(3)} color="rgba(255,255,255,0.66)" />
-                    <Text style={{ color: COLOR.TEXT }}>Reset</Text>
+                    <FontAwesome5 name="redo" size={calcWidth(3)} color={isFilterApplied ? COLOR.TEXT : COLOR.BUTTON_DISABLED} />
+                    <Text style={isFilterApplied ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>Reset</Text>
                 </TouchableOpacity>
             </View>
 
@@ -93,6 +108,15 @@ function ExpenseScreen() {
                     keyExtractor={(item, index) => item.id || index.toString()}
                     renderItem={({ item }) => <ExpenseCard item={item} />}
                     style={styles.list}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                            progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                        />
+                    }
                 />
             )}
         </SafeAreaView>
@@ -102,15 +126,12 @@ function ExpenseScreen() {
 export default ExpenseScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,
         fontWeight: 'bold',
-        margin: calcHeight(3),
+        marginHorizontal: calcHeight(3),
+        marginVertical: calcHeight(2),
     },
     selectorContainer: {
         flexDirection: 'row',
@@ -123,8 +144,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
     },
-    list: {
-        // Add styles for your FlatList if needed
-    },
-    // Add other styles that you might have used in your component
+    list: {},
 });

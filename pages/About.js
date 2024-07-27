@@ -1,11 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Image, Pressable, Linking } from 'react-native';
-import { MaterialIcons, Foundation } from '@expo/vector-icons';
+import { Foundation } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
+import React from 'react';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import icon from '../assets/icon.png';
 import COLOR from '../constants/Colors';
 import about from '../constants/about';
 import { calcHeight, calcWidth } from '../helper/res';
-import icon from '../assets/icon.png';
 
 const About = () => {
     const renderLink = (iconName, text, onPress = () => {}) => (
@@ -16,31 +17,21 @@ const About = () => {
     );
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollViewContent}>
-                <View style={styles.header}>
-                    <Image source={icon} style={styles.icon} />
-                    <Text style={styles.headerText}>What's Amigo</Text>
-                </View>
-                <Text style={styles.text}>{about}</Text>
-                <View style={styles.linksContainer}>
-                    {renderLink('info', 'Terms and conditions', () =>
-                        WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/terms-and-conditions'),
-                    )}
-                    {renderLink('lock', 'Privacy Policy', () =>
-                        WebBrowser.openBrowserAsync('https://bhaumik-tandan.github.io/Amigo-Privacy-Policy/'),
-                    )}
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+        <ScrollView contentContainerStyle={styles.scrollViewContent} alwaysBounceVertical={false}>
+            <View style={styles.header}>
+                <Image source={icon} style={styles.icon} />
+                <Text style={styles.headerText}>What's Amigo</Text>
+            </View>
+            <Text style={styles.text}>{about}</Text>
+            <View style={styles.linksContainer}>
+                {renderLink('info', 'Terms and conditions', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/terms'))}
+                {renderLink('lock', 'Privacy Policy', () => WebBrowser.openBrowserAsync('https://www.getamigo.today/privacy'))}
+            </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
     scrollViewContent: {
         margin: calcHeight(2),
     },

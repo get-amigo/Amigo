@@ -1,15 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Alert, Button } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import Loader from '../components/Loader';
 import Search from '../components/Search';
+import safeAreaStyle from '../constants/safeAreaStyle';
 import apiHelper from '../helper/apiHelper';
 
-const SearchScreen = ({ navigation }) => {
+const size = 10; // api page fetch size
+
+const SearchScreen = () => {
     const [loading, setLoading] = useState(false);
     const [searchString, setSearchString] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [page, setPage] = useState(1);
-    const [size, setSize] = useState(10); // Set default page size
 
     // Debounce function
     const debounce = (func, delay) => {
@@ -31,12 +35,12 @@ const SearchScreen = ({ navigation }) => {
                     params: { searchString, size, page },
                 });
                 setSearchResults(response.data.groups); // Assuming the API returns an array of groups
-            } catch (e) {
+            } catch {
                 Alert.alert('Error', 'Failed to fetch search results.');
             }
             setLoading(false);
         }, 500),
-        [page, size],
+        [page],
     ); // 500ms delay, re-run on page/size change
 
     useEffect(() => {
@@ -53,7 +57,7 @@ const SearchScreen = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={safeAreaStyle}>
             <Search setSearch={setSearchString} search={searchString} />
             <ScrollView style={{ width: '100%' }}>
                 {searchResults.map((group, index) => (

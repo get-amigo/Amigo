@@ -1,26 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Linking, Button, Image, Pressable, Text, Alert } from 'react-native';
 import * as BarCodeScanner from 'expo-barcode-scanner';
-import CameraScanner from '../components/CameraScanner';
-import { useTransaction } from '../context/TransactionContext';
+import React, { useEffect, useState } from 'react';
+import { Alert, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import URL from 'url-parse';
-import PAGES from '../constants/pages';
+
+import SignUpImage from '../assets/SignUp.png';
+import CameraScanner from '../components/CameraScanner';
 import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
 import openSettings from '../helper/openSettings';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
     const [isLit, setIsLit] = useState(false);
     const { setUpiParams } = useTransaction();
     const [barcodeScanEnabled, setBarcodeScanEnabled] = useState(true);
+
     useEffect(() => {
         const checkCameraPermission = async () => {
             const { status } = await BarCodeScanner.getPermissionsAsync();
             setHasPermission(status === 'granted');
-            if (status !== 'granted') {
-                requestCameraPermission();
+        };
+
+        const handleAppStateChange = (nextAppState) => {
+            if (nextAppState === 'active') {
+                checkCameraPermission();
             }
         };
         checkCameraPermission();
+
+        AppState.addEventListener('change', handleAppStateChange);
+
+        return () => {
+            AppState;
+        };
     }, []);
 
     useEffect(() => {
@@ -32,13 +46,15 @@ const QRCodeScanner = ({ navigation }) => {
             })();
         });
 
-        return unsubscribe;
-    }, [navigation]);
+        const unsubscribeBlur = navigation.addListener('blur', () => {
+            setBarcodeScanEnabled(false);
+        });
 
-    const requestCameraPermission = async () => {
-        const { status } = await BarCodeScanner.requestPermissionsAsync();
-        setHasPermission(status === 'granted');
-    };
+        return () => {
+            unsubscribe(); // Remove the 'focus' event listener
+            unsubscribeBlur(); // Remove the 'blur' event listener
+        };
+    }, [navigation]);
 
     const parseQueryString = (queryString) => {
         const pairs = queryString.substring(1).split('&');
@@ -54,15 +70,12 @@ const QRCodeScanner = ({ navigation }) => {
         if (!barcodeScanEnabled) return;
         try {
             const url = new URL(data);
-
             const params = parseQueryString(url.query);
-
             // Initialize an object to store extracted parameters
             const extractedParams = {
                 receiverId: '',
-                // Add other common parameters here
+                description: params['tn'] || '',
             };
-
             // Check the URL scheme to identify UPI and extract relevant data
             if (url.protocol === 'upi:') {
                 extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
@@ -77,7 +90,6 @@ const QRCodeScanner = ({ navigation }) => {
                         onPress: () => setBarcodeScanEnabled(true),
                     },
                 ]);
-                return;
             }
         } catch (error) {
             console.error('Error processing scanned data:', error);
@@ -88,15 +100,36 @@ const QRCodeScanner = ({ navigation }) => {
     return (
         <View style={styles.container}>
             {!hasPermission ? (
-                <Pressable onPress={openSettings}>
-                    <Text
-                        style={{
-                            color: COLOR.TEXT,
-                        }}
-                    >
-                        Allow Camera Permission
-                    </Text>
-                </Pressable>
+                <View style={{ flex: 1 }}>
+                    <View style={styles.top}>
+                        <Image source={SignUpImage} style={styles.permitImage} />
+                        <Text style={{ fontWeight: '600', color: '#FFF', fontSize: getFontSizeByWindowWidth(16), textAlign: 'center' }}>
+                            Allow Access to Camera
+                        </Text>
+                        <Text
+                            style={{
+                                fontWeight: '400',
+                                color: '#FFF',
+                                fontSize: getFontSizeByWindowWidth(12),
+                                textAlign: 'center',
+                                marginTop: calcHeight(1),
+                                opacity: 0.6,
+                            }}
+                        >
+                            To scan QR codes, we need access to your camera.{`\n`}
+                            Please allow camera access to proceed.
+                        </Text>
+                    </View>
+                    <View style={styles.bottom}>
+                        <Pressable style={styles.btn} onPress={openSettings}>
+                            <Text
+                                style={{ color: '#FFFFFF', fontSize: getFontSizeByWindowWidth(15), fontWeight: '400', textAlign: 'center' }}
+                            >
+                                Allow
+                            </Text>
+                        </Pressable>
+                    </View>
+                </View>
             ) : (
                 <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} />
             )}
@@ -107,9 +140,33 @@ const QRCodeScanner = ({ navigation }) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: COLOR.APP_BACKGROUND,
+        justifyContent: 'center',
+    },
+    btn: {
+        backgroundColor: COLOR.BUTTON,
+        marginTop: calcHeight((8 / 844) * 100),
+        paddingHorizontal: calcWidth(5),
+        paddingVertical: calcHeight(2),
+        width: calcWidth(90),
+        borderRadius: 10,
+        alignSelf: 'center',
+    },
+    permitImage: {
+        width: calcWidth((150 / 390) * 100),
+        height: calcHeight((180 / 844) * 100),
+        alignSelf: 'center',
+        marginBottom: calcHeight((12 / 844) * 100),
+    },
+    top: {
+        flex: 1,
+        marginTop: -calcHeight((180 / 844) * 100) / 2.5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    bottom: {
+        marginBottom: calcHeight(4),
+        marginTop: 'auto',
     },
 });
 

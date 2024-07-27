@@ -1,25 +1,27 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, FlatList, Pressable, Image } from 'react-native';
-import apiHelper from '../helper/apiHelper';
-import PAGES from '../constants/pages';
-import FabIcon from '../components/FabIcon';
 import { useFocusEffect } from '@react-navigation/native';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import EmptyScreen from '../components/EmptyScreen';
+import React, { useCallback, useState } from 'react';
+import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import NoBalance from '../assets/NoBalance.png';
-import GroupBalanceCard from '../components/GroupBalanceCard';
-import { useAuth } from '../stores/auth';
 import ScanIcon from '../assets/icons/scan.png';
+import EmptyScreen from '../components/EmptyScreen';
+import FabIcon from '../components/FabIcon';
+import GroupBalanceCard from '../components/GroupBalanceCard';
 import UserAvatar from '../components/UserAvatar';
-const headerIconSize = calcHeight(1);
-import NetInfo from '@react-native-community/netinfo';
-import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { calcHeight, calcWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
+
+const headerIconSize = calcHeight(1);
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
     const { fetchData, loading, totalBalances, balances } = useBalance();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -27,9 +29,15 @@ function BalanceScreen({ navigation }) {
         }, []),
     );
 
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, [user]);
+
     if (loading)
         return (
-            <SafeAreaView style={styles.container}>
+            <>
                 <View
                     style={{
                         flexDirection: 'row',
@@ -82,13 +90,13 @@ function BalanceScreen({ navigation }) {
                                 color: COLOR.TEXT,
                                 fontWeight: 'bold',
                             }}
-                        ></Text>
+                        />
                         <Text
                             style={{
                                 color: COLOR.TEXT,
                                 fontWeight: 'bold',
                             }}
-                        ></Text>
+                        />
                     </View>
                 </View>
                 <FlatList
@@ -98,17 +106,18 @@ function BalanceScreen({ navigation }) {
                         marginTop: calcHeight(5),
                     }}
                 />
-            </SafeAreaView>
+            </>
         );
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={safeAreaStyle}>
             <View
                 style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    margin: calcWidth(headerIconSize),
+                    marginHorizontal: calcWidth(headerIconSize),
+                    marginVertical: calcWidth(3),
                 }}
             >
                 <Pressable onPress={() => navigation.navigate(PAGES.SCANNER)}>
@@ -181,9 +190,15 @@ function BalanceScreen({ navigation }) {
                     data={balances}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => <GroupBalanceCard group={item} />}
-                    style={{
-                        marginTop: calcHeight(5),
-                    }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                            progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                        />
+                    }
                 />
             )}
             {balances && balances.length != 0 && (
@@ -196,41 +211,5 @@ function BalanceScreen({ navigation }) {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: COLOR.APP_BACKGROUND,
-    },
-    header: {
-        fontSize: getFontSizeByWindowWidth(19),
-        color: COLOR.TEXT,
-        fontWeight: 'bold',
-        alignContent: 'left',
-        padding: calcWidth(3),
-    },
-    groupName: {
-        fontSize: 16,
-        marginVertical: 5, // Add margin for better spacing
-    },
-    group: {
-        flexDirection: 'row',
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: calcWidth(5),
-        borderWidth: 1,
-        borderColor: COLOR.BUTTON,
-        borderRadius: 10,
-        margin: calcHeight(2),
-        marginBottom: calcHeight(5),
-    },
-    input: {
-        flex: 1,
-        marginLeft: 10,
-        color: 'white',
-    },
-});
 
 export default BalanceScreen;

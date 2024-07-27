@@ -1,12 +1,21 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
-const Button = ({ onPress, title, styleOverwrite = {} }) => {
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+
+const Button = ({ onPress, title, styleOverwrite = {}, disabled, loading }) => {
     return (
-        <TouchableOpacity style={{ ...styles.button, ...styleOverwrite }} onPress={onPress}>
-            <Text style={styles.buttonText}>{title}</Text>
+        <TouchableOpacity
+            style={{ ...styles.button, ...styleOverwrite, opacity: disabled || loading ? 0.5 : 1 }}
+            onPress={onPress}
+            disabled={disabled || loading}
+        >
+            {loading ? (
+                <ActivityIndicator color="white" style={{ alignItems: 'center' }} />
+            ) : (
+                <Text style={styles.buttonText}>{title}</Text>
+            )}
         </TouchableOpacity>
     );
 };

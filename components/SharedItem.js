@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { StyleSheet, Text, View } from 'react-native';
+
 import COLOR from '../constants/Colors';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const SharedItem = ({ user, amount, generateColor }) => {
     return (

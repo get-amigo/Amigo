@@ -1,6 +1,6 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import PAGES from '../../constants/pages';
@@ -12,7 +12,7 @@ import useNetwork from '../../hooks/useNetwork';
 import { useAuth } from '../../stores/auth';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 
-const MessageComposer = () => {
+const MessageComposer = ({ chatData }) => {
     const { group } = useGroup();
     const { user } = useAuth();
     const { setTransactionData, resetTransaction } = useTransaction();
@@ -22,9 +22,19 @@ const MessageComposer = () => {
     const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
     const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
     const [text, setText] = useState('');
+    const [editing, setEditing] = useState(false);
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
+
+    useEffect(() => {
+        if (chatData) {
+            setText(chatData.message);
+            setEditing(true);
+        } else {
+            setEditing(false);
+        }
+    }, [chatData]);
 
     const handleTextInputAndToggleExpenseButton = useCallback((text) => {
         if (text.length === 0) {
@@ -41,44 +51,54 @@ const MessageComposer = () => {
     }, []);
 
     const sendChatMessage = async (message) => {
-        setText('');
-        if (message.replace(/^\s+|\s+$/g, '') == '') {
+        if (message.replace(/^\s+|\s+$/g, '') === '') {
             return;
         }
-        if (isConnected) {
-            const { activityId, relatedId } = addActivityToLocalDB(
-                { activityType: 'chat', relatedId: { message } },
-                group._id,
-                user,
-                false,
-                false,
-            );
-            await apiHelper
-                .post(`/group/${group._id}/chat`, {
-                    message,
-                    activityId,
-                    chatId: relatedId,
-                })
-                .then(() => {
+        const currentTime = new Date().toISOString();
+        try {
+            if (isConnected) {
+                if (editing) {
+                    await apiHelper.patch(`/chat/${chatData._id}`, {
+                        message,
+                        updatedAt: currentTime,
+                    });
+                    updateIsSynced({
+                        _id: chatData._id,
+                        group: group._id,
+                    });
+                } else {
+                    const { activityId, relatedId } = addActivityToLocalDB(
+                        { activityType: 'chat', relatedId: { message } },
+                        group._id,
+                        user,
+                        false,
+                        false,
+                    );
+                    await apiHelper.post(`/group/${group._id}/chat`, {
+                        message,
+                        activityId,
+                        chatId: relatedId,
+                    });
                     updateIsSynced({
                         _id: activityId,
                         group: group._id,
                     });
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        } else {
-            addActivityToLocalDB({ activityType: 'chat', relatedId: { message } }, group._id, user, false, true);
+                }
+            } else {
+                // No network connection
+                addActivityToLocalDB({ activityType: 'chat', relatedId: { message } }, group._id, user, false, false);
+                console.warn('No network connection. Activity saved locally.');
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setText('');
+            setEditing(false);
         }
     };
 
     return (
-        <View
-            style={{
-                marginTop: calcWidth(2),
-            }}
-        >
+        <View style={{ marginTop: calcWidth(2) }}>
             {/* <View style={styles.payContainer}>
                 **** will be required when we add "Pay to XYZ rs. 500 feature" ****
                 <Pressable style={styles.payBtn}>
@@ -93,6 +113,7 @@ const MessageComposer = () => {
                     </Text>
                 </Pressable>
             </View> */}
+
             <View style={styles.bottomContainer}>
                 <View style={styles.row}>
                     <Pressable

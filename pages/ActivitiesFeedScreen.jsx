@@ -16,13 +16,14 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
-const ActivitiesFeedScreen = () => {
+const ActivitiesFeedScreen = ({ route }) => {
     const { group } = useGroup();
     const { user } = useAuth();
     const isConnected = useNetwork();
 
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
+    const { chatData } = route?.params || {};
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
@@ -92,7 +93,7 @@ const ActivitiesFeedScreen = () => {
 
                 <FeedsContainer />
 
-                <MessageComposer />
+                <MessageComposer chatData={chatData} />
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

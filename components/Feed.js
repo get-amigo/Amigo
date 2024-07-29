@@ -122,7 +122,6 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
     const transactionId = transaction._id;
     const groupId = transaction.group;
-    const [isEditing, setIsEditing] = useState(false);
     const deleteActivity = useGroupActivitiesStore((state) => state.deleteActivity);
 
     const handleDelete = async () => {
@@ -171,7 +170,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
         try {
             const response = await apiHelper.get(`/transaction/${transactionId}`);
             const transactionData = response.data;
-            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing });
+            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData });
         } catch (error) {
             console.error('Error fetching transaction:', error);
         }
@@ -351,7 +350,7 @@ function PaymentActivity({ payment, contacts, highlightColor }) {
     );
 }
 
-function ChatActivity({ chat, synced }) {
+function ChatActivityDetails({ chat, synced }) {
     return (
         <View
             style={{
@@ -400,6 +399,73 @@ function ChatActivity({ chat, synced }) {
                 )}
             </View>
         </View>
+    );
+}
+
+function ChatActivity({ chat, synced }) {
+    const { user } = useAuth();
+    const navigation = useNavigation();
+    const [isModalVisible, setModalVisible] = useState(false);
+    const [selectedChat, setSelectedChat] = useState(null);
+    const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
+    const chatId = chat._id;
+
+    const chatEdit = async () => {
+        try {
+            const response = await apiHelper.get(`/chat/${chatId}`);
+            const chatData = response.data;
+            navigation.navigate(PAGES.GROUP, { chatData });
+        } catch (error) {
+            console.error('Error fetching chat:', error);
+        }
+    };
+
+    const renderModal = () => {
+        if (user._id === chat.creator._id) {
+            return (
+                <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
+                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                        <View style={styles.modalOverlay}>
+                            <BlurView style={styles.absolute} blurType="regular" blurAmount={10} reducedTransparencyFallbackColor="white" />
+                            <TouchableWithoutFeedback>
+                                <View style={[styles.modalContainer, { top: modalPosition.y - 140, right: calcWidth(8) }]}>
+                                    {selectedChat && <ChatActivityDetails chat={selectedChat} synced={synced} />}
+                                    <View style={[styles.modalButtons, { top: calcHeight(6), left: calcWidth(-24) }]}>
+                                        <Pressable
+                                            style={styles.modalButton}
+                                            onPress={() => {
+                                                setModalVisible(false);
+                                                chatEdit();
+                                            }}
+                                        >
+                                            <Text style={[styles.modalButtonText, { color: COLOR.PRIMARY }]}>Edit</Text>
+                                            <MaterialIcons name="edit" size={calcWidth(6)} color="white" />
+                                        </Pressable>
+                                    </View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Modal>
+            );
+        } else {
+            return null;
+        }
+    };
+
+    return (
+        <>
+            <Pressable
+                onLongPress={(event) => {
+                    setSelectedChat(chat);
+                    setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
+                    setModalVisible(true);
+                }}
+            >
+                <ChatActivityDetails chat={chat} synced={synced} />
+            </Pressable>
+            {renderModal()}
+        </>
     );
 }
 
@@ -546,6 +612,7 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
                             creator,
                             message: relatedId?.message,
                             createdAt,
+                            _id: relatedId?._id,
                         }}
                         synced={synced}
                     />

@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React from 'react';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import TabBarIcon from '../components/TabBarIcon';
 import COLOR from '../constants/Colors';
@@ -15,7 +15,6 @@ import GroupListScreen from '../pages/GroupListScreen';
 const Tab = createMaterialTopTabNavigator();
 
 const TabNavigator = () => {
-    const insets = useSafeAreaInsets();
     return (
         <SafeAreaView style={safeAreaStyle}>
             <Tab.Navigator
@@ -28,7 +27,7 @@ const TabNavigator = () => {
                     tabBarIconStyle: {
                         justifyContent: 'center',
                         alignItems: 'center',
-                        height: calcWidth(13) + insets.bottom,
+                        height: calcWidth(13),
                         width: calcWidth(13),
                     },
                 }}

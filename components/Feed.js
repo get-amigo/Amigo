@@ -250,6 +250,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                     handleEdit,
                 });
             }}
+            style={styles.transactionActivityContainer}
         >
             <TransactionActivityDetails
                 transaction={transaction}
@@ -483,25 +484,10 @@ function Feed(props) {
     return (
         <>
             {showDate && (
-                <View
-                    style={{
-                        alignItems: 'center',
-                        marginVertical: calcWidth(7),
-                    }}
-                >
-                    <Text
-                        style={{
-                            color: 'white',
-                            paddingHorizontal: calcWidth(2.4),
-                            paddingVertical: calcWidth(1.2),
-                            borderRadius: calcWidth(3.6),
-                            fontSize: getFontSizeByWindowWidth(10.7),
-                            fontWeight: '400',
-                            backgroundColor: '#272239',
-                        }}
-                    >
-                        {formatDateRelativeToToday(createdAt)}
-                    </Text>
+                <View style={styles.dateContainer}>
+                    <View style={styles.dateWrapper}>
+                        <Text style={styles.dateText}>{formatDateRelativeToToday(createdAt)}</Text>
+                    </View>
                 </View>
             )}
             <View
@@ -729,6 +715,25 @@ const styles = StyleSheet.create({
         width: calcWidth(2.2),
         margin: 'auto',
         marginLeft: calcWidth(1),
+    },
+    dateContainer: {
+        alignItems: 'center',
+        marginVertical: calcWidth(7),
+    },
+    dateWrapper: {
+        borderRadius: calcWidth(3.6),
+        overflow: 'hidden',
+    },
+    dateText: {
+        color: 'white',
+        paddingHorizontal: calcWidth(2.4),
+        paddingVertical: calcWidth(1.2),
+        fontSize: getFontSizeByWindowWidth(10.7),
+        fontWeight: '400',
+        backgroundColor: '#272239',
+    },
+    transactionActivityContainer: {
+        width: calcWidth(54),
     },
 });
 

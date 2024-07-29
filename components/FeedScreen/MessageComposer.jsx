@@ -3,6 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MESSAGE_COMPOSER_PADDING } from '../../constants/constants';
 import PAGES from '../../constants/pages';
 import { useGroup } from '../../context/GroupContext';
 import { useTransaction } from '../../context/TransactionContext';
@@ -13,6 +15,7 @@ import { useAuth } from '../../stores/auth';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 
 const MessageComposer = ({ chatData }) => {
+    const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
     const { setTransactionData, resetTransaction } = useTransaction();
@@ -113,8 +116,16 @@ const MessageComposer = ({ chatData }) => {
                     </Text>
                 </Pressable>
             </View> */}
-
-            <View style={styles.bottomContainer}>
+            <View
+                style={[
+                    styles.bottomContainer,
+                    {
+                        paddingHorizontal: calcWidth(2.8),
+                        paddingTop: MESSAGE_COMPOSER_PADDING,
+                        paddingBottom: MESSAGE_COMPOSER_PADDING > insets.bottom ? MESSAGE_COMPOSER_PADDING : insets.bottom,
+                    },
+                ]}
+            >
                 <View style={styles.row}>
                     <Pressable
                         style={{
@@ -191,9 +202,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: calcWidth(3),
         borderTopRightRadius: calcWidth(3),
         alignContent: 'center',
-        padding: calcWidth(5),
         backgroundColor: '#111016',
-        minHeight: calcWidth(21),
     },
     row: {
         alignContent: 'center',

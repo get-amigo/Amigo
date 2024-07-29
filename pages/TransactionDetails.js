@@ -17,6 +17,7 @@ import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import useCustomColor from '../hooks/useCustomColor';
+import { useAuth } from '../stores/auth';
 
 const TransactionDetail = ({
     navigation,
@@ -29,23 +30,26 @@ const TransactionDetail = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const transactionId = transaction._id;
-
+ const {user} = useAuth()
     const generateColor = useCustomColor();
 
     useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <View>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Image source={dots} />
-                    </TouchableOpacity>
-                </View>
-            ),
-        });
+        if (user._id === transaction.creator._id) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <View>
+                        <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <Image source={dots} />
+                        </TouchableOpacity>
+                    </View>
+                ),
+            });
+        }
     }, [navigation, handleDelete, transaction._id]);
 
     useEffect(() => {
         setDate(new Date(transaction.date));
+        console.log("T",transaction)
     }, [transaction]);
 
     const handleEdit = async () => {

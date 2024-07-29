@@ -1,7 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import NoBalance from '../assets/NoBalance.png';
 import ScanIcon from '../assets/icons/scan.png';
@@ -11,7 +10,6 @@ import GroupBalanceCard from '../components/GroupBalanceCard';
 import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import safeAreaStyle from '../constants/safeAreaStyle';
 import { calcHeight, calcWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
@@ -110,7 +108,7 @@ function BalanceScreen({ navigation }) {
         );
 
     return (
-        <SafeAreaView style={safeAreaStyle}>
+        <View style={{ flex: 1 }}>
             <View
                 style={{
                     flexDirection: 'row',
@@ -208,7 +206,7 @@ function BalanceScreen({ navigation }) {
                     }}
                 />
             )}
-        </SafeAreaView>
+        </View>
     );
 }
 

@@ -14,7 +14,7 @@ import useNetwork from '../../hooks/useNetwork';
 import { useAuth } from '../../stores/auth';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 
-const MessageComposer = ({ chatData }) => {
+const MessageComposer = ({ chatData, activityId }) => {
     const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
@@ -29,11 +29,13 @@ const MessageComposer = ({ chatData }) => {
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
+    const updateChat = useGroupActivitiesStore((state) => state.updateChat);
 
     useEffect(() => {
         if (chatData) {
             setText(chatData.message);
             setEditing(true);
+            console.log('chat', chatData);
         } else {
             setEditing(false);
         }
@@ -69,6 +71,7 @@ const MessageComposer = ({ chatData }) => {
                         _id: chatData._id,
                         group: group._id,
                     });
+                    updateChat(activityId, group._id, message);
                 } else {
                     const { activityId, relatedId } = addActivityToLocalDB(
                         { activityType: 'chat', relatedId: { message } },

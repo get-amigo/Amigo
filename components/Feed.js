@@ -410,12 +410,13 @@ function ChatActivity({ chat, synced }) {
     const [selectedChat, setSelectedChat] = useState(null);
     const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
     const chatId = chat._id;
+    const activityId = chat.activityId;
 
     const chatEdit = async () => {
         try {
             const response = await apiHelper.get(`/chat/${chatId}`);
             const chatData = response.data;
-            navigation.navigate(PAGES.GROUP, { chatData });
+            navigation.navigate(PAGES.GROUP, { chatData, activityId });
         } catch (error) {
             console.error('Error fetching chat:', error);
         }
@@ -592,13 +593,14 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
             };
         case 'chat':
             return {
-                renderActivity: ({ creator, relatedId, createdAt, isSynced: synced }) => (
+                renderActivity: ({ creator, relatedId, createdAt, isSynced: synced, _id }) => (
                     <ChatActivity
                         chat={{
                             creator,
                             message: relatedId?.message,
                             createdAt,
                             _id: relatedId?._id,
+                            activityId: _id,
                         }}
                         synced={synced}
                     />

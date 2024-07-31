@@ -348,6 +348,31 @@ const groupActivitiesStore = (set, get) => ({
             };
         });
     },
+
+    updateChat: (activityId, groupId, newMessage) => {
+        set((state) => {
+            const newActivitiesById = {
+                ...(state.activities[groupId]?.activitiesById || {}),
+            };
+            const updatedActivity = {
+                ...newActivitiesById[activityId],
+                relatedId: {
+                    ...newActivitiesById[activityId].relatedId,
+                    message: newMessage,
+                },
+            };
+            newActivitiesById[activityId] = updatedActivity;
+            return {
+                activities: {
+                    ...state.activities,
+                    [groupId]: {
+                        ...state.activities[groupId],
+                        activitiesById: newActivitiesById,
+                    },
+                },
+            };
+        });
+    },
 });
 
 const useGroupActivitiesStore = create(

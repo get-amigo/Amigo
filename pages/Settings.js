@@ -1,12 +1,11 @@
 import { AntDesign } from '@expo/vector-icons';
 import React from 'react';
-import { Text, View, TouchableOpacity, FlatList } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 
-import PAGES from '../constants/pages';
-import { useAuth } from '../stores/auth';
 import { calcHeight } from '../helper/res';
+import { useAuth } from '../stores/auth';
 
-function Settings({ navigation }) {
+function Settings() {
     const { logout } = useAuth();
     const settingsOptions = [
         {

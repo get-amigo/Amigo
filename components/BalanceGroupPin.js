@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Text, Pressable, View, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { Feather } from '@expo/vector-icons';
+import { calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 function BalanceArrow({ totalBalance }) {
     return (

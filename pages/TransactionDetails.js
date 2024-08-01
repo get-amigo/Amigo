@@ -1,31 +1,47 @@
-import React, { useState, useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Alert, ScrollView, Image } from 'react-native';
-import { AntDesign, Entypo } from '@expo/vector-icons';
-import COLOR from '../constants/Colors';
-import { calcWidth, calcHeight, getFontSizeByWindowWidth } from '../helper/res';
-import { getCategoryIcon } from '../constants/Categories';
-import apiHelper from '../helper/apiHelper';
-import useCustomColor from '../hooks/useCustomColor';
-import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
-import SharedList from '../components/SharedList';
-import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
-import TransactionDetailsButton from '../components/TransactionDetailsButton';
-import sliceText from '../helper/sliceText';
+import { Entypo } from '@expo/vector-icons';
+import { React, useEffect, useLayoutEffect, useState } from 'react';
+import { Image, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import CalendarIcon from '../assets/icons/calendar.png';
+import deleteIcon from '../assets/icons/deleteIcon.png';
+import dots from '../assets/icons/dots.png';
+import editIcon from '../assets/icons/editIcon.png';
 import AmountInput from '../components/AmountInput';
-import { useExpense } from '../stores/expense';
-
+import SharedList from '../components/SharedList';
+import TransactionDetailsButton from '../components/TransactionDetailsButton';
+import { getCategoryIcon } from '../constants/Categories';
+import COLOR from '../constants/Colors';
+import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
+import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import sliceText from '../helper/sliceText';
+import useCustomColor from '../hooks/useCustomColor';
 const TransactionDetail = ({
     navigation,
     route: {
-        params: { transaction },
+        params: { transaction, handleDelete },
     },
 }) => {
-    const [date, setDate] = useState(new Date(transaction.date));
+    const [date, setDate] = useState();
     const [expandNames, setExpandNames] = useState(false);
-    const { deleteExpenseById } = useExpense();
+    const [modalVisible, setModalVisible] = useState(false);
 
     const generateColor = useCustomColor();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View>
+                    <TouchableOpacity onPress={() => setModalVisible(true)}>
+                        <Image source={dots} />
+                    </TouchableOpacity>
+                </View>
+            ),
+        });
+    }, [navigation, handleDelete, transaction._id]);
+
+    useEffect(() => {
+        setDate(new Date(transaction.date));
+    }, [transaction]);
 
     return (
         <ScrollView alwaysBounceVertical={false}>
@@ -136,12 +152,7 @@ const TransactionDetail = ({
                         <Text style={styles.userAmount}>₹ {transaction.amount}</Text>
                     </View>
                 </View>
-                <SharedList
-                    transaction={transaction}
-                    generateColor={generateColor}
-                    expandNames={expandNames}
-                    setExpandNames={setExpandNames}
-                />
+                <SharedList transaction={transaction} generateColor={generateColor} expandNames={expandNames} />
             </View>
             <View
                 style={{
@@ -168,6 +179,39 @@ const TransactionDetail = ({
                     />
                 )}
             </View>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                    setModalVisible(!modalVisible);
+                }}
+            >
+                <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                    <View style={styles.modalBackground}>
+                        <View style={styles.modalView}>
+                            <TouchableOpacity style={[styles.button, styles.editButton]}>
+                                <Image source={editIcon} />
+                                <Text style={styles.textStyle}>Edit</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.button, styles.deleteButton]}
+                                onPress={async () => {
+                                    try {
+                                        await handleDelete(transaction._id);
+                                        navigation.goBack();
+                                    } catch (error) {
+                                        console.error('Error deleting transaction:', error);
+                                    }
+                                }}
+                            >
+                                <Image source={deleteIcon} />
+                                <Text style={styles.textStyle}>Delete</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
         </ScrollView>
     );
 };
@@ -238,6 +282,55 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(12),
         padding: calcWidth(3),
+    },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modalView: {
+        position: 'absolute',
+        top: calcHeight(6),
+        right: calcWidth(2),
+        flexDirection: 'column',
+        alignItems: 'center',
+        backgroundColor: COLOR.PAYMENT_BACKGROUND,
+        borderRadius: calcHeight(1),
+        paddingHorizontal: calcHeight((20 / 390) * 100),
+        width: calcWidth((165 / 390) * 100),
+        paddingVertical: calcHeight((20 / 844) * 100),
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    button: {
+        width: calcWidth(30),
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: calcWidth(2),
+    },
+    textStyle: {
+        color: 'white',
+        fontSize: getFontSizeByWindowWidth(14),
+        textAlign: 'center',
+    },
+    modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+    },
+    editButton: {
+        paddingBottom: calcHeight(2),
+        borderBottomColor: COLOR.BORDER_COLOR,
+        borderBottomWidth: calcHeight(0.2),
+    },
+    deleteButton: {
+        paddingTop: calcHeight(2),
     },
 });
 

@@ -1,8 +1,9 @@
-import { create } from '../helper/zustand'; // Import create instead of createStore
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createJSONStorage, persist } from 'zustand/middleware';
+
 import apiHelper from '../helper/apiHelper';
 import editNamesAsync from '../helper/editNamesAsync';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { create } from '../helper/zustand'; // Import create instead of createStore
 
 const useGroupStore = create(
     persist(
@@ -18,7 +19,7 @@ const useGroupStore = create(
                     set({ loading: true });
                 }
                 const { data } = await apiHelper('/group');
-                for (let group of data) group.members = await editNamesAsync(group.members, user._id);
+                for (const group of data) group.members = await editNamesAsync(group.members, user._id);
                 set({ groups: data, loading: false });
             },
         }),

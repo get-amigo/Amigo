@@ -9,7 +9,7 @@ function editNames(usersArray, currentUserId, contacts) {
     try {
         const contactsMap = new Map(Object.entries(contacts));
 
-        for (let user of usersArray) {
+        for (const user of usersArray) {
             if (user._id === currentUserId) {
                 user.name = 'You';
             } else if (user.phoneNumber && contactsMap.has(user.phoneNumber)) {

@@ -1,6 +1,7 @@
 import { FontAwesome6 } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+
 import { useGroup } from '../../context/GroupContext';
 import areDatesEqual from '../../helper/areDatesEqual';
 import formatDateRelativeToToday from '../../helper/formatDateRelativeToToday';
@@ -69,11 +70,18 @@ const FeedsContainer = () => {
                     const currentCreator = activities[item].creator;
                     const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
                     const nextCreator = index > 0 ? activities[activityOrder[index - 1]].creator : null;
-                    const showCreatorName = !previousCreator || currentCreator._id !== previousCreator._id;
-                    const showCreatorAvatar = !nextCreator || currentCreator._id !== nextCreator._id;
 
                     const currentDate = new Date(activities[item].createdAt);
                     const previousDate = index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
+                    const nextDate = index > 0 ? new Date(activities[activityOrder[index - 1]].createdAt) : null;
+
+                    const showCreatorAvatar =
+                        !nextCreator || currentCreator._id !== nextCreator._id || (nextDate && nextDate.getDate() != currentDate.getDate());
+
+                    const showCreatorName =
+                        !previousCreator ||
+                        currentCreator._id !== previousCreator._id ||
+                        (previousDate && currentDate.getDate() != previousDate.getDate());
 
                     const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
                     return (

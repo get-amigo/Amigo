@@ -1,9 +1,10 @@
 import * as Contacts from 'expo-contacts';
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+
 import generateRandomColor from '../helper/generateRandomColor';
-import { useAuth } from '../stores/auth';
-import { parsePhoneNumber, isValidPhoneNumber } from 'libphonenumber-js';
 import getDefaultCountryCode from '../helper/getDefaultCountryCode';
+import { useAuth } from '../stores/auth';
 
 const ContactsContext = createContext();
 
@@ -33,8 +34,6 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
             };
         });
 };
-
-const handleLoadContactsError = (error) => {};
 
 const fetchContactsData = async () => {
     try {
@@ -104,7 +103,7 @@ export const ContactsProvider = ({ children }) => {
                     setContactPermission(false);
                 }
             } catch (error) {
-                handleLoadContactsError(error);
+                console.log(error);
             } finally {
                 setLoading(false);
             }

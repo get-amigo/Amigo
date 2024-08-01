@@ -1,30 +1,36 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Text, StyleSheet, FlatList, View, TextInput, Keyboard } from 'react-native';
-import Loader from '../components/Loader';
-import apiHelper from '../helper/apiHelper';
-import PAGES from '../constants/pages';
-import FabIcon from '../components/FabIcon';
 import { useFocusEffect } from '@react-navigation/native';
-import EmptyScreen from '../components/EmptyScreen';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import GroupCard from '../components/GroupCard';
-import NoGroupsImage from '../assets/NoGroups.png';
-import Search from '../components/Search';
-import { useGroupList } from '../stores/groupList';
-import { useAuth } from '../stores/auth';
-import safeAreaStyle from '../constants/safeAreaStyle';
+import React, { useCallback, useEffect, useState } from 'react';
+import { FlatList, Keyboard, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+import NoGroupsImage from '../assets/NoGroups.png';
+import EmptyScreen from '../components/EmptyScreen';
+import FabIcon from '../components/FabIcon';
+import GroupCard from '../components/GroupCard';
+import Search from '../components/Search';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import safeAreaStyle from '../constants/safeAreaStyle';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
+import { useGroupList } from '../stores/groupList';
 
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
     const { user } = useAuth();
+    const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
         useCallback(() => {
             fetchData(user);
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, [user]);
 
     useEffect(() => {
         fetchData(user);
@@ -77,13 +83,7 @@ function GroupListScreen({ navigation }) {
                 />
             ) : (
                 <>
-                    <View
-                        style={{
-                            alignItems: 'center',
-                            marginTop: calcHeight(2),
-                            marginBottom: calcHeight(4),
-                        }}
-                    >
+                    <View style={styles.searchContainer}>
                         <Search search={search} setSearch={setSearch} />
                     </View>
                     <FlatList
@@ -93,6 +93,15 @@ function GroupListScreen({ navigation }) {
                         onScroll={() => {
                             Keyboard.dismiss();
                         }}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                                tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                                progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                            />
+                        }
                     />
                 </>
             )}
@@ -110,6 +119,11 @@ function GroupListScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
+    searchContainer: {
+        alignItems: 'center',
+        marginTop: calcHeight(2),
+        marginBottom: calcWidth(1.5),
+    },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
         color: COLOR.TEXT,

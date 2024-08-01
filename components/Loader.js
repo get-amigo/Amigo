@@ -1,8 +1,9 @@
 import React from 'react';
 import { Image, StyleSheet } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import SplashImage from '../assets/Loader.gif';
 import { calcHeight, calcWidth } from '../helper/res';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 function Loader() {
     return (

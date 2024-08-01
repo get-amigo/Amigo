@@ -1,6 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-const TransactionContext = createContext();
+import React, { createContext, useContext, useState } from 'react';
+
 import { useAuth } from '../stores/auth';
+const TransactionContext = createContext();
 
 export const TransactionProvider = ({ children }) => {
     const { user } = useAuth();

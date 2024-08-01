@@ -1,4 +1,4 @@
-import { DEEP_LINK_URL } from '@env';
+import { WEBSITE_URL } from '@env';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Alert, FlatList, Image, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -67,9 +67,10 @@ const GroupScreen = ({
         setGroup((prev) => ({ ...prev, name: groupRef.current }));
     };
 
-    const shareGroupLink = () => {
+    const shareGroupLink = async () => {
+        const shareUrl = await apiHelper.get(`/group/getGroupToken/${group._id}`);
         Share.share({
-            message: 'Join the group at Amigo: ' + `${DEEP_LINK_URL}join?groupId=${group._id}`,
+            message: 'Join the group at Amigo: ' + `${WEBSITE_URL}/invite/#/join?groupId=${shareUrl.data.token}`,
         });
     };
 

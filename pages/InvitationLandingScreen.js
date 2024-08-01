@@ -16,11 +16,12 @@ const InvitationLandingScreen = ({
 
     const handleJoin = async () => {
         try {
-            const { data } = await apiHelper.post(`group/${groupId}/join`);
+            const { data } = await apiHelper.post(`group/${groupId}/joinWithLink`);
             Toast.show(`Joined ${data?.name}`, {
                 duration: Toast.durations.LONG,
             });
         } catch (e) {
+            console.error(e);
             Toast.show('Already in the group', {
                 duration: Toast.durations.LONG,
             });

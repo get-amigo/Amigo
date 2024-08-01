@@ -1,7 +1,19 @@
 import { DEEP_LINK_URL } from '@env';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Alert, FlatList, Image, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    Alert,
+    FlatList,
+    Image,
+    Keyboard,
+    Share,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from 'react-native';
 
 import AddMembersImage from '../assets/icons/addMembers.png';
 import ShareImage from '../assets/icons/share.png';
@@ -188,15 +200,23 @@ const GroupScreen = ({
     return loading ? (
         <Loader />
     ) : (
-        <View style={styles.faltListContainer}>
-            <FlatList
-                data={groupMembers}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderMemberItem}
-                ListHeaderComponent={renderListHeader()}
-                ListFooterComponent={renderListFooter}
-            />
-        </View>
+        <TouchableWithoutFeedback
+            onPress={() => {
+                Keyboard.dismiss();
+                setIsEditing(false);
+            }}
+        >
+            <View style={styles.faltListContainer}>
+                <FlatList
+                    keyboardShouldPersistTaps="always"
+                    data={groupMembers}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={renderMemberItem}
+                    ListHeaderComponent={renderListHeader()}
+                    ListFooterComponent={renderListFooter}
+                />
+            </View>
+        </TouchableWithoutFeedback>
     );
 };
 

@@ -181,7 +181,7 @@ function TransactionFormScreen({ navigation }) {
     };
 
     return (
-        <ScrollView style={styles.container} alwaysBounceVertical={false}>
+        <ScrollView style={styles.container} alwaysBounceVertical={false} keyboardShouldPersistTaps="always">
             <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
             <View style={styles.rowCentered}>

@@ -36,6 +36,7 @@ const ContactList = ({ eliminatedContacts }) => {
             </View>
             {contactPermission ? (
                 <FlatList
+                    keyboardShouldPersistTaps="always"
                     ref={flatListRef}
                     style={{
                         marginTop: calcWidth(1.5),

@@ -1,7 +1,7 @@
 import { Octicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import GroupIcon from '../components/GroupIcon';
 import GroupSelectCard from '../components/GroupSelectCard';
@@ -26,50 +26,53 @@ function GroupListScreen({ navigation }) {
     );
 
     return (
-        <View style={styles.container}>
-            <View
-                style={{
-                    marginVertical: calcHeight(2),
-                }}
-            >
-                <Search search={search} setSearch={setSearch} />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.container}>
+                <View
+                    style={{
+                        marginVertical: calcHeight(2),
+                    }}
+                >
+                    <Search search={search} setSearch={setSearch} />
+                </View>
+                <FlatList
+                    keyboardShouldPersistTaps="always"
+                    data={filterGroups(groups)}
+                    ListHeaderComponent={
+                        <GroupSelectCard
+                            name="Create new group"
+                            image={
+                                <View
+                                    style={{
+                                        backgroundColor: 'white',
+                                        height: calcHeight(5),
+                                        width: calcHeight(5),
+                                        borderRadius: calcHeight(5),
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <Octicons name="people" size={calcHeight(3)} color="black" />
+                                </View>
+                            }
+                            onPress={() => {
+                                navigation.navigate(PAGES.CREATE_GROUP);
+                            }}
+                        />
+                    }
+                    renderItem={({ item: group }) => (
+                        <GroupSelectCard
+                            name={group.name}
+                            onPress={() => {
+                                setTransactionData((prev) => ({ ...prev, group }));
+                                navigation.navigate(PAGES.ADD_TRANSACTION);
+                            }}
+                            image={<GroupIcon groupId={group._id} />}
+                        />
+                    )}
+                />
             </View>
-            <FlatList
-                data={filterGroups(groups)}
-                ListHeaderComponent={
-                    <GroupSelectCard
-                        name="Create new group"
-                        image={
-                            <View
-                                style={{
-                                    backgroundColor: 'white',
-                                    height: calcHeight(5),
-                                    width: calcHeight(5),
-                                    borderRadius: calcHeight(5),
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Octicons name="people" size={calcHeight(3)} color="black" />
-                            </View>
-                        }
-                        onPress={() => {
-                            navigation.navigate(PAGES.CREATE_GROUP);
-                        }}
-                    />
-                }
-                renderItem={({ item: group }) => (
-                    <GroupSelectCard
-                        name={group.name}
-                        onPress={() => {
-                            setTransactionData((prev) => ({ ...prev, group }));
-                            navigation.navigate(PAGES.ADD_TRANSACTION);
-                        }}
-                        image={<GroupIcon groupId={group._id} />}
-                    />
-                )}
-            />
-        </View>
+        </TouchableWithoutFeedback>
     );
 }
 

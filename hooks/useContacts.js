@@ -20,7 +20,7 @@ const mapToSimplifiedContacts = (uniqueContacts) => {
     const defaultCountryCode = getDefaultCountryCode();
 
     return uniqueContacts
-        .filter((contact) => isValidPhoneNumber(contact.phoneNumbers[0].number))
+        .filter((contact) => isValidPhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode))
         .map((contact) => {
             const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
 

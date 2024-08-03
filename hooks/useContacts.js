@@ -1,79 +1,10 @@
 import * as Contacts from 'expo-contacts';
-import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-import generateRandomColor from '../helper/generateRandomColor';
-import getDefaultCountryCode from '../helper/getDefaultCountryCode';
 import { useAuth } from '../stores/auth';
+import { fetchContacts, filterUnique, flatPhoneNumbersArr, simplify } from '../helper/contacts';
 
 const ContactsContext = createContext();
-
-const filterUniqueContacts = (contactsData, userPhoneNumber) => {
-    const seenPhoneNumbers = new Set();
-    return contactsData.filter((contact) => {
-        const phoneNumber = contact.phoneNumbers?.[0].number.replace(/\D/g, '');
-        return phoneNumber && phoneNumber !== userPhoneNumber && !seenPhoneNumbers.has(phoneNumber) && seenPhoneNumbers.add(phoneNumber);
-    });
-};
-
-const mapToSimplifiedContacts = (uniqueContacts) => {
-    const defaultCountryCode = getDefaultCountryCode();
-
-    return uniqueContacts
-        .filter((contact) => isValidPhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode))
-        .map((contact) => {
-            const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
-
-            return {
-                id: contact.id,
-                name: contact.name || '',
-                phoneNumber: phoneNumber.nationalNumber,
-                countryCode: `+${phoneNumber.countryCallingCode}`,
-                imageURI: contact.imageAvailable ? contact.image.uri : '',
-                color: generateRandomColor(),
-            };
-        });
-};
-
-const fetchContactsData = async () => {
-    try {
-        const { data } = await Contacts.getContactsAsync({
-            fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers, Contacts.Fields.Image],
-        });
-
-        if (!data) {
-            return [];
-        }
-
-        const contactsWithMultipleNumbers = [];
-
-        // Iterate through each contact
-        data.forEach((contact) => {
-            const { name, phoneNumbers, image } = contact;
-
-            // Check if there are multiple phone numbers for the contact
-            if (phoneNumbers && phoneNumbers.length > 1) {
-                // Create a copy of the contact for each phone number
-                phoneNumbers.forEach((phoneNumber) => {
-                    const contactCopy = {
-                        name,
-                        phoneNumbers: [phoneNumber], // Create an array with a single phone number
-                        image,
-                    };
-                    contactsWithMultipleNumbers.push(contactCopy);
-                });
-            } else {
-                // No need to create a copy, just push the original contact
-                contactsWithMultipleNumbers.push(contact);
-            }
-        });
-
-        return contactsWithMultipleNumbers;
-    } catch (error) {
-        console.error('Error fetching contacts data:', error);
-        throw error;
-    }
-};
 
 export const ContactsProvider = ({ children }) => {
     const [allContacts, setAllContacts] = useState([]);
@@ -90,11 +21,12 @@ export const ContactsProvider = ({ children }) => {
                 const permissionStatus = await requestContactsPermission();
 
                 if (permissionStatus === 'granted') {
-                    const contactsData = await fetchContactsData();
+                    const contactsData = await fetchContacts();
 
                     if (contactsData.length > 0) {
-                        const uniqueContacts = filterUniqueContacts(contactsData, user.phoneNumber);
-                        const simplifiedContacts = mapToSimplifiedContacts(uniqueContacts);
+                        const flattenedContacts = flatPhoneNumbersArr(contactsData);
+                        const uniqueContacts = filterUnique(flattenedContacts, user.phoneNumber);
+                        const simplifiedContacts = simplify(uniqueContacts);
 
                         setAllContacts(simplifiedContacts);
                         setFilteredContacts(simplifiedContacts);
@@ -124,7 +56,6 @@ export const ContactsProvider = ({ children }) => {
     }, [user.phoneNumber]);
 
     useEffect(() => {
-        // Update filtered contacts whenever search changes
         const filtered = allContacts.filter(
             (contact) => contact.name.toLowerCase().includes(search.toLowerCase()) || contact.phoneNumber.includes(search),
         );
@@ -157,7 +88,7 @@ export const ContactsProvider = ({ children }) => {
         </ContactsContext.Provider>
     );
 };
+
 ContactsProvider.displayName = 'ContactsProvider';
-export const useContacts = () => {
-    return useContext(ContactsContext);
-};
+
+export const useContacts = () => useContext(ContactsContext);

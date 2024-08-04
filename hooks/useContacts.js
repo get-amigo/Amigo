@@ -2,7 +2,7 @@ import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { useAuth } from '../stores/auth';
-import { fetchContacts, filterUnique, flatPhoneNumbersArr, simplify } from '../helper/contacts';
+import { fetchContacts, filterUniqueContacts, simplifyContactsObj, flatPhoneNumbersArr } from '../helper/contacts';
 
 const ContactsContext = createContext();
 
@@ -25,8 +25,8 @@ export const ContactsProvider = ({ children }) => {
 
                     if (contactsData.length > 0) {
                         const flattenedContacts = flatPhoneNumbersArr(contactsData);
-                        const uniqueContacts = filterUnique(flattenedContacts, user.phoneNumber);
-                        const simplifiedContacts = simplify(uniqueContacts);
+                        const uniqueContacts = filterUniqueContacts(flattenedContacts, user.phoneNumber);
+                        const simplifiedContacts = simplifyContactsObj(uniqueContacts);
 
                         setAllContacts(simplifiedContacts);
                         setFilteredContacts(simplifiedContacts);

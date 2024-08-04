@@ -21,7 +21,7 @@ const fetchContacts = async () => {
     }
 };
 
-const filterUnique = (contactsData, userPhoneNumber) => {
+const filterUniqueContacts = (contactsData, userPhoneNumber) => {
     const seenPhoneNumbers = new Set();
     return contactsData.filter((contact) => {
         const phoneNumber = contact.phoneNumbers?.[0].number.replace(/\D/g, '');
@@ -30,7 +30,7 @@ const filterUnique = (contactsData, userPhoneNumber) => {
     });
 };
 
-const simplify = (uniqueContacts) => {
+const simplifyContactsObj = (uniqueContacts) => {
     const defaultCountryCode = getDefaultCountryCode();
 
     return uniqueContacts
@@ -72,4 +72,4 @@ const flatPhoneNumbersArr = (contacts) => {
     return flattenedContacts;
 };
 
-export { fetchContacts, filterUnique, simplify, flatPhoneNumbersArr };
+export { fetchContacts, filterUniqueContacts, simplifyContactsObj, flatPhoneNumbersArr };

@@ -225,12 +225,6 @@ const AppNavigator = () => {
                                 animation: 'fade',
                                 title: null,
                                 headerTintColor: '#fff',
-                                headerTitle: 'Add Transaction',
-                                headerTitleStyle: {
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                    fontSize: getFontSizeByWindowWidth(19),
-                                },
                             }}
                         />
                         <Stack.Screen

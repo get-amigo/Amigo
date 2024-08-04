@@ -2,13 +2,11 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 import DatePickerSelector from '../components/DatePickerSelector';
 import ExpenseCard from '../components/ExpenseCard';
 import TypeSelector from '../components/TypeSelector';
 import COLOR from '../constants/Colors';
-import safeAreaStyle from '../constants/safeAreaStyle';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useExpense } from '../stores/expense';
 
@@ -30,7 +28,7 @@ function ExpenseScreen() {
 
     if (loading) {
         return (
-            <SafeAreaView style={safeAreaStyle}>
+            <View style={{ flex: 1 }}>
                 <Text style={styles.header}>Expense Summary</Text>
                 <View
                     style={{
@@ -65,14 +63,14 @@ function ExpenseScreen() {
                     </View>
                 </View>
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
-            </SafeAreaView>
+            </View>
         );
     }
 
     const isFilterApplied = type || (range.endDate && range.startDate);
 
     return (
-        <SafeAreaView style={safeAreaStyle}>
+        <View style={{ flex: 1 }}>
             <Text style={styles.header}>Expense Summary</Text>
             <View
                 style={{
@@ -119,7 +117,7 @@ function ExpenseScreen() {
                     }
                 />
             )}
-        </SafeAreaView>
+        </View>
     );
 }
 

@@ -229,6 +229,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                     handleDelete,
                 });
             }}
+            style={styles.transactionActivityContainer}
         >
             <TransactionActivityDetails
                 transaction={transaction}
@@ -641,6 +642,9 @@ const styles = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(10.7),
         fontWeight: '400',
         backgroundColor: '#272239',
+    },
+    transactionActivityContainer: {
+        width: calcWidth(54),
     },
 });
 

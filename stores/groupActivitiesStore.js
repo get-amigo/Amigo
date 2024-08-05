@@ -348,6 +348,46 @@ const groupActivitiesStore = (set, get) => ({
             };
         });
     },
+    editTransaction: (activityId, groupId, updatedActivity) => {
+        set((state) => {
+          const newActivitiesById = {
+            ...(state.activities[groupId]?.activitiesById || {}),
+          };
+    
+          // Ensure the activity exists before updating
+          if (newActivitiesById[activityId]) {
+            newActivitiesById[activityId] = {
+              ...newActivitiesById[activityId],
+              relatedId: {
+                ...newActivitiesById[activityId].relatedId,
+                amount: updatedActivity.amount,
+                creator: updatedActivity.creator,
+                description: updatedActivity.description,
+                paidBy: updatedActivity.paidBy,
+                splitAmong: updatedActivity.splitAmong,
+                type: updatedActivity.type,
+                updatedAt: updatedActivity.updatedAt,
+              },
+              updatedAt: updatedActivity.updatedAt,
+              isSynced: updatedActivity.isSynced,
+            };
+    
+            return {
+              activities: {
+                ...state.activities,
+                [groupId]: {
+                  ...state.activities[groupId],
+                  activitiesById: newActivitiesById,
+                },
+              },
+            };
+          } else {
+            // Handle case where activity does not exist
+            console.error(`Activity with ID ${activityId} not found in group ${groupId}`);
+            return state;
+          }
+        });
+      },
 });
 
 const useGroupActivitiesStore = create(

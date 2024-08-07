@@ -18,12 +18,13 @@ import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
-function TransactionFormScreen({ navigation }) {
+function TransactionFormScreen({ navigation, route }) {
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
+    const { newGroup } = route.params || {};
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
@@ -45,6 +46,15 @@ function TransactionFormScreen({ navigation }) {
             }));
         }
     }, [transactionData.amount, transactionData.group]);
+
+    useEffect(() => {
+        if (newGroup) {
+            setTransactionData((prev) => ({
+                ...prev,
+                group: newGroup,
+            }));
+        }
+    }, [newGroup]);
 
     useEffect(() => {
         setTransactionData((prev) => ({

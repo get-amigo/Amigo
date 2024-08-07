@@ -52,7 +52,6 @@ const CreateGroup = ({ navigation }) => {
             });
 
             const newGroup = response.data;
-            console.log('ss', newGroup);
             Toast.show(`${groupName} created`, {
                 duration: Toast.durations.LONG,
             });

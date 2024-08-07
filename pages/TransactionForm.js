@@ -48,13 +48,26 @@ function TransactionFormScreen({ navigation, route }) {
     }, [transactionData.amount, transactionData.group]);
 
     useEffect(() => {
-        if (newGroup) {
-            setTransactionData((prev) => ({
-                ...prev,
-                group: newGroup,
-            }));
-        }
-    }, [newGroup]);
+        const fetchNewGroupData = async () => {
+            if (newGroup) {
+                try {
+                    const data = await apiHelper(`/group/`);
+                    const fetchedGroups = data.data;
+                    const matchingGroup = fetchedGroups.find((group) => group.name === newGroup.name);
+
+                    if (matchingGroup) {
+                        setTransactionData((prev) => ({
+                            ...prev,
+                            group: matchingGroup,
+                        }));
+                    }
+                } catch (error) {
+                    console.error('Error fetching group data:', error);
+                }
+            }
+        };
+        fetchNewGroupData();
+    }, [newGroup, setTransactionData]);
 
     useEffect(() => {
         setTransactionData((prev) => ({

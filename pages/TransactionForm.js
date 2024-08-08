@@ -19,15 +19,21 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 function TransactionFormScreen({ navigation, route }) {
-    const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
+    const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams, newGroup, setNewGroup } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
-    const { newGroup } = route.params || {};
+    const { newGroup: routeNewGroup } = route.params || {};
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
+
+    useEffect(() => {
+        if (routeNewGroup) {
+            setNewGroup(routeNewGroup);
+        }
+    }, [routeNewGroup, setNewGroup]);
 
     useEffect(() => {
         const { group } = transactionData;
@@ -46,28 +52,6 @@ function TransactionFormScreen({ navigation, route }) {
             }));
         }
     }, [transactionData.amount, transactionData.group]);
-
-    useEffect(() => {
-        const fetchNewGroupData = async () => {
-            if (newGroup) {
-                try {
-                    const data = await apiHelper(`/group/`);
-                    const fetchedGroups = data.data;
-                    const matchingGroup = fetchedGroups.find((group) => group.name === newGroup.name);
-
-                    if (matchingGroup) {
-                        setTransactionData((prev) => ({
-                            ...prev,
-                            group: matchingGroup,
-                        }));
-                    }
-                } catch (error) {
-                    console.error('Error fetching group data:', error);
-                }
-            }
-        };
-        fetchNewGroupData();
-    }, [newGroup, setTransactionData]);
 
     useEffect(() => {
         setTransactionData((prev) => ({
@@ -266,7 +250,7 @@ function TransactionFormScreen({ navigation, route }) {
                     <Pressable
                         style={styles.button}
                         onPress={() => {
-                            navigation.navigate(PAGES.GROUP_SPLIT_SCREEN);
+                            navigation.navigate(PAGES.GROUP_SPLIT_SCREEN, { newGroup });
                         }}
                     >
                         <Text style={styles.buttonText}>Split Equally</Text>

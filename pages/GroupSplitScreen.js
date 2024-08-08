@@ -38,7 +38,6 @@ const GroupSplitScreen = ({ navigation }) => {
                 isAmountManuallyEntered: false,
             });
         }
-
         setMembers([...parsedMembers]);
     }, []);
     useEffect(() => {
@@ -235,7 +234,7 @@ const GroupSplitScreen = ({ navigation }) => {
                         }}
                     >
                         <UserAvatar user={item.user} />
-                        <Text style={styles.memberName}>{item.user.name}</Text>
+                        <Text style={styles.memberName}>{item.user.name ? item.user.name : item.user.phoneNumber}</Text>
                     </View>
                 </View>
 

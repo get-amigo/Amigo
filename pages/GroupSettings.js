@@ -69,9 +69,10 @@ const GroupScreen = ({
     };
 
     const shareGroupLink = async () => {
-        const shareUrl = await apiHelper.get(`/group/getGroupToken/${group._id}`);
+        const shareUrl = await apiHelper.get(`/group/${group._id}/token`);
+
         Share.share({
-            message: 'Join the group at Amigo: ' + `${WEBSITE_URL}/invite/#/join?groupId=${shareUrl.data.token}`,
+            message: 'Join the group at Amigo: ' + `${WEBSITE_URL}/invite/#/join?groupId=${shareUrl.data}`,
         });
     };
 

@@ -1,9 +1,11 @@
 import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
+import { useFocusEffect } from '@react-navigation/native';
+import { fetchContacts, filterUniqueContacts, flatPhoneNumbersArr, simplifyContactsObj } from '../helper/contacts';
 import { useAuth } from '../stores/auth';
-import { fetchContacts, filterUniqueContacts, simplifyContactsObj, flatPhoneNumbersArr } from '../helper/contacts';
-
+import loadash from 'lodash';
+import { removeProperty } from '../helper/removePropertyFromArray';
 const ContactsContext = createContext();
 
 export const ContactsProvider = ({ children }) => {
@@ -15,20 +17,23 @@ export const ContactsProvider = ({ children }) => {
     const [contactPermission, setContactPermission] = useState(false);
     const { user } = useAuth();
 
-    useEffect(() => {
+    useFocusEffect(() => {
         const loadContacts = async () => {
             try {
                 const permissionStatus = await requestContactsPermission();
 
                 if (permissionStatus === 'granted') {
-                    const contactsData = await fetchContacts();
+                    const fetchContactsData = await fetchContacts();
 
-                    if (contactsData.length > 0) {
-                        const flattenedContacts = flatPhoneNumbersArr(contactsData);
+                    if (fetchContactsData.length > 0) {
+                        const flattenedContacts = flatPhoneNumbersArr(fetchContactsData);
                         const uniqueContacts = filterUniqueContacts(flattenedContacts, user.phoneNumber);
                         const simplifiedContacts = simplifyContactsObj(uniqueContacts);
+                        if (loadash.isEqual(removeProperty(allContacts, 'color'), removeProperty(simplifiedContacts, 'color'))) return;
 
                         setAllContacts(simplifiedContacts);
+                        console.log(simplifiedContacts, allContacts);
+
                         setFilteredContacts(simplifiedContacts);
                     }
                 } else {
@@ -53,7 +58,7 @@ export const ContactsProvider = ({ children }) => {
         };
 
         loadContacts();
-    }, [user.phoneNumber]);
+    });
 
     useEffect(() => {
         const filtered = allContacts.filter(

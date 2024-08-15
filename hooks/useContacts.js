@@ -4,8 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { fetchContacts, filterUniqueContacts, flatPhoneNumbersArr, simplifyContactsObj } from '../helper/contacts';
 import { useAuth } from '../stores/auth';
-import loadash from 'lodash';
-import { removeProperty } from '../helper/removePropertyFromArray';
+import compareArrayOfObject from '../helper/compareArrayOfObject';
 const ContactsContext = createContext();
 
 export const ContactsProvider = ({ children }) => {
@@ -29,11 +28,10 @@ export const ContactsProvider = ({ children }) => {
                         const flattenedContacts = flatPhoneNumbersArr(fetchContactsData);
                         const uniqueContacts = filterUniqueContacts(flattenedContacts, user.phoneNumber);
                         const simplifiedContacts = simplifyContactsObj(uniqueContacts);
-                        if (loadash.isEqual(removeProperty(allContacts, 'color'), removeProperty(simplifiedContacts, 'color'))) return;
+
+                        if (compareArrayOfObject(allContacts, simplifiedContacts, 'color')) return;
 
                         setAllContacts(simplifiedContacts);
-                        console.log(simplifiedContacts, allContacts);
-
                         setFilteredContacts(simplifiedContacts);
                     }
                 } else {

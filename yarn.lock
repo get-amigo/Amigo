@@ -2337,6 +2337,11 @@
   dependencies:
     plist "^3.1.0"
 
+"@react-native-firebase/messaging@^20.3.0":
+  version "20.3.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-20.3.0.tgz#2c5e5aa56df1188264417281f403cb785ed1279a"
+  integrity sha512-jkAQq4gMGjrOcodFLP4YJGpaXaqcqikxlGMa7AzldTPyzNPdMIUhhWxiH1xjcCcepb4aIXz3ysqtJ3LvBWdyyw==
+
 "@react-native-picker/picker@2.7.6":
   version "2.7.6"
   resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.7.6.tgz#fda996742f6878660277b995e878711641e778f4"
@@ -8278,6 +8283,11 @@ react-native-country-codes-picker@^2.3.4:
   version "2.3.5"
   resolved "https://registry.yarnpkg.com/react-native-country-codes-picker/-/react-native-country-codes-picker-2.3.5.tgz#159cbbcee14716533cdaa9997d457ab1a943038c"
   integrity sha512-dDQhd0bVvlmgb84NPhTOmTk5UVYPHtk3lqZI+BPb61H1rC2IDrTvPWENg6u1DMGliqWHQDBYpeH37zvxxQL71w==
+
+react-native-device-info@^11.1.0:
+  version "11.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-11.1.0.tgz#7db5c4e5a179dce761efac155a493aa0956a40ab"
+  integrity sha512-hzXJSObJdezEz0hF7MAJ3tGeoesuQWenXXt9mrQR9Mjb8kXpZ09rqSsZ/quNpJdZpQ3rYiFa3/0GFG5KNn9PBg==
 
 react-native-dotenv@^3.4.9:
   version "3.4.11"

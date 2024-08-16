@@ -6,6 +6,7 @@ import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import './index';
 import RootNavigator from './navigator/RootNavigator';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});

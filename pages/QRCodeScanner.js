@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Alert, Text, Pressable, AppState } from 'react-native';
 import * as BarCodeScanner from 'expo-barcode-scanner';
-import { MotiView } from 'moti';
+import React, { useEffect, useState } from 'react';
+import { Alert, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import URL from 'url-parse';
 
 import SignUpImage from '../assets/SignUp.png';
@@ -29,17 +28,18 @@ const QRCodeScanner = ({ navigation }) => {
                 checkCameraPermission();
             }
         };
-
         checkCameraPermission();
+
         AppState.addEventListener('change', handleAppStateChange);
 
         return () => {
-            AppState.removeEventListener('change', handleAppStateChange);
+            AppState;
         };
     }, []);
 
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
+            setHasPermission(false);
             (async () => {
                 const { status } = await BarCodeScanner.requestPermissionsAsync();
                 setHasPermission(status === 'granted');
@@ -71,15 +71,17 @@ const QRCodeScanner = ({ navigation }) => {
         try {
             const url = new URL(data);
             const params = parseQueryString(url.query);
+            // Initialize an object to store extracted parameters
             const extractedParams = {
                 receiverId: '',
                 description: params['tn'] || '',
             };
+            // Check the URL scheme to identify UPI and extract relevant data
             if (url.protocol === 'upi:') {
-                extractedParams.receiverId = params['pa'] || '';
+                extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
                 Object.assign(extractedParams, params);
-                setUpiParams(extractedParams);
-                navigation.navigate(PAGES.ADD_TRANSACTION);
+                setUpiParams(extractedParams); // Ensure setUpiParams is defined and available
+                navigation.navigate(PAGES.ADD_TRANSACTION); // Ensure navigation and PAGES are defined and available
             } else {
                 setBarcodeScanEnabled(false);
                 Alert.alert('Not a valid UPI URL', null, [
@@ -91,65 +93,80 @@ const QRCodeScanner = ({ navigation }) => {
             }
         } catch (error) {
             console.error('Error processing scanned data:', error);
+            // Handle error (e.g., show an error message)
         }
     };
 
-    const handleBack = () => {
-        navigation.goBack();
-    };
-
     return (
-        <MotiView style={styles.container}>
-            <MotiView
-                from={{ opacity: 1, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 2.5 }}
-                transition={{
-                    type: 'timing',
-                    duration: 300,
-                }}
-                style={styles.pulsatingCircle}
-            />
-            <MotiView
-                style={styles.container}
-                from={{ opacity: 0.3, zIndex: 1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ type: 'timing', duration: 800 }}
-            >
-                {!hasPermission ? (
-                    <Pressable onPress={openSettings}>
-                        <Text style={{ color: COLOR.TEXT }}>
-                            Allow Camera Permission
+        <View style={styles.container}>
+            {!hasPermission ? (
+                <View style={{ flex: 1 }}>
+                    <View style={styles.top}>
+                        <Image source={SignUpImage} style={styles.permitImage} />
+                        <Text style={{ fontWeight: '600', color: '#FFF', fontSize: getFontSizeByWindowWidth(16), textAlign: 'center' }}>
+                            Allow Access to Camera
                         </Text>
-                    </Pressable>
-                ) : (
-                    <MotiView
-                        style={styles.container}
-                        from={{ opacity: 0, zIndex: 1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ type: 'timing', duration: 800 }}
-                    >
-                        <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} back={handleBack} />
-                    </MotiView>
-                )}
-            </MotiView>
-        </MotiView>
+                        <Text
+                            style={{
+                                fontWeight: '400',
+                                color: '#FFF',
+                                fontSize: getFontSizeByWindowWidth(12),
+                                textAlign: 'center',
+                                marginTop: calcHeight(1),
+                                opacity: 0.6,
+                            }}
+                        >
+                            To scan QR codes, we need access to your camera.{`\n`}
+                            Please allow camera access to proceed.
+                        </Text>
+                    </View>
+                    <View style={styles.bottom}>
+                        <Pressable style={styles.btn} onPress={openSettings}>
+                            <Text
+                                style={{ color: '#FFFFFF', fontSize: getFontSizeByWindowWidth(15), fontWeight: '400', textAlign: 'center' }}
+                            >
+                                Allow
+                            </Text>
+                        </Pressable>
+                    </View>
+                </View>
+            ) : (
+                <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} />
+            )}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLOR.PAYMENT_BACKGROUND,
+        backgroundColor: COLOR.APP_BACKGROUND,
+        justifyContent: 'center',
     },
-    pulsatingCircle: {
+    btn: {
+        backgroundColor: COLOR.BUTTON,
+        marginTop: calcHeight((8 / 844) * 100),
+        paddingHorizontal: calcWidth(5),
+        paddingVertical: calcHeight(2),
+        width: calcWidth(90),
+        borderRadius: 10,
+        alignSelf: 'center',
+    },
+    permitImage: {
+        width: calcWidth((150 / 390) * 100),
+        height: calcHeight((180 / 844) * 100),
+        alignSelf: 'center',
+        marginBottom: calcHeight((12 / 844) * 100),
+    },
+    top: {
         flex: 1,
-        position: 'absolute',
-        top: -calcHeight(60),
-        right: calcWidth(-20),
-        width: calcHeight(100),
-        height: calcHeight(100),
-        backgroundColor: 'rgba(39, 34, 57, 1)',
-        borderRadius: calcHeight(100),
+        marginTop: -calcHeight((180 / 844) * 100) / 2.5,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    bottom: {
+        marginBottom: calcHeight(4),
+        marginTop: 'auto',
     },
 });
 

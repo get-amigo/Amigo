@@ -145,7 +145,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         if (isOnline) {
                             try {
                                 await apiHelper.delete(`/transaction/${transactionId}`);
-                                deleteActivity(activityId, groupId, synced);
+                                deleteActivity({ activityId, groupId, synced });
                                 Toast.show('Transaction Deleted', {
                                     duration: Toast.durations.LONG,
                                 });
@@ -156,7 +156,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                                 });
                             }
                         } else {
-                            deleteActivity(activityId, groupId, synced);
+                            deleteActivity({ activityId, groupId, synced });
                         }
                     },
                     style: 'destructive',

@@ -11,7 +11,7 @@
             "env": {
                 "ENV": "development",
                 "API_URL": "https://dev-api.getamigo.today",
-                "DEEP_LINK_URL": "https://get-amigo.github.io/Split-IT-Home/#/"
+                "WEBSITE_URL": "https://www.getamigo.today"
             }
         },
         "preview": {
@@ -31,14 +31,14 @@
             "env": {
                 "ENV": "staging",
                 "API_URL": "https://staging-api.getamigo.today",
-                "DEEP_LINK_URL": "https://get-amigo.github.io/Split-IT-Home/#/"
+                "WEBSITE_URL": "https://www.getamigo.today"
             }
         },
         "production": {
             "env": {
                 "ENV": "production",
                 "API_URL": "https://api.getamigo.today",
-                "DEEP_LINK_URL": "https://get-amigo.github.io/Split-IT-Home/#/"
+                "WEBSITE_URL": "https://www.getamigo.today"
             },
             "channel": "production"
         }

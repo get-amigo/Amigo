@@ -1,19 +1,17 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image, RefreshControl } from 'react-native';
-import { useAuth } from '../stores/auth';
-import { useExpense } from '../stores/expense'; // Custom hook for fetching transactions
+import { FontAwesome5 } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import DatePickerSelector from '../components/DatePickerSelector';
 import ExpenseCard from '../components/ExpenseCard';
-import DatePickerSelector from '../components/DatePickerSelector'; // Separate component for date picker
 import TypeSelector from '../components/TypeSelector';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect from React Navigation
-import safeAreaStyle from '../constants/safeAreaStyle';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useExpense } from '../stores/expense';
 
 function ExpenseScreen() {
-    const { expense, resetParams, loading, fetchExpense } = useExpense();
+    const { expense, resetParams, loading, fetchExpense, type, range } = useExpense();
     const [refreshing, setRefreshing] = useState(false);
 
     useFocusEffect(
@@ -28,9 +26,9 @@ function ExpenseScreen() {
         setRefreshing(false);
     }, []);
 
-    if (loading)
+    if (loading) {
         return (
-            <SafeAreaView style={safeAreaStyle}>
+            <View style={{ flex: 1 }}>
                 <Text style={styles.header}>Expense Summary</Text>
                 <View
                     style={{
@@ -65,10 +63,14 @@ function ExpenseScreen() {
                     </View>
                 </View>
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
-            </SafeAreaView>
+            </View>
         );
+    }
+
+    const isFilterApplied = type || (range.endDate && range.startDate);
+
     return (
-        <SafeAreaView style={safeAreaStyle}>
+        <View style={{ flex: 1 }}>
             <Text style={styles.header}>Expense Summary</Text>
             <View
                 style={{
@@ -81,7 +83,9 @@ function ExpenseScreen() {
                     <TypeSelector />
                     <DatePickerSelector />
                 </View>
+
                 <TouchableOpacity
+                    disabled={!isFilterApplied}
                     onPress={resetParams}
                     style={{
                         flexDirection: 'row',
@@ -89,8 +93,8 @@ function ExpenseScreen() {
                         gap: calcWidth(1),
                     }}
                 >
-                    <FontAwesome5 name="redo" size={calcWidth(3)} color="rgba(255,255,255,0.66)" />
-                    <Text style={{ color: COLOR.TEXT }}>Reset</Text>
+                    <FontAwesome5 name="redo" size={calcWidth(3)} color={isFilterApplied ? COLOR.TEXT : COLOR.BUTTON_DISABLED} />
+                    <Text style={isFilterApplied ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>Reset</Text>
                 </TouchableOpacity>
             </View>
 
@@ -107,12 +111,13 @@ function ExpenseScreen() {
                             refreshing={refreshing}
                             onRefresh={onRefresh}
                             colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
                             progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
                         />
                     }
                 />
             )}
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -137,8 +142,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
     },
-    list: {
-        // Add styles for your FlatList if needed
-    },
-    // Add other styles that you might have used in your component
+    list: {},
 });

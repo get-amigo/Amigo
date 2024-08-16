@@ -1,6 +1,6 @@
 import React from 'react';
 import { Animated, Easing, StyleSheet } from 'react-native';
-import Svg, { Path, SvgProps } from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 
 export default function QRIndicator() {
     const scale = React.useMemo(() => new Animated.Value(1), []);

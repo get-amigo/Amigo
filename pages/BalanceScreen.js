@@ -1,23 +1,20 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, FlatList, Pressable, Image, RefreshControl } from 'react-native';
-import apiHelper from '../helper/apiHelper';
-import PAGES from '../constants/pages';
-import FabIcon from '../components/FabIcon';
 import { useFocusEffect } from '@react-navigation/native';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import EmptyScreen from '../components/EmptyScreen';
+import React, { useCallback, useState } from 'react';
+import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
+
 import NoBalance from '../assets/NoBalance.png';
-import GroupBalanceCard from '../components/GroupBalanceCard';
-import { useAuth } from '../stores/auth';
 import ScanIcon from '../assets/icons/scan.png';
+import EmptyScreen from '../components/EmptyScreen';
+import FabIcon from '../components/FabIcon';
+import GroupBalanceCard from '../components/GroupBalanceCard';
 import UserAvatar from '../components/UserAvatar';
-const headerIconSize = calcHeight(1);
-import NetInfo from '@react-native-community/netinfo';
-import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { calcHeight, calcWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
-import safeAreaStyle from '../constants/safeAreaStyle';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+const headerIconSize = calcHeight(1);
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
@@ -91,13 +88,13 @@ function BalanceScreen({ navigation }) {
                                 color: COLOR.TEXT,
                                 fontWeight: 'bold',
                             }}
-                        ></Text>
+                        />
                         <Text
                             style={{
                                 color: COLOR.TEXT,
                                 fontWeight: 'bold',
                             }}
-                        ></Text>
+                        />
                     </View>
                 </View>
                 <FlatList
@@ -111,7 +108,7 @@ function BalanceScreen({ navigation }) {
         );
 
     return (
-        <SafeAreaView style={safeAreaStyle}>
+        <View style={{ flex: 1 }}>
             <View
                 style={{
                     flexDirection: 'row',
@@ -191,14 +188,12 @@ function BalanceScreen({ navigation }) {
                     data={balances}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => <GroupBalanceCard group={item} />}
-                    style={{
-                        marginTop: calcHeight(5),
-                    }}
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={onRefresh}
                             colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                            tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
                             progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
                         />
                     }
@@ -211,7 +206,7 @@ function BalanceScreen({ navigation }) {
                     }}
                 />
             )}
-        </SafeAreaView>
+        </View>
     );
 }
 

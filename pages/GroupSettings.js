@@ -1,7 +1,8 @@
-import { DEEP_LINK_URL } from '@env';
+import { WEBSITE_URL } from '@env';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Alert, FlatList, Image, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+
 import AddMembersImage from '../assets/icons/addMembers.png';
 import ShareImage from '../assets/icons/share.png';
 import GroupIcon from '../components/GroupIcon';
@@ -11,9 +12,9 @@ import COLOR from '../constants/Colors';
 import { GROUP_NAME_MAX_LENGTH } from '../constants/constants';
 import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
+import showToast from '../helper/Toast';
 import apiHelper from '../helper/apiHelper';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import showToast from '../helper/Toast';
 
 const MemberItem = ({ name, phone, _id }) => (
     <View style={styles.memberItem}>
@@ -67,9 +68,11 @@ const GroupScreen = ({
         setGroup((prev) => ({ ...prev, name: groupRef.current }));
     };
 
-    const shareGroupLink = () => {
+    const shareGroupLink = async () => {
+        const shareUrl = await apiHelper.get(`/group/${group._id}/token`);
+
         Share.share({
-            message: 'Join the group at Amigo: ' + `${DEEP_LINK_URL}join?groupId=${group._id}`,
+            message: 'Join the group at Amigo: ' + `${WEBSITE_URL}/invite/#/join?groupId=${shareUrl.data}`,
         });
     };
 

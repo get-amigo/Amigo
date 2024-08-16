@@ -1,19 +1,20 @@
 import { FontAwesome6 } from '@expo/vector-icons';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+
 import { useGroup } from '../../context/GroupContext';
 import areDatesEqual from '../../helper/areDatesEqual';
 import formatDateRelativeToToday from '../../helper/formatDateRelativeToToday';
 import { calcWidth } from '../../helper/res';
 import useActivities from '../../hooks/useActivities';
-import { useContacts } from '../../hooks/useContacts';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import Feed from '../Feed';
 import StickyDate from './StickyDate';
+import getNamesFromContacts from '../../helper/getNamesFromContacts';
 
 const FeedsContainer = () => {
+    const [contactsNamesMap, setContactsNamesMap] = useState([]);
     const { group } = useGroup();
-    const { contacts } = useContacts();
 
     const [isStickyDateVisible, setIsStickyDateVisible] = useState(false);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -51,6 +52,14 @@ const FeedsContainer = () => {
     }, []);
 
     useEffect(() => {
+        async function fetchContacts() {
+            const data = await getNamesFromContacts();
+            setContactsNamesMap(data);
+        }
+        fetchContacts();
+    }, []);
+
+    useEffect(() => {
         // handle fetch
         if (shouldFetch && hasNextPage && !isLoading) {
             fetchNextPage();
@@ -69,18 +78,25 @@ const FeedsContainer = () => {
                     const currentCreator = activities[item].creator;
                     const previousCreator = index < activityOrder.length - 1 ? activities[activityOrder[index + 1]].creator : null;
                     const nextCreator = index > 0 ? activities[activityOrder[index - 1]].creator : null;
-                    const showCreatorName = !previousCreator || currentCreator._id !== previousCreator._id;
-                    const showCreatorAvatar = !nextCreator || currentCreator._id !== nextCreator._id;
 
                     const currentDate = new Date(activities[item].createdAt);
                     const previousDate = index < activityOrder.length - 1 ? new Date(activities[activityOrder[index + 1]].createdAt) : null;
+                    const nextDate = index > 0 ? new Date(activities[activityOrder[index - 1]].createdAt) : null;
+
+                    const showCreatorAvatar =
+                        !nextCreator || currentCreator._id !== nextCreator._id || (nextDate && nextDate.getDate() != currentDate.getDate());
+
+                    const showCreatorName =
+                        !previousCreator ||
+                        currentCreator._id !== previousCreator._id ||
+                        (previousDate && currentDate.getDate() != previousDate.getDate());
 
                     const showDate = !previousDate || !areDatesEqual(currentDate, previousDate);
                     return (
                         <View onLayout={() => trackViewedItem(item)}>
                             <Feed
                                 {...activities[item]}
-                                contacts={contacts}
+                                contacts={contactsNamesMap}
                                 showCreatorName={showCreatorName}
                                 showCreatorAvatar={showCreatorAvatar}
                                 showDate={showDate}

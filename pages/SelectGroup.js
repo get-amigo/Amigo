@@ -1,28 +1,38 @@
-import React, { useCallback, useState } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import PAGES from '../constants/pages';
-import { useFocusEffect } from '@react-navigation/native';
-import COLOR from '../constants/Colors';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import Search from '../components/Search';
-import GroupSelectCard from '../components/GroupSelectCard';
-import { useTransaction } from '../context/TransactionContext';
-import GroupIcon from '../components/GroupIcon';
 import { Octicons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+
+import GroupIcon from '../components/GroupIcon';
+import GroupSelectCard from '../components/GroupSelectCard';
+import Search from '../components/Search';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
 
 function GroupListScreen({ navigation }) {
     const [search, setSearch] = useState('');
     const { setTransactionData } = useTransaction();
     const { groups, fetchData } = useGroupList();
+    const { user } = useAuth();
+    const [refreshing, setRefreshing] = useState(false);
 
     const filterGroups = () => (search === '' ? groups : groups.filter((group) => group.name.toLowerCase().includes(search.toLowerCase())));
 
     useFocusEffect(
         useCallback(() => {
-            fetchData();
+            fetchData(user);
         }, []),
     );
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await fetchData(user);
+        setRefreshing(false);
+    }, []);
 
     return (
         <View style={styles.container}>
@@ -37,7 +47,7 @@ function GroupListScreen({ navigation }) {
                 data={filterGroups(groups)}
                 ListHeaderComponent={
                     <GroupSelectCard
-                        name={'Create new group'}
+                        name="Create new group"
                         image={
                             <View
                                 style={{
@@ -67,6 +77,15 @@ function GroupListScreen({ navigation }) {
                         image={<GroupIcon groupId={group._id} />}
                     />
                 )}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                        tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                        progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                    />
+                }
             />
         </View>
     );

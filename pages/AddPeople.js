@@ -1,21 +1,22 @@
 import React, { useLayoutEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import COLOR from '../constants/Colors';
-import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import { Text, TouchableOpacity, View } from 'react-native';
+
 import ContactList from '../components/ContactList';
-import { useContacts } from '../hooks/useContacts';
+import Loader from '../components/Loader';
+import COLOR from '../constants/Colors';
+import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
-import PAGES from '../constants/pages';
-import Loader from '../components/Loader';
+import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
+import { useContacts } from '../hooks/useContacts';
 
 const AddPeople = ({ navigation }) => {
     const { selectedContacts } = useContacts();
-    const { group, setGroup } = useGroup();
+    const { group } = useGroup();
     const [loading, setLoading] = useState(false);
     async function addMembers() {
         setLoading(true);
-        const { data } = await apiHelper.patch(
+        await apiHelper.patch(
             `/group/${group._id}`,
             selectedContacts.map((contact) => ({
                 phoneNumber: contact.phoneNumber,

@@ -1,9 +1,10 @@
 import React from 'react';
-import { FAB } from 'react-native-paper';
 import { StyleSheet, View } from 'react-native';
-import { calcHeight, calcWidth } from '../helper/res';
+import { FAB } from 'react-native-paper';
+
 import COLOR from '../constants/Colors';
 import plusIconStyle from '../constants/plusIconStyle';
+import { calcHeight, calcWidth } from '../helper/res';
 
 interface FabIconProps {
     onPress: () => void;
@@ -14,29 +15,16 @@ const FabIcon: React.FC<FabIconProps> = ({ onPress, loading }) => {
     if (loading) {
         return (
             <View style={styles.fabContainer}>
-                <FAB
-                    style={[
-                        styles.fab,
-                        { backgroundColor: COLOR.SKELETON_MASK_COLOR },
-                    ]}
-                    customSize={calcHeight(9)}
-                    color="white"
-                />
+                <FAB style={[styles.fab, { backgroundColor: COLOR.SKELETON_MASK_COLOR }]} customSize={calcHeight(9)} color="white" />
             </View>
         );
     }
     return (
         <View style={styles.fabContainer}>
-            <FAB
-                style={styles.fab}
-                icon="plus"
-                customSize={calcHeight(9)}
-                onPress={onPress}
-                color="white"
-            />
+            <FAB style={styles.fab} icon="plus" customSize={calcHeight(9)} onPress={onPress} color="white" />
         </View>
     );
-}
+};
 
 export default FabIcon;
 

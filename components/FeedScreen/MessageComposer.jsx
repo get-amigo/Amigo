@@ -1,18 +1,21 @@
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
-import { FontAwesome } from '@expo/vector-icons';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MESSAGE_COMPOSER_PADDING } from '../../constants/constants';
 import PAGES from '../../constants/pages';
 import { useGroup } from '../../context/GroupContext';
-import { Ionicons } from '@expo/vector-icons';
-import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import { useTransaction } from '../../context/TransactionContext';
+import apiHelper from '../../helper/apiHelper';
+import { calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
 import useNetwork from '../../hooks/useNetwork';
 import { useAuth } from '../../stores/auth';
-import apiHelper from '../../helper/apiHelper';
-import { useNavigation } from '@react-navigation/native';
+import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 
 const MessageComposer = () => {
+    const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
     const { setTransactionData, resetTransaction } = useTransaction();
@@ -47,7 +50,7 @@ const MessageComposer = () => {
         }
         if (isConnected) {
             const { activityId, relatedId } = addActivityToLocalDB(
-                { activityType: 'chat', relatedId: { message: message } },
+                { activityType: 'chat', relatedId: { message } },
                 group._id,
                 user,
                 false,
@@ -55,8 +58,8 @@ const MessageComposer = () => {
             );
             await apiHelper
                 .post(`/group/${group._id}/chat`, {
-                    message: message,
-                    activityId: activityId,
+                    message,
+                    activityId,
                     chatId: relatedId,
                 })
                 .then(() => {
@@ -69,7 +72,7 @@ const MessageComposer = () => {
                     console.error(err);
                 });
         } else {
-            addActivityToLocalDB({ activityType: 'chat', relatedId: { message: message } }, group._id, user, false, true);
+            addActivityToLocalDB({ activityType: 'chat', relatedId: { message } }, group._id, user, false, true);
         }
     };
 
@@ -93,7 +96,16 @@ const MessageComposer = () => {
                     </Text>
                 </Pressable>
             </View> */}
-            <View style={styles.bottomContainer}>
+            <View
+                style={[
+                    styles.bottomContainer,
+                    {
+                        paddingHorizontal: calcWidth(2.8),
+                        paddingTop: MESSAGE_COMPOSER_PADDING,
+                        paddingBottom: MESSAGE_COMPOSER_PADDING > insets.bottom ? MESSAGE_COMPOSER_PADDING : insets.bottom,
+                    },
+                ]}
+            >
                 <View style={styles.row}>
                     <Pressable
                         style={{
@@ -170,9 +182,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: calcWidth(3),
         borderTopRightRadius: calcWidth(3),
         alignContent: 'center',
-        padding: calcWidth(5),
         backgroundColor: '#111016',
-        minHeight: calcWidth(21),
     },
     row: {
         alignContent: 'center',

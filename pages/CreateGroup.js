@@ -38,7 +38,6 @@ const CreateGroup = ({ navigation }) => {
     const [isError, setIsError] = useState(false);
     const nameRef = useRef();
     const MAX_LEN = 40;
-
     const createGroupAsync = async () => {
         const isOnline = await checkConnectivity();
         if (!isOnline) {

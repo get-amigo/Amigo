@@ -1,39 +1,32 @@
-import React, { useEffect, useRef } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, TextInput, StyleSheet, ScrollView, Alert, Pressable } from 'react-native';
 import Toast from 'react-native-root-toast';
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
 import { StackActions } from '@react-navigation/native';
-
 import AmountInput from '../components/AmountInput';
-import Button from '../components/Button';
+import Loader from '../components/Loader';
 import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { useGroup } from '../context/GroupContext';
 import { useTransaction } from '../context/TransactionContext';
 import apiHelper from '../helper/apiHelper';
 import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
-import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
+import { useGroup } from '../context/GroupContext';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import useNetwork from '../hooks/useNetwork';
 
-function TransactionFormScreen({ navigation, route }) {
-    const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams, newGroup, setNewGroup } = useTransaction();
+function TransactionFormScreen({ navigation }) {
+    const [loading, setIsLoading] = useState(false);
+    const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
-    const { newGroup: routeNewGroup } = route.params || {};
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
-
-    useEffect(() => {
-        if (routeNewGroup) {
-            setNewGroup(routeNewGroup);
-        }
-    }, [routeNewGroup, setNewGroup]);
 
     useEffect(() => {
         const { group } = transactionData;
@@ -82,7 +75,7 @@ function TransactionFormScreen({ navigation, route }) {
         }
     };
 
-    const remainingCharacters = transactionData?.description ? 100 - transactionData.description.length : 100;
+    const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
     const handleCategorySelect = (category) => {
         setTransactionData((prev) => ({
@@ -113,6 +106,7 @@ function TransactionFormScreen({ navigation, route }) {
         }
 
         try {
+            // Create a new object with modifications, leaving original transactionData unchanged
             const newTransaction = {
                 ...transactionData,
                 amount: parseInt(transactionData.amount, 10),
@@ -142,14 +136,30 @@ function TransactionFormScreen({ navigation, route }) {
 
             if (isConnected) {
                 const { activityId, relatedId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
-                const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
+                const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: relatedId };
 
-                await apiHelper.post('/transaction', newTransactionWithId);
-                setUpiParams({});
-                updateIsSynced({
-                    _id: activityId,
-                    group: newActivity.relatedId.group._id,
-                });
+                apiHelper
+                    .post('/transaction', newTransactionWithId)
+                    .then((res) => {
+
+                        setUpiParams({});
+//                         setActivitiesHash(newTransaction.group, [
+//                             {
+//                                 ...newActivity,
+//                                 synced: true,
+//                             },
+//                             ...activities,
+//                         ]);
+                        updateIsSynced({
+                            _id: activityId,
+                            group: newActivity.relatedId.group._id,
+                        });
+
+                    })
+                    .catch((err) => {
+                        console.log('error in api post', err);
+                        Alert.alert('Error', JSON.stringify(err));
+                    });
             } else {
                 addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
             }
@@ -162,7 +172,6 @@ function TransactionFormScreen({ navigation, route }) {
                 navigation.navigate(PAGES.UPI_APP_SELECTION);
                 return;
             }
-
             Toast.show('Transaction Added', {
                 duration: Toast.durations.LONG,
             });
@@ -178,74 +187,152 @@ function TransactionFormScreen({ navigation, route }) {
         }
     };
 
-    return (
-        <ScrollView style={styles.container} alwaysBounceVertical={false}>
-            <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
+    return loading ? (
+        <Loader />
+    ) : (
+        <ScrollView style={styles.container} alwaysBounceVertical={false} keyboardDismissMode="none" keyboardShouldPersistTaps="always">
+            <AmountInput
+                amount={transactionData.amount}
+                handleInputChange={(text) => handleInputChange('amount', text)}
+                isTextInput
+                onSubmitEditing={() => descriptionRef.current.focus()}
+            />
+
             <View style={styles.rowCentered}>
                 <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
                     <TextInput
-                        ref={descriptionRef}
                         style={styles.description}
                         onChangeText={(text) => handleInputChange('description', text)}
                         value={transactionData.description}
                         placeholder="Description"
-                        placeholderTextColor="gray"
-                        textAlign={transactionData?.description?.length === 0 ? 'left' : 'center'}
+                        placeholderTextColor="#ccc"
+                        ref={descriptionRef}
+                        textAlign="center"
                         maxLength={100}
-                        scrollEnabled
+                        multiline={false}
+                        blurOnSubmit={false}
+                        onSubmitEditing={handleSubmit}
                     />
                 </Pressable>
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.verticalScrollView}>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                    marginVertical: calcHeight(3),
+                }}
+            >
                 {Categories.map((item, index) => (
                     <Pressable
                         key={index}
-                        style={[styles.categoryItem, transactionData.type === item.name && styles.selectedCategory]}
+                        style={[
+                            styles.categoryItem,
+                            transactionData.type === item.name && styles.selectedCategory,
+                            {
+                                borderColor: '#4D426C',
+                                borderWidth: 1,
+                                borderRadius: 10,
+                                marginHorizontal: calcWidth(1),
+                            },
+                        ]}
                         onPress={() => handleCategorySelect(item.name)}
                     >
                         {item.icon}
-                        <Text style={styles.categoryText}>{item.name}</Text>
+                        <Text style={[styles.categoryText]}>{item.name}</Text>
                     </Pressable>
                 ))}
             </ScrollView>
-
-            {getPreviousPageName(navigation) !== PAGES.GROUP && (
+            {getPreviousPageName(navigation) != PAGES.GROUP && (
                 <View>
                     <Pressable
-                        style={styles.addGroupBtn}
-                        onPress={() => navigation.navigate(PAGES.SELECT_GROUP)}
+                        style={{
+                            backgroundColor: '#302B49',
+                            padding: calcWidth(4),
+                            borderRadius: 8,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                        }}
+                        onPress={() => {
+                            navigation.navigate(PAGES.SELECT_GROUP);
+                        }}
                     >
-                        <View style={styles.buttonWrapper}>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }}
+                        >
                             <MaterialIcons name="group-add" size={calcWidth(8)} color="white" />
-                            <Text style={styles.buttonText}>{transactionData.group?.name || 'Add Group'}</Text>
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    paddingLeft: calcWidth(2),
+                                }}
+                            >
+                                {transactionData.group?.name || 'Add Group'}
+                            </Text>
                         </View>
                         <AntDesign name="right" size={calcWidth(5)} color="white" />
                     </Pressable>
                 </View>
             )}
-
             {transactionData.group?.members?.length > 0 && (
-                <View style={styles.paidByAndSplitContainer}>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                    }}
+                >
                     <Pressable
-                        style={styles.button}
-                        onPress={() => navigation.navigate(PAGES.SELECT_PAID_BY)}
+                        style={{
+                            backgroundColor: '#302B49',
+                            padding: calcWidth(4),
+                            borderRadius: 8,
+                            flexDirection: 'row',
+                            justifyContent: 'space-evenly',
+                            marginTop: calcHeight(2),
+                            width: calcWidth(40),
+                        }}
+                        onPress={() => {
+                            navigation.navigate(PAGES.SELECT_PAID_BY);
+                        }}
                     >
-                        <Text style={styles.buttonText}>Paid By {transactionData.paidBy?.name}</Text>
+                        <Text
+                            style={{
+                                color: 'white',
+                            }}
+                        >
+                            Paid By {transactionData.paidBy?.name}
+                        </Text>
                     </Pressable>
                     <Pressable
-                        style={styles.button}
-                        onPress={() => navigation.navigate(PAGES.GROUP_SPLIT_SCREEN, { newGroup })}
+                        style={{
+                            backgroundColor: '#302B49',
+                            padding: calcWidth(4),
+                            borderRadius: 8,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-evenly',
+                            marginTop: calcHeight(2),
+                            width: calcWidth(40),
+                        }}
+                        onPress={() => {
+                            navigation.navigate(PAGES.GROUP_SPLIT_SCREEN);
+                        }}
                     >
-                        <Text style={styles.buttonText}>Split Equally</Text>
+                        <Text
+                            style={{
+                                color: 'white',
+                            }}
+                        >
+                            Split Equally
+                        </Text>
                     </Pressable>
                 </View>
             )}
-
-            <View style={styles.submitBtnContainer}>
-                <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
-            </View>
         </ScrollView>
     );
 }
@@ -259,75 +346,46 @@ const styles = StyleSheet.create({
     rowCentered: {
         justifyContent: 'center',
     },
+    amount: {
+        color: COLOR.TEXT,
+        fontSize: getFontSizeByWindowWidth(50),
+        lineHeight: calcHeight(8),
+        fontWeight: 'bold',
+    },
     description: {
         color: 'white',
-        paddingHorizontal: calcWidth(3),
     },
     descriptionContainer: {
-        borderColor: 'gray',
+        alignSelf: 'center',
+        padding: calcWidth(2.2),
         borderWidth: 1,
-        borderRadius: calcWidth(5),
-        height: calcHeight(6),
-        marginBottom: calcHeight(2),
+        borderColor: 'gray',
+        borderRadius: 5,
+        maxWidth: calcWidth(80),
+        maxHeight: calcWidth(20),
+        marginTop: calcWidth(2),
     },
     remainingCharacters: {
-        color: 'gray',
-        marginTop: calcHeight(1),
-        marginBottom: calcHeight(2),
-        textAlign: 'right',
-    },
-    verticalScrollView: {
-        flexDirection: 'row',
-        marginBottom: calcHeight(2),
+        color: COLOR.BUTTON,
+        fontSize: getFontSizeByWindowWidth(10),
+        alignSelf: 'center',
+        paddingTop: calcHeight(1),
     },
     categoryItem: {
-        paddingHorizontal: calcWidth(5),
-        paddingVertical: calcHeight(2),
-        justifyContent: 'center',
+        flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: calcWidth(2),
-        borderRadius: calcWidth(5),
-        backgroundColor: COLOR.CATEGORY_BACKGROUND,
-    },
-    selectedCategory: {
-        backgroundColor: COLOR.SELECTED_CATEGORY_BACKGROUND,
+        paddingHorizontal: calcWidth(3),
+        paddingVertical: calcHeight(0.5),
     },
     categoryText: {
-        color: 'white',
-        marginTop: calcHeight(1),
+        color: COLOR.TEXT,
+        fontSize: getFontSizeByWindowWidth(12),
+        paddingHorizontal: calcWidth(1),
     },
-    addGroupBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: COLOR.ADD_GROUP_BUTTON_BACKGROUND,
-        padding: calcWidth(2),
-        borderRadius: calcWidth(5),
-        marginBottom: calcHeight(2),
-    },
-    buttonWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        marginLeft: calcWidth(2),
-        fontSize: getFontSizeByWindowWidth(14),
-    },
-    paidByAndSplitContainer: {
-        marginBottom: calcHeight(2),
-    },
-    button: {
-        backgroundColor: COLOR.BUTTON_BACKGROUND,
-        padding: calcWidth(3),
-        borderRadius: calcWidth(5),
-        marginBottom: calcHeight(1),
-    },
-    submitBtnContainer: {
-        marginTop: calcHeight(2),
-    },
-    submitBtn: {
-        backgroundColor: COLOR.SUBMIT_BUTTON_BACKGROUND,
-        padding: calcWidth(3),
+    selectedCategory: {
+        backgroundColor: '#4D426C', 
+        borderRadius: 10,
+        color: COLOR.TEXT,
     },
 });
 

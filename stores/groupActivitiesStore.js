@@ -19,7 +19,7 @@ const groupActivitiesStore = (set, get) => ({
     pendingActivities: {},
 
     addOldActivitiesToLocalDB: (acts) => {
-        // acts is an array of activities fethed by api
+        // acts is an array of activities fetched by api
         if (!acts || acts.length === 0) {
             return;
         }
@@ -136,6 +136,7 @@ const groupActivitiesStore = (set, get) => ({
                             paidBy: {
                                 _id: activity.relatedId.paidBy._id,
                                 name: activity.relatedId.paidBy.name,
+                                phoneNumber: activity.relatedId.paidBy.phoneNumber,
                             },
                             splitAmong: activity.relatedId.splitAmong,
                             type: activity.relatedId.type,

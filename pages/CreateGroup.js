@@ -46,14 +46,16 @@ const CreateGroup = ({ navigation }) => {
                 phoneNumber,
                 countryCode,
             }));
-            await apiHelper.post('/group', {
+            const response = await apiHelper.post('/group', {
                 name: groupName,
                 phoneNumbers,
             });
+
+            const newGroup = response.data;
             Toast.show(`${groupName} created`, {
                 duration: Toast.durations.LONG,
             });
-            if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) navigation.navigate(PAGES.ADD_TRANSACTION);
+            if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) navigation.navigate(PAGES.ADD_TRANSACTION, { newGroup });
             else {
                 navigation.goBack();
             }

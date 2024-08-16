@@ -86,8 +86,7 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
-                                headerShown: false,
-                                animation: 'none',
+                                animation: 'fade',
                                 headerTintColor: '#fff',
                             }}
                         />
@@ -116,8 +115,6 @@ const AppNavigator = () => {
                                 },
                                 animation: 'fade',
                                 headerTintColor: '#fff',
-                                headerShown: false,
-                                animation: 'none',
                             }}
                         />
                         <Stack.Screen

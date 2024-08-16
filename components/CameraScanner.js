@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, View, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { CameraView } from 'expo-camera';
-import COLOR from '../constants/Colors';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 import getLocalImage from '../helper/getLocalImage';
 import getQrDataFromImage from '../helper/getQrDataFromImage';
 import { calcHeight, calcWidth } from '../helper/res';
 import QRFooterButton from './QRFooterButton';
 import QRIndicator from './QRIndicator';
 
-const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
+const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
     const { bottom } = useSafeAreaInsets();
-    const [scanned, setScanned] = useState(false);
-
     async function getImage() {
         const image = await getLocalImage();
         const scannedResults = await getQrDataFromImage(image);
@@ -23,6 +20,7 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
         }
         Alert.alert('Alert', 'No QR code found in image');
     }
+    const [scanned, setScanned] = useState(false);
 
     const handleBarCode = (event) => {
         setScanned(true);
@@ -42,11 +40,6 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit, back }) => {
                 }}
                 onBarcodeScanned={scanned ? null : handleBarCode}
             >
-                <View style={{ margin: calcWidth(4) }}>
-                    <TouchableOpacity style={{ marginLeft: calcWidth(2), marginTop: calcHeight(2) }} onPress={back}>
-                        <Ionicons name="arrow-back" size={calcWidth(7)} color={'#FFF'} />
-                    </TouchableOpacity>
-                </View>
                 <View style={styles.buttonContainer}>
                     <QRIndicator />
                     <View style={[styles.footer, { bottom: 30 + bottom }]}>
@@ -71,6 +64,27 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    button: {
+        flex: 1,
+        alignSelf: 'flex-end',
+        alignItems: 'center',
+    },
+    text: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+    },
+    scannerContainer: {
+        width: calcWidth(100),
+
+        height: calcHeight(100),
+        overflow: 'hidden',
+        zIndex: 1,
+        flex: 1,
+        backgroundColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
     },

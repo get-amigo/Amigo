@@ -21,7 +21,8 @@ const InvitationLandingScreen = ({
             Toast.show(`Joined ${data?.name}`, {
                 duration: Toast.durations.LONG,
             });
-        } catch {
+        } catch (e) {
+            console.error(e);
             Toast.show('Already in the group', {
                 duration: Toast.durations.LONG,
             });

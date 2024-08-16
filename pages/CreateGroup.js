@@ -23,7 +23,6 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
-
 const CreateGroup = ({ navigation }) => {
     const { selectedContacts } = useContacts();
     const [groupName, setGroupName] = useState('');
@@ -31,7 +30,6 @@ const CreateGroup = ({ navigation }) => {
     const [isError, setIsError] = useState(false);
     const nameRef = useRef();
     const MAX_LEN = 40;
-
     const createGroupAsync = async () => {
         const isOnline = await checkConnectivity();
         if (!isOnline) {
@@ -46,12 +44,11 @@ const CreateGroup = ({ navigation }) => {
                 phoneNumber,
                 countryCode,
             }));
-            const response = await apiHelper.post('/group', {
+           await apiHelper.post('/group', {
                 name: groupName,
                 phoneNumbers,
             });
 
-            const newGroup = response.data;
             Toast.show(`${groupName} created`, {
                 duration: Toast.durations.LONG,
             });

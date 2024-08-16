@@ -44,11 +44,11 @@ const CreateGroup = ({ navigation }) => {
                 phoneNumber,
                 countryCode,
             }));
-           await apiHelper.post('/group', {
+            const response = await apiHelper.post('/group', {
                 name: groupName,
                 phoneNumbers,
             });
-
+            const newGroup = response.data;
             Toast.show(`${groupName} created`, {
                 duration: Toast.durations.LONG,
             });

@@ -8,47 +8,50 @@ import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
+import useContactsNamesMap from '../hooks/useContactsNamesMap';
+import editNames from '../helper/editNames';
+import { useAuth } from '../stores/auth';
 
 const GroupSplitScreen = ({ navigation }) => {
+    const contactsNamesMap = useContactsNamesMap();
+    const { user } = useAuth();
     const { transactionData, setTransactionData } = useTransaction();
     const [members, setMembers] = useState([]);
-    const membersRef = useRef(members);
-
-    function countIncludedMembers() {
-        return members.filter((member) => member.included).length;
-    }
-
-    function allSelected() {
-        return countIncludedMembers() === members.length;
-    }
-
-    function selectionFraction() {
-        return `${countIncludedMembers()}/${members.length}`;
-    }
+    const membersRef = useRef(members); // because `useLayoutEffect` can't access the updated `member` state.
 
     useEffect(() => {
         const parsedMembers = [];
 
-        for (const i of transactionData.group.members) {
-            const memberAmount = transactionData.splitAmong.find(({ user }) => user._id == i._id)?.amount;
+        for (const member of transactionData.group.members) {
+            const memberAmount = transactionData.splitAmong.find(({ user }) => user._id == member._id)?.amount;
             parsedMembers.push({
                 amount: memberAmount || 0,
-                user: i,
+                user: member,
                 included: memberAmount && true,
                 isAmountManuallyEntered: false,
             });
         }
         setMembers([...parsedMembers]);
     }, []);
+
     useEffect(() => {
-        membersRef.current = members;
+        membersRef.current = members; // Dirty code but required for `useLayoutEffect`. Read: https://tghosh.hashnode.dev/an-in-depth-look-at-closures-in-react
     }, [members]);
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={submitSplit}>
+                    <Text style={[styles.tabBarText]}>Done</Text>
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
     const submitSplit = () => {
         let totalSplitAmount = 0;
         const includedMembers = [];
 
-        // Single iteration for filtering and summing
         membersRef.current.forEach((member) => {
             if (member.included) {
                 includedMembers.push({
@@ -62,15 +65,26 @@ const GroupSplitScreen = ({ navigation }) => {
         // Compare with the total transaction amount
         if (totalSplitAmount != transactionData.amount) {
             Alert.alert('Alert', 'The split amounts do not sum up to the total transaction amount.');
-            return; // Stop the function execution
+            return;
         }
 
-        // Proceed if amounts are equal
         setTransactionData((prev) => ({
             ...prev,
             splitAmong: includedMembers,
         }));
         navigation.goBack();
+    };
+
+    const countIncludedMembers = () => {
+        return members.filter((member) => member.included).length;
+    };
+
+    const allSelected = () => {
+        return countIncludedMembers() === members.length;
+    };
+
+    const selectionFraction = () => {
+        return `${countIncludedMembers()}/${members.length}`;
     };
 
     const splitEqually = () => {
@@ -200,16 +214,6 @@ const GroupSplitScreen = ({ navigation }) => {
         });
     };
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <TouchableOpacity onPress={submitSplit}>
-                    <Text style={[styles.tabBarText]}>Done</Text>
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation]);
-
     const renderItem = ({ item }) => {
         return (
             <View style={styles.memberContainer}>
@@ -234,7 +238,7 @@ const GroupSplitScreen = ({ navigation }) => {
                         }}
                     >
                         <UserAvatar user={item.user} />
-                        <Text style={styles.memberName}>{item.user.name ? item.user.name : item.user.phoneNumber}</Text>
+                        <Text style={styles.memberName}>{editNames([item.user], user._id, contactsNamesMap)[0].name}</Text>
                     </View>
                 </View>
 

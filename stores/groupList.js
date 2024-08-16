@@ -18,7 +18,6 @@ const useGroupStore = create(
                 if (groups.length === 0) {
                     set({ loading: true });
                 }
-                console.log('updating');
                 const { data } = await apiHelper('/group');
                 for (const group of data) group.members = await editNamesAsync(group.members, user._id);
                 set({ groups: data, loading: false });

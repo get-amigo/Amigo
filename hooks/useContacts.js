@@ -2,9 +2,9 @@ import * as Contacts from 'expo-contacts';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { useFocusEffect } from '@react-navigation/native';
+import checkObjectArraysEqualityAndOmitKey from '../helper/checkObjectArraysEqualAndOmitKey';
 import { fetchContacts, filterUniqueContacts, flatPhoneNumbersArr, simplifyContactsObj } from '../helper/contacts';
 import { useAuth } from '../stores/auth';
-import compareArrayOfObject from '../helper/compareArrayOfObject';
 const ContactsContext = createContext();
 
 export const ContactsProvider = ({ children }) => {
@@ -29,7 +29,8 @@ export const ContactsProvider = ({ children }) => {
                         const uniqueContacts = filterUniqueContacts(flattenedContacts, user.phoneNumber);
                         const simplifiedContacts = simplifyContactsObj(uniqueContacts);
 
-                        if (compareArrayOfObject({ objArray1: allContacts, objArray2: simplifiedContacts, omit: 'color' })) return;
+                        if (checkObjectArraysEqualityAndOmitKey({ objArray1: allContacts, objArray2: simplifiedContacts, omit: 'color' }))
+                            return;
 
                         setAllContacts(simplifiedContacts);
                         setFilteredContacts(simplifiedContacts);

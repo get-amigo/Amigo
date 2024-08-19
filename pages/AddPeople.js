@@ -9,20 +9,33 @@ import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
 import { calcHeight, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
+import { useGroupList } from '../stores/groupList';
+import { useAuth } from '../stores/auth';
 
 const AddPeople = ({ navigation }) => {
     const { selectedContacts } = useContacts();
     const { group } = useGroup();
     const [loading, setLoading] = useState(false);
+    const { updateMember } = useGroupList();
+    const { user } = useAuth();
+
     async function addMembers() {
         setLoading(true);
-        await apiHelper.patch(
+        const response = await apiHelper.patch(
             `/group/${group._id}`,
             selectedContacts.map((contact) => ({
                 phoneNumber: contact.phoneNumber,
                 countryCode: '+91',
             })),
         );
+        await updateMember({
+            groupId: response.data._id,
+            newMembers: selectedContacts.map((contact) => ({
+                phoneNumber: contact.phoneNumber,
+                countryCode: '+91',
+            })),
+            userId: user._id,
+        });
         setLoading(false);
         navigation.navigate(PAGES.GROUP_LIST);
     }

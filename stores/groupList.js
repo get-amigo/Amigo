@@ -36,7 +36,7 @@ const useGroupStore = create(
                     console.log('Group not found');
                 }
                 console.log(newGroups);
-                set({ group: newGroups });
+                set({ groups: newGroups });
             },
         }),
         {

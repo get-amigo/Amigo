@@ -7,14 +7,14 @@ import areDatesEqual from '../../helper/areDatesEqual';
 import formatDateRelativeToToday from '../../helper/formatDateRelativeToToday';
 import { calcWidth } from '../../helper/res';
 import useActivities from '../../hooks/useActivities';
-import { useContacts } from '../../hooks/useContacts';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import Feed from '../Feed';
 import StickyDate from './StickyDate';
+import getNamesFromContacts from '../../helper/getNamesFromContacts';
 
 const FeedsContainer = () => {
+    const [contactsNamesMap, setContactsNamesMap] = useState([]);
     const { group } = useGroup();
-    const { contacts } = useContacts();
 
     const [isStickyDateVisible, setIsStickyDateVisible] = useState(false);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -49,6 +49,14 @@ const FeedsContainer = () => {
 
     const scrollToBottom = useCallback(() => {
         flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+    }, []);
+
+    useEffect(() => {
+        async function fetchContacts() {
+            const data = await getNamesFromContacts();
+            setContactsNamesMap(data);
+        }
+        fetchContacts();
     }, []);
 
     useEffect(() => {
@@ -88,7 +96,7 @@ const FeedsContainer = () => {
                         <View onLayout={() => trackViewedItem(item)}>
                             <Feed
                                 {...activities[item]}
-                                contacts={contacts}
+                                contacts={contactsNamesMap}
                                 showCreatorName={showCreatorName}
                                 showCreatorAvatar={showCreatorAvatar}
                                 showDate={showDate}

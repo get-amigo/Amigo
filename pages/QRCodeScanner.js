@@ -2,7 +2,9 @@ import * as BarCodeScanner from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { Alert, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import URL from 'url-parse';
+import apiHelper from '../helper/apiHelper';
 
+import Toast from 'react-native-root-toast';
 import SignUpImage from '../assets/SignUp.png';
 import CameraScanner from '../components/CameraScanner';
 import COLOR from '../constants/Colors';
@@ -66,34 +68,58 @@ const QRCodeScanner = ({ navigation }) => {
         return params;
     };
 
+    const joinGroup = async (groupId) => {
+        try {
+            const { data } = await apiHelper.post(`group/${groupId}/join`);
+            Toast.show(`Joined ${data?.name}`, {
+                duration: Toast.durations.LONG,
+            });
+        } catch (e) {
+            console.error(e);
+            Toast.show('Already in the group', {
+                duration: Toast.durations.LONG,
+            });
+        }
+
+        navigation.navigate(PAGES.TAB_NAVIGATOR, {
+            screen: PAGES.GROUP_LIST,
+        });
+    };
+
     const handleBarCodeScanned = ({ data }) => {
         if (!barcodeScanEnabled) return;
-        try {
-            const url = new URL(data);
-            const params = parseQueryString(url.query);
-            // Initialize an object to store extracted parameters
-            const extractedParams = {
-                receiverId: '',
-                description: params['tn'] || '',
-            };
-            // Check the URL scheme to identify UPI and extract relevant data
-            if (url.protocol === 'upi:') {
-                extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
-                Object.assign(extractedParams, params);
-                setUpiParams(extractedParams); // Ensure setUpiParams is defined and available
-                navigation.navigate(PAGES.ADD_TRANSACTION); // Ensure navigation and PAGES are defined and available
-            } else {
-                setBarcodeScanEnabled(false);
-                Alert.alert('Not a valid UPI URL', null, [
-                    {
-                        text: 'OK',
-                        onPress: () => setBarcodeScanEnabled(true),
-                    },
-                ]);
+
+        const key = data.substring(0, 9);
+        if (key === 'joinGroup') {
+            joinGroup(data.substring(10));
+        } else {
+            try {
+                const url = new URL(data);
+                const params = parseQueryString(url.query);
+                // Initialize an object to store extracted parameters
+                const extractedParams = {
+                    receiverId: '',
+                    description: params['tn'] || '',
+                };
+                // Check the URL scheme to identify UPI and extract relevant data
+                if (url.protocol === 'upi:') {
+                    extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
+                    Object.assign(extractedParams, params);
+                    setUpiParams(extractedParams); // Ensure setUpiParams is defined and available
+                    navigation.navigate(PAGES.ADD_TRANSACTION); // Ensure navigation and PAGES are defined and available
+                } else {
+                    setBarcodeScanEnabled(false);
+                    Alert.alert('Not a valid UPI URL', null, [
+                        {
+                            text: 'OK',
+                            onPress: () => setBarcodeScanEnabled(true),
+                        },
+                    ]);
+                }
+            } catch (error) {
+                console.error('Error processing scanned data:', error);
+                // Handle error (e.g., show an error message)
             }
-        } catch (error) {
-            console.error('Error processing scanned data:', error);
-            // Handle error (e.g., show an error message)
         }
     };
 

@@ -28,9 +28,10 @@ export default SharedList;
 const styles = StyleSheet.create({
     sharedLabel: {
         color: COLOR.TEXT,
-        fontSize: getFontSizeByWindowWidth(14),
+        fontSize: getFontSizeByWindowWidth(12),
         padding: calcWidth(2),
         backgroundColor: COLOR.BUTTON,
+        fontWeight: 'bold',
     },
     sharedUser: {
         color: COLOR.TEXT,

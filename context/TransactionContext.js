@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import apiHelper from '../helper/apiHelper';
+import React, { createContext, useContext, useState } from 'react';
 import { useAuth } from '../stores/auth';
 
 const TransactionContext = createContext();
@@ -8,7 +7,6 @@ export const TransactionProvider = ({ children }) => {
     const { user } = useAuth();
     const [transactionData, setTransactionData] = useState({});
     const [upiParams, setUpiParams] = useState({});
-    const [newGroup, setNewGroup] = useState(null);
 
     const resetTransaction = () => {
         setTransactionData((prev) => ({
@@ -23,28 +21,6 @@ export const TransactionProvider = ({ children }) => {
         }));
     };
 
-    useEffect(() => {
-        const fetchNewGroupData = async () => {
-            if (newGroup) {
-                try {
-                    const data = await apiHelper(`/group/`);
-                    const fetchedGroups = data.data;
-                    const matchingGroup = fetchedGroups.find((group) => group.name === newGroup.name);
-
-                    if (matchingGroup) {
-                        setTransactionData((prev) => ({
-                            ...prev,
-                            group: matchingGroup,
-                        }));
-                    }
-                } catch (error) {
-                    console.error('Error fetching group data:', error);
-                }
-            }
-        };
-        fetchNewGroupData();
-    }, [newGroup]);
-
     return (
         <TransactionContext.Provider
             value={{
@@ -53,8 +29,6 @@ export const TransactionProvider = ({ children }) => {
                 resetTransaction,
                 upiParams,
                 setUpiParams,
-                newGroup,
-                setNewGroup,
             }}
         >
             {children}

@@ -24,18 +24,16 @@ const useGroupStore = create(
             },
             updateMember: async ({ groupId, newMembers, userId }) => {
                 const { groups } = useGroupStore.getState();
-                let groupIndex = groups.findIndex((group) => group._id === groupId);
-                let newMembersWithName = await editNamesAsync(newMembers, userId);
-                let newGroups = groups.map((group) => ({
+                const groupIndex = groups.findIndex((group) => group._id === groupId);
+                const newMembersWithName = await editNamesAsync(newMembers, userId);
+                const newGroups = groups.map((group) => ({
                     ...group,
                     members: [...group.members],
                 }));
+
                 if (groupIndex !== -1) {
                     for (const newMemberWithName of newMembersWithName) newGroups[groupIndex].members.push(newMemberWithName);
-                } else {
-                    console.log('Group not found');
                 }
-                console.log(newGroups);
                 set({ groups: newGroups });
             },
         }),

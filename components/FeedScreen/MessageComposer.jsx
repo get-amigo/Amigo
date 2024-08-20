@@ -49,13 +49,13 @@ const MessageComposer = () => {
             return;
         }
         if (isConnected) {
-            const { activityId, relatedId } = addActivityToLocalDB(
-                { activityType: 'chat', relatedId: { message } },
-                group._id,
-                user,
-                false,
-                false,
-            );
+            const { activityId, relatedId } = addActivityToLocalDB({
+                activity: { activityType: 'chat', relatedId: { message } },
+                groupId: group._id,
+                user: user,
+                isSynced: false,
+                addToPending: false,
+            });
             await apiHelper
                 .post(`/group/${group._id}/chat`, {
                     message,
@@ -72,7 +72,13 @@ const MessageComposer = () => {
                     console.error(err);
                 });
         } else {
-            addActivityToLocalDB({ activityType: 'chat', relatedId: { message } }, group._id, user, false, true);
+            addActivityToLocalDB({
+                activity: { activityType: 'chat', relatedId: { message } },
+                groupId: group._id,
+                user: user,
+                isSynced: false,
+                addToPending: true,
+            });
         }
     };
 

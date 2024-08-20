@@ -28,9 +28,14 @@ const AddPeople = ({ navigation }) => {
                 countryCode: '+91',
             })),
         );
+        const membersIdsArray = response.data.members;
+        const membersIdsArrayLength = membersIdsArray.length;
+        const newMembersIdsStartIndex = membersIdsArrayLength - 1 - (selectedContacts.length - 1);
+        const newMembersIdsArray = membersIdsArray.splice(newMembersIdsStartIndex);
         await updateMember({
             groupId: response.data._id,
-            newMembers: selectedContacts.map((contact) => ({
+            newMembers: selectedContacts.map((contact, index) => ({
+                _id: newMembersIdsArray[index],
                 phoneNumber: contact.phoneNumber,
                 countryCode: '+91',
             })),

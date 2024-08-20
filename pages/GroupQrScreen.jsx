@@ -1,8 +1,11 @@
 import { WEBSITE_URL } from '@env';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import Entypo from '@expo/vector-icons/Entypo';
+import * as Sharing from 'expo-sharing';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { QRCode } from 'react-native-qrcode-composer';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ViewShot from 'react-native-view-shot';
 import logo from '../assets/icons/qrIcon.png';
 import GroupIcon from '../components/GroupIcon';
 import COLOR from '../constants/Colors';
@@ -13,6 +16,8 @@ const GroupQrScreen = ({ route }) => {
     const groupId = route.params.groupId;
     const groupName = route.params.groupName;
     const [inviteToken, setInviteToken] = useState();
+
+    const qrCodeView = useRef(null);
 
     useEffect(() => {
         async function getToken() {
@@ -26,46 +31,78 @@ const GroupQrScreen = ({ route }) => {
         getToken();
     }, []);
 
+    const captureQrCode = async () => {
+        if (qrCodeView.current) {
+            try {
+                const uri = await qrCodeView.current.capture();
+                shareQrCode(uri);
+            } catch (error) {
+                console.error('Error capturing QR code:', error);
+            }
+        }
+    };
+
+    const shareQrCode = async (imageUri) => {
+        const shareOptions = {
+            dialogTitle: 'Group Invite QR Code',
+            UTI: 'jpg',
+            url: imageUri,
+        };
+
+        try {
+            await Sharing.shareAsync(imageUri, shareOptions);
+        } catch (error) {
+            console.error('Error sharing:', error);
+        }
+    };
+
     return (
         <SafeAreaView edges={['bottom', 'left', 'right']} style={styles.container}>
             <View style={styles.wrapper}>
-                <View style={styles.box}>
-                    <View style={styles.groupImageContainer}>
-                        <GroupIcon size={calcWidth(1.9)} groupId={groupId} />
+                <ViewShot style={styles.boxWrapper} options={{ format: 'jpg', quality: 1 }} ref={qrCodeView}>
+                    <View style={styles.box}>
+                        <View style={styles.groupImageContainer}>
+                            <GroupIcon size={calcWidth(1.9)} groupId={groupId} />
+                        </View>
+                        <Text style={styles.groupName}>{groupName}</Text>
+                        <Text style={styles.lightText}>Amigo group</Text>
+                        <View style={styles.qrContainer}>
+                            {inviteToken ? (
+                                <QRCode
+                                    value={`${WEBSITE_URL}/invite/#/join?groupId=${inviteToken}`}
+                                    logo={logo}
+                                    size={calcWidth(58)}
+                                    logoStyle={{ size: calcWidth(15) }}
+                                    style={{
+                                        errorCorrectionLevel: 'L',
+                                        color: 'white',
+                                        backgroundColor: COLOR.QR,
+                                        detectionMarkerOptions: {
+                                            cornerRadius: 0.8,
+                                        },
+                                        patternOptions: {
+                                            connected: false,
+                                            cornerRadius: 5,
+                                        },
+                                    }}
+                                />
+                            ) : (
+                                <View>
+                                    <ActivityIndicator size="large" color={'white'} />
+                                </View>
+                            )}
+                        </View>
                     </View>
-                    <Text style={styles.groupName}>{groupName}</Text>
-                    <Text style={styles.lightText}>Amigo group</Text>
-                    <View style={styles.qrContainer}>
-                        {inviteToken ? (
-                            <QRCode
-                                value={`${WEBSITE_URL}/invite/#/join?groupId=${inviteToken}`}
-                                logo={logo}
-                                size={calcWidth(58)}
-                                logoStyle={{ size: calcWidth(15) }}
-                                style={{
-                                    errorCorrectionLevel: 'L',
-                                    color: 'white',
-                                    backgroundColor: COLOR.QR,
-                                    detectionMarkerOptions: {
-                                        cornerRadius: 0.8,
-                                    },
-                                    patternOptions: {
-                                        connected: false,
-                                        cornerRadius: 5,
-                                    },
-                                }}
-                            />
-                        ) : (
-                            <View>
-                                <ActivityIndicator size="large" color={'white'} />
-                            </View>
-                        )}
-                    </View>
-                </View>
-                <Text style={styles.info}>
-                    This group QR code is private. If it is shared with someone, they can scan it with their Amigo camera to join the group.
-                </Text>
+                    <Text style={styles.info}>
+                        This group QR code is private. If it is shared with someone, they can scan it with their Amigo camera to join the
+                        group.
+                    </Text>
+                </ViewShot>
             </View>
+            <Pressable onPress={captureQrCode} style={styles.shareButton}>
+                <Entypo name="share" size={24} color="white" />
+                <Text style={styles.shareText}>Share QR</Text>
+            </Pressable>
         </SafeAreaView>
     );
 };
@@ -129,5 +166,20 @@ const styles = StyleSheet.create({
         marginTop: calcWidth(4),
         marginBottom: calcWidth(8),
         backgroundColor: COLOR.QR,
+    },
+    boxWrapper: {
+        paddingHorizontal: calcWidth(4),
+        paddingTop: calcWidth(12),
+        paddingBottom: calcWidth(10),
+    },
+    shareButton: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: calcWidth(2),
+    },
+    shareText: {
+        color: 'white',
+        fontWeight: '600',
     },
 });

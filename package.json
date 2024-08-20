@@ -75,6 +75,7 @@
         "react-native-screens": "3.31.1",
         "react-native-svg": "^15.5.0",
         "react-native-tab-view": "^3.5.2",
+        "react-native-view-shot": "^3.8.0",
         "seedrandom": "^3.0.5",
         "socket.io-client": "^4.7.5",
         "url-parse": "^1.5.10",

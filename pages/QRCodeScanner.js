@@ -1,3 +1,4 @@
+import { WEBSITE_URL } from '@env';
 import * as BarCodeScanner from 'expo-barcode-scanner';
 import React, { useEffect, useState } from 'react';
 import { Alert, AppState, Image, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -89,9 +90,8 @@ const QRCodeScanner = ({ navigation }) => {
     const handleBarCodeScanned = ({ data }) => {
         if (!barcodeScanEnabled) return;
 
-        const key = data.substring(0, 9);
-        if (key === 'joinGroup') {
-            joinGroup(data.substring(10));
+        if (data.includes(`${WEBSITE_URL}/invite/#/join?groupId=`)) {
+            joinGroup(data.substring(`${WEBSITE_URL}/invite/#/join?groupId=`.length));
         } else {
             try {
                 const url = new URL(data);

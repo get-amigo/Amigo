@@ -1,12 +1,13 @@
+import { WEBSITE_URL } from '@env';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
+import { QRCode } from 'react-native-qrcode-composer';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import logo from '../assets/icon.png';
+import logo from '../assets/icons/qrIcon.png';
 import GroupIcon from '../components/GroupIcon';
 import COLOR from '../constants/Colors';
 import apiHelper from '../helper/apiHelper';
-import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import { calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const GroupQrScreen = ({ route }) => {
     const groupId = route.params.groupId;
@@ -30,23 +31,33 @@ const GroupQrScreen = ({ route }) => {
             <View style={styles.wrapper}>
                 <View style={styles.box}>
                     <View style={styles.groupImageContainer}>
-                        <GroupIcon size={calcWidth(2.5)} groupId={groupId} />
+                        <GroupIcon size={calcWidth(1.9)} groupId={groupId} />
                     </View>
                     <Text style={styles.groupName}>{groupName}</Text>
                     <Text style={styles.lightText}>Amigo group</Text>
                     <View style={styles.qrContainer}>
                         {inviteToken ? (
                             <QRCode
-                                size={calcHeight(18)}
-                                value={`joinGroup:${inviteToken}`}
+                                value={`${WEBSITE_URL}/invite/#/join?groupId=${inviteToken}`}
                                 logo={logo}
-                                logoSize={30}
-                                logoBackgroundColor="transparent"
-                                color={COLOR.QR}
+                                size={calcWidth(58)}
+                                logoStyle={{ size: calcWidth(15) }}
+                                style={{
+                                    errorCorrectionLevel: 'L',
+                                    color: 'white',
+                                    backgroundColor: COLOR.QR,
+                                    detectionMarkerOptions: {
+                                        cornerRadius: 0.8,
+                                    },
+                                    patternOptions: {
+                                        connected: false,
+                                        cornerRadius: 5,
+                                    },
+                                }}
                             />
                         ) : (
                             <View>
-                                <ActivityIndicator size="large" color={COLOR.QR} />
+                                <ActivityIndicator size="large" color={'white'} />
                             </View>
                         )}
                     </View>
@@ -76,12 +87,12 @@ const styles = StyleSheet.create({
         position: 'relative',
     },
     groupImageContainer: {
-        width: calcWidth(18),
-        height: calcWidth(18),
-        borderRadius: calcWidth(9),
+        width: calcWidth(14),
+        height: calcWidth(14),
+        borderRadius: calcWidth(7),
         position: 'absolute',
-        top: -calcWidth(9),
-        left: calcWidth(28.5),
+        top: -calcWidth(7),
+        left: calcWidth(30),
         justifyContent: 'center',
         alignItems: 'center',
         overflow: 'hidden',
@@ -109,15 +120,14 @@ const styles = StyleSheet.create({
         fontWeight: '300',
     },
     qrContainer: {
-        borderStartColor: 'red',
-        backgroundColor: 'white',
-        width: calcWidth(42),
-        height: calcWidth(42),
+        width: calcWidth(62),
+        height: calcWidth(62),
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: calcWidth(2),
         marginHorizontal: 'auto',
         marginTop: calcWidth(4),
         marginBottom: calcWidth(8),
+        backgroundColor: COLOR.QR,
     },
 });

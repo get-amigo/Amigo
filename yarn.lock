@@ -8373,12 +8373,11 @@ react-native-picker-select@^9.1.3:
     lodash.isequal "^4.5.0"
     lodash.isobject "^3.0.2"
 
-react-native-qr-svg@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/react-native-qr-svg/-/react-native-qr-svg-1.3.2.tgz#c9a9e8833693ba7232f8946ba34611f7d47a9d23"
-  integrity sha512-+YM/L7snE2nFW7/tzD8iYiwmXMWs4eyD0J5WWCF9XQzSoMYeZVGQmFZAyYc29NchF3SR11i2vIlsZ9em9xiQpA==
+react-native-qrcode-composer@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-qrcode-composer/-/react-native-qrcode-composer-0.2.0.tgz#bd4885a354fa37a5109cb4fe2a791f4b760efcec"
+  integrity sha512-W2gK0+GX6sZStLvX1xwGCns57gRs7rxHs59XYs64CVU5YN6czRx20BJ9EECVFHWzk4lCqpfkG2Zu+Qkt5YP2mw==
   dependencies:
-    nanoid "^3.3.7"
     qrcode "^1.5.3"
 
 react-native-qrcode-svg@^6.3.2:

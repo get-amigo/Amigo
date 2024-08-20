@@ -20,7 +20,7 @@ const COLOR = {
     LIGHT_GRAY: '#d9d9d9',
     CATEGORY_BORDER_AND_HIGHLIGHT_COLOR: '#4D426C',
     PRESSABLE_BACKGROUND: '#302B49',
-    QR: '#512697',
+    QR: '#8740FD',
 };
 
 export default COLOR;

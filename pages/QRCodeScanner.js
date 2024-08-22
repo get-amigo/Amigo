@@ -11,6 +11,7 @@ import CameraScanner from '../components/CameraScanner';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useTransaction } from '../context/TransactionContext';
+import { useGroup } from '../context/GroupContext';
 import openSettings from '../helper/openSettings';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
@@ -19,6 +20,7 @@ const QRCodeScanner = ({ navigation }) => {
     const [isLit, setIsLit] = useState(false);
     const { setUpiParams } = useTransaction();
     const [barcodeScanEnabled, setBarcodeScanEnabled] = useState(true);
+    const { setGroup } = useGroup();
 
     useEffect(() => {
         const checkCameraPermission = async () => {
@@ -72,9 +74,12 @@ const QRCodeScanner = ({ navigation }) => {
     const joinGroup = async (groupId) => {
         try {
             const { data } = await apiHelper.post(`group/${groupId}/join`);
+
             Toast.show(`Joined ${data?.name}`, {
                 duration: Toast.durations.LONG,
             });
+
+            setGroup(data);
         } catch (e) {
             console.error(e);
             Toast.show('Already in the group', {
@@ -82,9 +87,7 @@ const QRCodeScanner = ({ navigation }) => {
             });
         }
 
-        navigation.navigate(PAGES.TAB_NAVIGATOR, {
-            screen: PAGES.GROUP_LIST,
-        });
+        navigation.navigate(PAGES.GROUP);
     };
 
     const handleBarCodeScanned = ({ data }) => {

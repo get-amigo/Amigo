@@ -6,45 +6,55 @@ import PAGES from '../constants/pages';
 import { useAuth } from '../stores/auth';
 
 export default function useReceivePushNotification() {
-  const { user, token } = useAuth();
-  const navigation = useNavigation();
+    const { user, token } = useAuth();
+    const navigation = useNavigation();
 
-  useEffect(() => {
-    if (!user || !token) {
-      return;
-    }
+    useEffect(() => {
+        if (!user || !token) {
+            return;
+        }
 
-    const handleForegroundMessage = async (remoteMessage) => {
-      if (remoteMessage) {
-        console.log('Foreground Message:', remoteMessage.data);
+        const handleForegroundMessage = async (remoteMessage) => {
+            if (remoteMessage) {
+                console.log('Foreground Message:', remoteMessage.data);
 
-        const data = JSON.parse(remoteMessage.data.data);
+                const data = JSON.parse(remoteMessage.data.data);
+                const groupName = data.group.name;
+                const creatorName = data.creator.name;
+                const totalAmount = data.amount;
+                const userId = user._id;
 
-         // Foreground Notification
-         await Notifications.scheduleNotificationAsync({
-          content: {
-            title: data.group.name,
-            body: `A new transaction of ₹${data.amount} has been created by ${data.creator.name}`,
-        data: {data,screen:PAGES.ABOUT},
-            
-          },
-          trigger: { seconds: 1 },
+                const userShareObject = data.splitAmong.find((item) => item.user === userId);
+                const userShare = userShareObject ? userShareObject.amount : 0;
+
+                // notification content
+                const title = `${groupName}`;
+                const body = `New Expense Added.\n${creatorName} split ₹${totalAmount} with you. Your share: ₹${userShare}`;
+
+                // Foreground Notification
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: title,
+                        body: body,
+                        data: { data, screen: PAGES.GROUP_LIST },
+                    },
+                    trigger: { seconds: 1 },
+                });
+            }
+        };
+
+        Notifications.setNotificationHandler({
+            handleNotification: async () => ({
+                shouldShowAlert: true,
+                shouldPlaySound: true,
+                shouldSetBadge: true,
+            }),
         });
-      }
-    };
 
-    Notifications.setNotificationHandler({
-      handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-      }),
-    });
+        const unsubscribeOnMessage = messaging().onMessage(handleForegroundMessage);
 
-    const unsubscribeOnMessage = messaging().onMessage(handleForegroundMessage);
-
-    return () => {
-      unsubscribeOnMessage();
-    };
-  }, [user, token, navigation]);
+        return () => {
+            unsubscribeOnMessage();
+        };
+    }, [user, token, navigation]);
 }

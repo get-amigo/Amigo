@@ -34,7 +34,6 @@ const useAuthStore = create(
                         await apiHelper.delete('/notifications/device-token', {
                             data: payload,
                         });
-                        console.log('Payload:', payload);
                     } catch (error) {
                         console.error('Error deleting device token:', error);
                     }

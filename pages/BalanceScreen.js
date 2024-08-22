@@ -38,7 +38,6 @@ function BalanceScreen({ navigation }) {
 
     useRegisterForPushNotification()
     useReceivePushNotification()
-    
 
     if (loading)
         return (

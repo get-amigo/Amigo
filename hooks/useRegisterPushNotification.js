@@ -1,23 +1,28 @@
 import messaging from '@react-native-firebase/messaging';
+import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
-import DeviceInfo from 'react-native-device-info';
 import apiHelper from '../helper/apiHelper';
 import { useAuth } from '../stores/auth';
 
 async function getDeviceId() {
-    const deviceId = await DeviceInfo.getUniqueId();
+    let deviceId;
+
+    if (Platform.OS === 'ios') {
+        deviceId = (await Application.getIosIdForVendorAsync());
+    } else if (Platform.OS === 'android') {
+        deviceId = Application.getAndroidId() ;
+    }
+
     console.log('Device ID:', deviceId);
     return deviceId;
 }
 
 async function requestUserPermission() {
     const authStatus = await messaging().requestPermission();
-    const enabled =
-        authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-        authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    const enabled = authStatus === messaging.AuthorizationStatus.AUTHORIZED || authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
     if (enabled) {
         const token = await messaging().getToken();
@@ -28,6 +33,8 @@ async function requestUserPermission() {
 
 async function registerForPushNotificationsAsync() {
     let token;
+    let deviceId = await getDeviceId();
+
     if (Constants.deviceName) {
         const { status: existingStatus } = await Notifications.getPermissionsAsync();
         let finalStatus = existingStatus;
@@ -37,11 +44,10 @@ async function registerForPushNotificationsAsync() {
         }
         if (finalStatus !== 'granted') {
             console.error('Failed to get push token for push notification!');
-            return null;
+            return { token: null, deviceId };
         }
         const expoPushToken = await Notifications.getExpoPushTokenAsync();
-        token = expoPushToken;
-        deviceId = await getDeviceId();
+        token = expoPushToken.data;
     } else {
         console.error('Must use physical device for Push Notifications');
     }
@@ -68,7 +74,7 @@ export default function useRegisterForPushNotification() {
             }
 
             const fcmToken = await requestUserPermission();
-            const { token: expoToken} = await registerForPushNotificationsAsync();
+            const { token: expoToken, deviceId } = await registerForPushNotificationsAsync();
 
             if (fcmToken) {
                 setFcmToken(fcmToken);

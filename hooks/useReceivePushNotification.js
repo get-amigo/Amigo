@@ -2,6 +2,7 @@ import messaging from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
+import PAGES from '../constants/pages';
 import { useAuth } from '../stores/auth';
 
 export default function useReceivePushNotification() {
@@ -22,9 +23,10 @@ export default function useReceivePushNotification() {
          // Foreground Notification
          await Notifications.scheduleNotificationAsync({
           content: {
-            title: "Amigo",
-            body: "A new transaction is created in the group",
-            data: data,
+            title: data.group.name,
+            body: `A new transaction of ₹${data.amount} has been created by ${data.creator.name}`,
+        data: {data,screen:PAGES.ABOUT},
+            
           },
           trigger: { seconds: 1 },
         });

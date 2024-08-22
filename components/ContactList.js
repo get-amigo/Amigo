@@ -8,7 +8,7 @@ import { useContacts } from '../hooks/useContacts';
 import AddMemberWithoutContact from './AddMemberWithoutContact';
 import ContactCard from './ContactCard';
 import Search from './Search';
-
+import SortArrayWithTargetAndTargetProp from '../helper/SortArrayWithTargetAndTargetProp.js';
 const ContactList = ({ eliminatedContacts }) => {
     const { search, setSearch, contacts, selectedContacts, handleSelectContact, setSelectedContacts, contactPermission } = useContacts();
     const flatListRef = useRef(null);
@@ -40,7 +40,7 @@ const ContactList = ({ eliminatedContacts }) => {
                     style={{
                         marginTop: calcWidth(1.5),
                     }}
-                    data={eliminateContacts()}
+                    data={SortArrayWithTargetAndTargetProp(eliminateContacts())}
                     keyExtractor={(item) => item.phoneNumber}
                     renderItem={({ item }) => (
                         <Pressable onPress={() => handleSelectContact(item)}>

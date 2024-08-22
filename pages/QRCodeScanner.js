@@ -43,7 +43,7 @@ const QRCodeScanner = ({ navigation }) => {
     }, []);
 
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
+        const unsubscribeFocus = navigation.addListener('focus', () => {
             setHasPermission(false);
             (async () => {
                 const { status } = await BarCodeScanner.requestPermissionsAsync();
@@ -56,8 +56,8 @@ const QRCodeScanner = ({ navigation }) => {
         });
 
         return () => {
-            unsubscribe(); // Remove the 'focus' event listener
-            unsubscribeBlur(); // Remove the 'blur' event listener
+            unsubscribeFocus();
+            unsubscribeBlur();
         };
     }, [navigation]);
 

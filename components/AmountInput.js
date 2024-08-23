@@ -5,7 +5,7 @@ import COLOR from '../constants/Colors';
 import getFontSize from '../helper/getFontSize';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
-const AmountInput = ({ amount = '', handleInputChange, isTextInput = false }) => {
+const AmountInput = ({ amount = '', handleInputChange, isTextInput = false, onSubmitEditing }) => {
     const baseFontSize = getFontSizeByWindowWidth(40);
     const [fontSize, setFontSize] = useState(getFontSize('₹' + amount, calcWidth(65), baseFontSize));
 
@@ -53,6 +53,8 @@ const AmountInput = ({ amount = '', handleInputChange, isTextInput = false }) =>
                     placeholderTextColor={COLOR.TEXT}
                     placeholder="0"
                     ref={amountInputRef}
+                    blurOnSubmit={false}
+                    onSubmitEditing={onSubmitEditing}
                 />
             ) : (
                 <Text style={[styles.amount, commonStyles]}>{amount}</Text>

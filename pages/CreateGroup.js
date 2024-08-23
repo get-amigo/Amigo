@@ -23,15 +23,21 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useContacts } from '../hooks/useContacts';
+import getNamesFromContacts from '../helper/getNamesFromContacts';
+import { useTransaction } from '../context/TransactionContext';
+import editNames from '../helper/editNames';
+import { useAuth } from '../stores/auth';
 
 const CreateGroup = ({ navigation }) => {
     const { selectedContacts } = useContacts();
+    const { setTransactionData } = useTransaction();
+    const { user } = useAuth();
+
     const [groupName, setGroupName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isError, setIsError] = useState(false);
     const nameRef = useRef();
     const MAX_LEN = 40;
-
     const createGroupAsync = async () => {
         const isOnline = await checkConnectivity();
         if (!isOnline) {
@@ -42,19 +48,44 @@ const CreateGroup = ({ navigation }) => {
         setIsLoading(true);
 
         try {
-            const phoneNumbers = selectedContacts.map(({ phoneNumber, countryCode }) => ({
-                phoneNumber,
-                countryCode,
-            }));
-            await apiHelper.post('/group', {
+            const requestBody = {
                 name: groupName,
-                phoneNumbers,
-            });
+                phoneNumbers: selectedContacts.map(({ phoneNumber, countryCode }) => ({
+                    phoneNumber,
+                    countryCode,
+                })),
+            };
+
+            const response = await apiHelper.post('/group', requestBody);
+
+            const newGroup = response.data;
+
             Toast.show(`${groupName} created`, {
                 duration: Toast.durations.LONG,
             });
-            if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) navigation.navigate(PAGES.ADD_TRANSACTION);
-            else {
+
+            if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) {
+                const contacts = await getNamesFromContacts();
+                const memberPhoneNumbers = [
+                    user.phoneNumber, // Add current user's phone number to the list of members
+                    ...requestBody.phoneNumbers.map((member) => member.phoneNumber),
+                ];
+
+                setTransactionData((prev) => ({
+                    ...prev,
+                    group: {
+                        ...prev.group,
+                        ...newGroup,
+                        members: newGroup.members.map((memberId, index) => ({
+                            _id: memberId,
+                            name: editNames([{ _id: memberId, phoneNumber: memberPhoneNumbers[index] }], user._id, contacts)[0].name,
+                            phoneNumber: memberPhoneNumbers[index],
+                        })),
+                    },
+                }));
+
+                navigation.navigate(PAGES.ADD_TRANSACTION);
+            } else {
                 navigation.goBack();
             }
         } catch {

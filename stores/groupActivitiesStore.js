@@ -19,7 +19,7 @@ const groupActivitiesStore = (set, get) => ({
     pendingActivities: {},
 
     addOldActivitiesToLocalDB: (acts) => {
-        // acts is an array of activities fethed by api
+        // acts is an array of activities fetched by api
         if (!acts || acts.length === 0) {
             return;
         }
@@ -76,11 +76,13 @@ const groupActivitiesStore = (set, get) => ({
         });
     },
 
-    isActivityAvailable: (activityId, groupId) => {
+    isActivityAvailable: (params) => {
+        const { activityId, groupId } = params;
         return activityId in (get().activities[groupId]?.activitiesById || {});
     },
 
-    addActivityToLocalDB: (activity, groupId, user, isSynced = false, addToPending = false) => {
+    addActivityToLocalDB: (params) => {
+        const { activity, groupId, user, isSynced = false, addToPending = false } = params;
         if (isSynced) {
             set((state) => {
                 const newActivitiesById = {
@@ -136,6 +138,7 @@ const groupActivitiesStore = (set, get) => ({
                             paidBy: {
                                 _id: activity.relatedId.paidBy._id,
                                 name: activity.relatedId.paidBy.name,
+                                phoneNumber: activity.relatedId.paidBy.phoneNumber,
                             },
                             splitAmong: activity.relatedId.splitAmong,
                             type: activity.relatedId.type,
@@ -314,7 +317,8 @@ const groupActivitiesStore = (set, get) => ({
         });
     },
 
-    deleteActivity: (activityId, groupId, synced) => {
+    deleteActivity: (params) => {
+        const { activityId, groupId, synced } = params;
         if (synced === false) {
             set((state) => {
                 const newPendingActivities = state?.pendingActivities || {};

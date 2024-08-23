@@ -89,6 +89,7 @@ const MessageComposer = ({ chatData, activityId }) => {
                         _id: activityId,
                         group: group._id,
                     });
+
                 }
             } else {
                 // No network connection

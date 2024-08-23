@@ -135,8 +135,14 @@ function TransactionFormScreen({ navigation }) {
             };
 
             if (isConnected) {
-                const { activityId, relatedId } = addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, false);
-                const newTransactionWithId = { ...newTransaction, activityId: activityId, transactionId: relatedId };
+                const { activityId, relatedId } = addActivityToLocalDB({
+                    activity: newActivity,
+                    groupId: newActivity.relatedId.group._id,
+                    user: user,
+                    isSynced: false,
+                    addToPending: false,
+                });
+                const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
 
                 apiHelper
                     .post('/transaction', newTransactionWithId)
@@ -161,7 +167,13 @@ function TransactionFormScreen({ navigation }) {
                         Alert.alert('Error', JSON.stringify(err));
                     });
             } else {
-                addActivityToLocalDB(newActivity, newActivity.relatedId.group._id, user, false, true);
+                addActivityToLocalDB({
+                    activity: newActivity,
+                    groupId: newActivity.relatedId.group._id,
+                    user: user,
+                    isSynced: false,
+                    addToPending: true,
+                });
             }
 
             if (upiParams.receiverId) {

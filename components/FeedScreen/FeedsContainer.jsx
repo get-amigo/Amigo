@@ -10,11 +10,12 @@ import useActivities from '../../hooks/useActivities';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import Feed from '../Feed';
 import StickyDate from './StickyDate';
-import getNamesFromContacts from '../../helper/getNamesFromContacts';
+import useContactsNamesMap from '../../hooks/useContactsNamesMap';
 
 const FeedsContainer = () => {
-    const [contactsNamesMap, setContactsNamesMap] = useState([]);
     const { group } = useGroup();
+
+    const contactsNamesMap = useContactsNamesMap();
 
     const [isStickyDateVisible, setIsStickyDateVisible] = useState(false);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -52,15 +53,6 @@ const FeedsContainer = () => {
     }, []);
 
     useEffect(() => {
-        async function fetchContacts() {
-            const data = await getNamesFromContacts();
-            setContactsNamesMap(data);
-        }
-        fetchContacts();
-    }, []);
-
-    useEffect(() => {
-        // handle fetch
         if (shouldFetch && hasNextPage && !isLoading) {
             fetchNextPage();
         }

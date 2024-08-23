@@ -76,11 +76,13 @@ const groupActivitiesStore = (set, get) => ({
         });
     },
 
-    isActivityAvailable: (activityId, groupId) => {
+    isActivityAvailable: (params) => {
+        const { activityId, groupId } = params;
         return activityId in (get().activities[groupId]?.activitiesById || {});
     },
 
-    addActivityToLocalDB: (activity, groupId, user, isSynced = false, addToPending = false) => {
+    addActivityToLocalDB: (params) => {
+        const { activity, groupId, user, isSynced = false, addToPending = false } = params;
         if (isSynced) {
             set((state) => {
                 const newActivitiesById = {
@@ -315,7 +317,8 @@ const groupActivitiesStore = (set, get) => ({
         });
     },
 
-    deleteActivity: (activityId, groupId, synced) => {
+    deleteActivity: (params) => {
+        const { activityId, groupId, synced } = params;
         if (synced === false) {
             set((state) => {
                 const newPendingActivities = state?.pendingActivities || {};

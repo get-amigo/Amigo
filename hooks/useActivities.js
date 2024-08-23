@@ -60,7 +60,7 @@ const useActivities = () => {
             }
 
             const lastMessage = lastPage[fetchSize - 1];
-            if (isActivityAvailable(lastMessage._id, lastMessage.group)) {
+            if (isActivityAvailable({ activityId: lastMessage._id, groupId: lastMessage.group })) {
                 return undefined;
             }
             const secondLastMessage = lastPage[fetchSize - 2];

@@ -283,6 +283,7 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(12),
         padding: calcWidth(3),
+        fontWeight: 'bold',
     },
     modalBackground: {
         flex: 1,

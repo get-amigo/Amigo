@@ -5,8 +5,9 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 // Helper functions for responsive layout
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
+import HightlightedText from './HighlightText';
 
-function ContactCard({ selected, color, name, phoneNumber, imageURI, countryCode }) {
+function ContactCard({ selected, color, name, phoneNumber, imageURI, countryCode, search }) {
     return (
         <View style={styles.container}>
             {imageURI ? (
@@ -17,7 +18,8 @@ function ContactCard({ selected, color, name, phoneNumber, imageURI, countryCode
                 </View>
             )}
             <View style={styles.textContainer}>
-                <Text style={styles.nameText}>{name}</Text>
+                {/* <Text style={styles.nameText}>{name}</Text> */}
+                <HightlightedText text={name} target={search} style={styles.nameText} />
                 <Text style={styles.phoneText}>
                     {countryCode} {phoneNumber}
                 </Text>

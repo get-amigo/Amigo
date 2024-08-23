@@ -11,6 +11,7 @@ import AccountScreen from '../pages/AccountScreen';
 import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
 import AddPeople from '../pages/AddPeople';
 import CreateGroup from '../pages/CreateGroup';
+import DraftList from '../pages/DraftList';
 import FAQ from '../pages/FAQ';
 import GroupBalance from '../pages/GroupBalanceScreen';
 import GroupSettings from '../pages/GroupSettings';
@@ -270,6 +271,17 @@ const AppNavigator = () => {
                                 },
                                 animation: 'fade',
                                 title: null,
+                                headerTintColor: '#fff',
+                            }}
+                        />
+                        <Stack.Screen
+                            name={PAGES.DRAFT_LIST}
+                            component={DraftList}
+                            options={{
+                                headerStyle: {
+                                    backgroundColor: COLOR.APP_BACKGROUND,
+                                },
+                                animation: 'fade',
                                 headerTintColor: '#fff',
                             }}
                         />

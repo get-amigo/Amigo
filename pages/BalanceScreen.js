@@ -1,8 +1,9 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
+import { FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import NoBalance from '../assets/NoBalance.png';
+import draftIcon from "../assets/icons/draftIcon.png";
 import ScanIcon from '../assets/icons/scan.png';
 import EmptyScreen from '../components/EmptyScreen';
 import FabIcon from '../components/FabIcon';
@@ -13,7 +14,6 @@ import PAGES from '../constants/pages';
 import { calcHeight, calcWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
-
 const headerIconSize = calcHeight(1);
 
 function BalanceScreen({ navigation }) {
@@ -131,8 +131,18 @@ function BalanceScreen({ navigation }) {
                     style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
+                        alignItems:"center",
+                        gap:calcWidth(4)
                     }}
                 >
+                    <Pressable
+                        onPress={() => {
+                            navigation.navigate(PAGES.DRAFT_LIST);
+                        }}
+                        style={styles.draftIcon}
+                    >
+                        <Image source={draftIcon}/>
+                    </Pressable>
                     <Pressable
                         onPress={() => {
                             navigation.navigate(PAGES.ACCOUNT);
@@ -209,5 +219,14 @@ function BalanceScreen({ navigation }) {
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    draftIcon:{
+        borderWidth:calcWidth(0.48),
+        borderRadius:calcWidth(100),
+        borderColor:COLOR.PRIMARY,
+        padding:calcWidth(1.32),
+    },
+})
 
 export default BalanceScreen;

@@ -27,7 +27,8 @@ function TransactionFormScreen({ navigation, route }) {
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
-    const { transaction, isEditing, setIsEditing } = route.params || {};
+    const editTransaction = useGroupActivitiesStore((state) => state.editTransaction);
+    const { transaction, isEditing, activity } = route.params || {};
 
     useEffect(() => {
         if (transaction) {
@@ -141,23 +142,16 @@ function TransactionFormScreen({ navigation, route }) {
             };
 
             if (isConnected) {
-                const { activityId, relatedId } = addActivityToLocalDB({
-                    activity: newActivity,
-                    groupId: newActivity.relatedId.group._id,
-                    user: user,
-                    isSynced: false,
-                    addToPending: false,
-                });
-                const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
-
-                if (isEditing) {
+                if (isEditing && transaction._id) {
                     // Update existing transaction
+                    const newTransactionWithId = { ...newTransaction, activityId: activity, transactionId: transaction._id };
                     apiHelper
                         .put(`/transaction/${transactionData._id}`, newTransactionWithId)
                         .then(() => {
+                            editTransaction(activity, newTransactionWithId.group, newTransactionWithId);
                             setUpiParams({});
                             updateIsSynced({
-                                _id: activityId,
+                                _id: activity,
                                 group: newActivity.relatedId.group._id,
                             });
                             Toast.show('Transaction Updated', {
@@ -170,6 +164,14 @@ function TransactionFormScreen({ navigation, route }) {
                         });
                 } else {
                     // Create new transaction
+                    const { activityId, relatedId } = addActivityToLocalDB(
+                        newActivity,
+                        newActivity.relatedId.group._id,
+                        user,
+                        false,
+                        false,
+                    );
+                    const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
                     apiHelper
                         .post('/transaction', newTransactionWithId)
                         .then(() => {

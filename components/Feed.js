@@ -170,7 +170,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
         try {
             const response = await apiHelper.get(`/transaction/${transactionId}`);
             const transactionData = response.data;
-            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData });
+            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, activity: activityId });
         } catch (error) {
             console.error('Error fetching transaction:', error);
         }

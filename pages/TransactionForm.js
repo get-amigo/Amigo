@@ -148,7 +148,11 @@ function TransactionFormScreen({ navigation, route }) {
                     apiHelper
                         .put(`/transaction/${transactionData._id}`, newTransactionWithId)
                         .then(() => {
-                            editTransaction(activity, newTransactionWithId.group, newTransactionWithId);
+                            editTransaction({
+                                activityId: activity,
+                                groupId: newTransactionWithId.group,
+                                updatedActivity: newTransactionWithId,
+                            });
                             setUpiParams({});
                             updateIsSynced({
                                 _id: activity,

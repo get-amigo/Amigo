@@ -353,7 +353,8 @@ const groupActivitiesStore = (set, get) => ({
         });
     },
 
-    updateChat: (activityId, groupId, newMessage) => {
+    updateChat: (params) => {
+        const { activityId, groupId, newMessage } = params;
         set((state) => {
             const newActivitiesById = {
                 ...(state.activities[groupId]?.activitiesById || {}),
@@ -378,7 +379,8 @@ const groupActivitiesStore = (set, get) => ({
         });
     },
 
-    editTransaction: (activityId, groupId, updatedActivity) => {
+    editTransaction: (params) => {
+        const { activityId, groupId, updatedActivity } = params;
         set((state) => {
             const newActivitiesById = {
                 ...(state.activities[groupId]?.activitiesById || {}),

@@ -71,7 +71,7 @@ const MessageComposer = ({ chatData, activityId }) => {
                         _id: chatData._id,
                         group: group._id,
                     });
-                    updateChat(activityId, group._id, message);
+                    updateChat({ activityId: activityId, groupId: group._id, newMessage: message });
                 } else {
                     const { activityId, relatedId } = addActivityToLocalDB({
                         activity: { activityType: 'chat', relatedId: { message } },

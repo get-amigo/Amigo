@@ -164,13 +164,13 @@ function TransactionFormScreen({ navigation, route }) {
                         });
                 } else {
                     // Create new transaction
-                    const { activityId, relatedId } = addActivityToLocalDB(
-                        newActivity,
-                        newActivity.relatedId.group._id,
+                    const { activityId, relatedId } = addActivityToLocalDB({
+                        activity: newActivity,
+                        groupId: newActivity.relatedId.group._id,
                         user,
-                        false,
-                        false,
-                    );
+                        isSynced: false,
+                        addToPending: false,
+                    });
                     const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
                     apiHelper
                         .post('/transaction', newTransactionWithId)

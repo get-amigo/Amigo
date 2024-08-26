@@ -73,13 +73,13 @@ const MessageComposer = ({ chatData, activityId }) => {
                     });
                     updateChat(activityId, group._id, message);
                 } else {
-                    const { activityId, relatedId } = addActivityToLocalDB(
-                        { activityType: 'chat', relatedId: { message } },
-                        group._id,
+                    const { activityId, relatedId } = addActivityToLocalDB({
+                        activity: { activityType: 'chat', relatedId: { message } },
+                        groupId: group._id,
                         user,
-                        false,
-                        false,
-                    );
+                        isSynced: false,
+                        addToPending: false,
+                    });
                     await apiHelper.post(`/group/${group._id}/chat`, {
                         message,
                         activityId,
@@ -89,11 +89,16 @@ const MessageComposer = ({ chatData, activityId }) => {
                         _id: activityId,
                         group: group._id,
                     });
-
                 }
             } else {
                 // No network connection
-                addActivityToLocalDB({ activityType: 'chat', relatedId: { message } }, group._id, user, false, false);
+                addActivityToLocalDB({
+                    activity: { activityType: 'chat', relatedId: { message } },
+                    groupId: group._id,
+                    user,
+                    isSynced: false,
+                    addToPending: false,
+                });
                 console.warn('No network connection. Activity saved locally.');
             }
         } catch (err) {

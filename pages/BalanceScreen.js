@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
 import NoBalance from '../assets/NoBalance.png';
-import draftIcon from "../assets/icons/draftIcon.png";
+import draftIcon from '../assets/icons/draftIcon.png';
 import ScanIcon from '../assets/icons/scan.png';
 import EmptyScreen from '../components/EmptyScreen';
 import FabIcon from '../components/FabIcon';
@@ -11,29 +11,42 @@ import GroupBalanceCard from '../components/GroupBalanceCard';
 import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { calcHeight, calcWidth } from '../helper/res';
+import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
+import useDraftTransactionStore from '../stores/draftTransactionStore';
 const headerIconSize = calcHeight(1);
 
 function BalanceScreen({ navigation }) {
     const { user } = useAuth();
     const { fetchData, loading, totalBalances, balances } = useBalance();
     const [refreshing, setRefreshing] = useState(false);
+    const [drafts, setDrafts] = useState([]);
+    const [loadingDrafts, setLoadingDrafts] = useState(true);
+    const { getDraftsForUser } = useDraftTransactionStore();
 
     useFocusEffect(
         useCallback(() => {
-            fetchData(user);
-        }, []),
+            const loadData = async () => {
+                setLoadingDrafts(true);
+                await fetchData(user);
+                const draftsData = getDraftsForUser(user._id);
+                setDrafts(draftsData);
+                setLoadingDrafts(false);
+            };
+            loadData();
+        }, [user]),
     );
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await fetchData(user);
+        const draftsData = getDraftsForUser(user._id);
+        setDrafts(draftsData);
         setRefreshing(false);
     }, [user]);
 
-    if (loading)
+    if (loading || loadingDrafts)
         return (
             <>
                 <View
@@ -131,18 +144,23 @@ function BalanceScreen({ navigation }) {
                     style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
-                        alignItems:"center",
-                        gap:calcWidth(4)
+                        alignItems: 'center',
+                        gap: calcWidth(4),
                     }}
                 >
-                    <Pressable
-                        onPress={() => {
-                            navigation.navigate(PAGES.DRAFT_LIST);
-                        }}
-                        style={styles.draftIcon}
-                    >
-                        <Image source={draftIcon}/>
-                    </Pressable>
+                    {drafts && drafts.length > 0 && (
+                        <View style={styles.draftIconContainer}>
+                            <Pressable
+                                onPress={() => {
+                                    navigation.navigate(PAGES.DRAFT_LIST);
+                                }}
+                                style={styles.draftIcon}
+                            >
+                                <Image source={draftIcon} />
+                            </Pressable>
+                            <Text style={styles.draftCount}>{drafts.length}</Text>
+                        </View>
+                    )}
                     <Pressable
                         onPress={() => {
                             navigation.navigate(PAGES.ACCOUNT);
@@ -221,12 +239,28 @@ function BalanceScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    draftIcon:{
-        borderWidth:calcWidth(0.48),
-        borderRadius:calcWidth(100),
-        borderColor:COLOR.PRIMARY,
-        padding:calcWidth(1.32),
+    draftIcon: {
+        borderWidth: calcWidth(0.48),
+        borderRadius: calcWidth(100),
+        borderColor: COLOR.PRIMARY,
+        paddingVertical: calcWidth(1.4),
+        paddingHorizontal: calcWidth(1.76),
     },
-})
+    draftIconContainer: {
+        position: 'relative',
+    },
+    draftCount: {
+        position: 'absolute',
+        top: calcHeight(-0.8),
+        left: calcWidth(5.6),
+        backgroundColor: COLOR.BUTTON,
+        color: COLOR.PRIMARY,
+        alignItems: 'center',
+        textAlign: 'center',
+        borderRadius: calcWidth(100),
+        fontSize: getFontSizeByWindowWidth(10),
+        paddingHorizontal: calcWidth(1.6),
+    },
+});
 
 export default BalanceScreen;

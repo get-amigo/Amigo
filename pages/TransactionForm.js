@@ -19,7 +19,7 @@ import { useAuth } from '../stores/auth';
 import useDraftTransactionStore from '../stores/draftTransactionStore';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
-function TransactionFormScreen({ navigation ,route}) {
+function TransactionFormScreen({ navigation, route }) {
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
@@ -29,46 +29,40 @@ function TransactionFormScreen({ navigation ,route}) {
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
-    const { addDraft,getDraftsForUser,removeDraft,clearDrafts } = useDraftTransactionStore();
+    const { addDraft, removeDraft } = useDraftTransactionStore();
 
-    useEffect(() =>{
-        const userDrafts = getDraftsForUser(user._id);
-        console.log(`Saved drafts for user ${user._id}:`, userDrafts);
-    })
     const handleSaveAsDraft = () => {
-        const draftId = addDraft(transactionData, user, transactionData.group._id);
-        const userDrafts = getDraftsForUser(user._id);
-        console.log(`Saved drafts for user ${user._id}:`, userDrafts);
+        addDraft(transactionData, user, transactionData.group);
         Toast.show('Transaction saved as draft', {
-          duration: Toast.durations.LONG,
-        }); 
-        navigation.goBack()
-      };
+            duration: Toast.durations.LONG,
+        });
+        navigation.goBack();
+    };
 
-      useEffect(() => {
+    useEffect(() => {
         if (draft) {
-          setTransactionData((prev) => ({
-            ...prev,
-            amount: draft.relatedId.amount,
-            description: draft.relatedId.description,
-            type: draft.relatedId.type,
-            group: draft.relatedId.group,
-            paidBy: draft.relatedId.paidBy,
-            splitAmong: draft.relatedId.splitAmong,
-          }));
+            setTransactionData((prev) => ({
+                ...prev,
+                amount: draft.relatedId.amount,
+                description: draft.relatedId.description,
+                type: draft.relatedId.type,
+                group: draft.relatedId.group,
+                paidBy: draft.relatedId.paidBy,
+                splitAmong: draft.relatedId.splitAmong,
+            }));
         }
-      }, [draft]);
+    }, [draft]);
 
-      const isFormComplete = () => {
+    const isFormComplete = () => {
         return (
-          transactionData.amount &&
-          transactionData.description &&
-          transactionData.type &&
-          transactionData.group._id &&
-          transactionData.paidBy._id &&
-          transactionData.splitAmong.length > 0
+            transactionData.amount &&
+            transactionData.description &&
+            transactionData.type &&
+            transactionData.group._id &&
+            transactionData.paidBy._id &&
+            transactionData.splitAmong.length > 0
         );
-      };
+    };
 
     useEffect(() => {
         const { group } = transactionData;
@@ -202,9 +196,9 @@ function TransactionFormScreen({ navigation ,route}) {
                         Alert.alert('Error', JSON.stringify(err));
                     });
 
-                    if(draft){
-                        removeDraft(draft._id)
-                    }
+                if (draft) {
+                    removeDraft(draft._id);
+                }
             } else {
                 addActivityToLocalDB({
                     activity: newActivity,
@@ -311,10 +305,10 @@ function TransactionFormScreen({ navigation ,route}) {
             <View style={styles.submitBtnContainer}>
                 {/* <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" /> */}
                 {isFormComplete() ? (
-        <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
-      ) : (
-        <Button styleOverwrite={styles.submitBtn} onPress={handleSaveAsDraft} title="SAVE AS DRAFT" />
-      )}
+                    <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
+                ) : (
+                    <Button styleOverwrite={styles.submitBtn} onPress={handleSaveAsDraft} title="SAVE AS DRAFT" />
+                )}
             </View>
         </ScrollView>
     );

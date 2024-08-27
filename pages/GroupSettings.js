@@ -174,6 +174,20 @@ const GroupScreen = ({
                     <Image source={ShareImage} style={styles.icon} />
                     <Text style={styles.buttonText}>Share Group Link</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.memberItem}
+                    onPress={() =>
+                        navigation.push(PAGES.GROUP_QR_SCREEN, {
+                            groupId: group._id,
+                            groupName,
+                        })
+                    }
+                >
+                    <View style={[styles.icon, styles.qrCodeIcon]}>
+                        <Ionicons name="qr-code-outline" size={calcHeight(2.7)} color="white" />
+                    </View>
+                    <Text style={styles.buttonText}>Show QR code</Text>
+                </TouchableOpacity>
             </>
         );
     }
@@ -287,6 +301,12 @@ const styles = StyleSheet.create({
     icon: { height: calcHeight(5), width: calcHeight(5) },
     leaveGroupText: { color: 'rgba(253 ,64,9, 0.59)', marginLeft: calcWidth(3) },
     faltListContainer: { flex: 1 },
+    qrCodeIcon: {
+        backgroundColor: COLOR.BUTTON,
+        borderRadius: calcHeight(2.5),
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 
 export default GroupScreen;

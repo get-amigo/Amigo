@@ -6,13 +6,15 @@ interface Props {
     target: string;
     style: TextStyle;
 }
-export default function HighlightedText(props: Props) {
-    if (props.target === '') return <Text style={props.style}>{props.text}</Text>;
-    const parts = props.text.split(new RegExp(`(${props.target})`, 'gi'));
+export default function HighlightedText({ text, target, style }: Props) {
+    if (target === '') return <Text style={style}>{text}</Text>;
+
+    const parts = text.split(new RegExp(`(${target})`, 'gi'));
+
     return (
-        <Text style={props.style}>
+        <Text style={style}>
             {parts.map((part, index) =>
-                part.toLowerCase() === props.target.toLowerCase() ? (
+                part.toLowerCase() === target.toLowerCase() ? (
                     <Text key={index} style={{ color: COLOR.BUTTON }}>
                         {part}
                     </Text>

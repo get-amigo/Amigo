@@ -1,11 +1,14 @@
-export default function SortArrayWithTargetAndTargetProp<T extends Record<string, string>>({
+export default function sortArrayWithTargetAndTargetProp<
+    T extends Record<string, any>,
+    K extends keyof T, // ensures that K is a valid key of the objects in the array
+>({
     arr,
     target,
     targetProp,
 }: {
-    arr: Array<T>;
+    arr: T[];
     target: string;
-    targetProp: string;
+    targetProp: K; // targetProp is a key of T
 }) {
     if (target == '') return arr;
 

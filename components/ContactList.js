@@ -4,11 +4,11 @@ import { FlatList, Keyboard, Pressable, Text, View } from 'react-native';
 import COLOR from '../constants/Colors';
 import openSettings from '../helper/openSettings';
 import { calcWidth } from '../helper/res';
+import sortArrayWithTargetAndTargetProp from '../helper/sortArrayWithTargetAndTargetProp';
 import { useContacts } from '../hooks/useContacts';
 import AddMemberWithoutContact from './AddMemberWithoutContact';
 import ContactCard from './ContactCard';
 import Search from './Search';
-import SortArrayWithTargetAndTargetProp from '../helper/sortArrayWithTargetAndTargetProp';
 const ContactList = ({ eliminatedContacts }) => {
     const { search, setSearch, contacts, selectedContacts, handleSelectContact, setSelectedContacts, contactPermission } = useContacts();
     const flatListRef = useRef(null);
@@ -40,7 +40,7 @@ const ContactList = ({ eliminatedContacts }) => {
                     style={{
                         marginTop: calcWidth(1.5),
                     }}
-                    data={SortArrayWithTargetAndTargetProp({ arr: eliminateContacts(), target: search, targetProp: 'name' })}
+                    data={sortArrayWithTargetAndTargetProp({ arr: eliminateContacts(), target: search, targetProp: 'name' })}
                     keyExtractor={(item) => item.phoneNumber}
                     renderItem={({ item }) => (
                         <Pressable onPress={() => handleSelectContact(item)}>

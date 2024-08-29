@@ -13,7 +13,6 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
-    const [isLit, setIsLit] = useState(false);
     const { setUpiParams } = useTransaction();
     const [barcodeScanEnabled, setBarcodeScanEnabled] = useState(true);
 
@@ -81,7 +80,9 @@ const QRCodeScanner = ({ navigation }) => {
                 extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
                 Object.assign(extractedParams, params);
                 setUpiParams(extractedParams); // Ensure setUpiParams is defined and available
-                navigation.navigate(PAGES.ADD_TRANSACTION); // Ensure navigation and PAGES are defined and available
+                navigation.navigate(PAGES.ADD_TRANSACTION, {
+                    shouldOpenUpi: true,
+                }); // Ensure navigation and PAGES are defined and available
             } else {
                 setBarcodeScanEnabled(false);
                 Alert.alert('Not a valid UPI URL', null, [
@@ -131,7 +132,7 @@ const QRCodeScanner = ({ navigation }) => {
                     </View>
                 </View>
             ) : (
-                <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} />
+                <CameraScanner handleBarCodeScanned={handleBarCodeScanned} />
             )}
         </View>
     );

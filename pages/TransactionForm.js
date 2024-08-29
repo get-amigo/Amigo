@@ -18,7 +18,8 @@ import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
-function TransactionFormScreen({ navigation }) {
+function TransactionFormScreen({ navigation, route }) {
+    const { shouldOpenUpi } = route.params || {};
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
@@ -142,7 +143,6 @@ function TransactionFormScreen({ navigation }) {
                 apiHelper
                     .post('/transaction', newTransactionWithId)
                     .then(() => {
-                        setUpiParams({});
                         //                         setActivitiesHash(newTransaction.group, [
                         //                             {
                         //                                 ...newActivity,
@@ -170,11 +170,12 @@ function TransactionFormScreen({ navigation }) {
             }
 
             if (upiParams.receiverId) {
-                setUpiParams((prev) => ({
-                    ...prev,
+                const upiData = {
+                    ...upiParams,
                     am: transactionData.amount.toString(),
-                }));
-                navigation.navigate(PAGES.UPI_APP_SELECTION);
+                };
+                setUpiParams({});
+                navigation.navigate(PAGES.UPI_APP_SELECTION, upiData);
                 return;
             }
             Toast.show('Transaction Added', {
@@ -231,7 +232,9 @@ function TransactionFormScreen({ navigation }) {
                     <Pressable
                         style={styles.addGroupBtn}
                         onPress={() => {
-                            navigation.navigate(PAGES.SELECT_GROUP);
+                            navigation.navigate(PAGES.SELECT_GROUP, {
+                                shouldOpenUpi,
+                            });
                         }}
                     >
                         <View style={styles.buttonWrapper}>

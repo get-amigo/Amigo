@@ -13,7 +13,8 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
 
-function GroupListScreen({ navigation }) {
+function GroupListScreen({ navigation, route }) {
+    const { shouldOpenUpi } = route.params || {};
     const [search, setSearch] = useState('');
     const { setTransactionData } = useTransaction();
     const { groups, fetchData } = useGroupList();
@@ -72,7 +73,9 @@ function GroupListScreen({ navigation }) {
                         name={group.name}
                         onPress={() => {
                             setTransactionData((prev) => ({ ...prev, group }));
-                            navigation.navigate(PAGES.ADD_TRANSACTION);
+                            navigation.navigate(PAGES.ADD_TRANSACTION, {
+                                shouldOpenUpi,
+                            });
                         }}
                         image={<GroupIcon groupId={group._id} />}
                     />

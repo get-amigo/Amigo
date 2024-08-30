@@ -22,6 +22,20 @@ const useGroupStore = create(
                 for (const group of data) group.members = await editNamesAsync(group.members, user._id);
                 set({ groups: data, loading: false });
             },
+            updateMember: async ({ groupId, newMembers, userId }) => {
+                const { groups } = useGroupStore.getState();
+                const groupIndex = groups.findIndex((group) => group._id === groupId);
+                const newMembersWithName = await editNamesAsync(newMembers, userId);
+                const newGroups = groups.map((group) => ({
+                    ...group,
+                    members: [...group.members],
+                }));
+
+                if (groupIndex !== -1) {
+                    for (const newMemberWithName of newMembersWithName) newGroups[groupIndex].members.push(newMemberWithName);
+                }
+                set({ groups: newGroups });
+            },
         }),
         {
             name: 'groupList',

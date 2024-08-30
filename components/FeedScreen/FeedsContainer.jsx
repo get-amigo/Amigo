@@ -7,14 +7,15 @@ import areDatesEqual from '../../helper/areDatesEqual';
 import formatDateRelativeToToday from '../../helper/formatDateRelativeToToday';
 import { calcWidth } from '../../helper/res';
 import useActivities from '../../hooks/useActivities';
-import { useContacts } from '../../hooks/useContacts';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import Feed from '../Feed';
 import StickyDate from './StickyDate';
+import useContactsNamesMap from '../../hooks/useContactsNamesMap';
 
 const FeedsContainer = () => {
     const { group } = useGroup();
-    const { contacts } = useContacts();
+
+    const contactsNamesMap = useContactsNamesMap();
 
     const [isStickyDateVisible, setIsStickyDateVisible] = useState(false);
     const [showScrollToBottom, setShowScrollToBottom] = useState(false);
@@ -52,7 +53,6 @@ const FeedsContainer = () => {
     }, []);
 
     useEffect(() => {
-        // handle fetch
         if (shouldFetch && hasNextPage && !isLoading) {
             fetchNextPage();
         }
@@ -88,7 +88,7 @@ const FeedsContainer = () => {
                         <View onLayout={() => trackViewedItem(item)}>
                             <Feed
                                 {...activities[item]}
-                                contacts={contacts}
+                                contacts={contactsNamesMap}
                                 showCreatorName={showCreatorName}
                                 showCreatorAvatar={showCreatorAvatar}
                                 showDate={showDate}

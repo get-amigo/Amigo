@@ -15,6 +15,7 @@ import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import useCustomColor from '../hooks/useCustomColor';
+
 const TransactionDetail = ({
     navigation,
     route: {
@@ -282,6 +283,7 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(12),
         padding: calcWidth(3),
+        fontWeight: 'bold',
     },
     modalBackground: {
         flex: 1,

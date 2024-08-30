@@ -56,7 +56,12 @@ const ActivitiesFeedScreen = () => {
 
     const fetchActivity = useCallback(async (activity) => {
         if (activity.creator._id !== user._id) {
-            addActivityToLocalDB(activity, activity.group, user, true);
+            addActivityToLocalDB({
+                activity: activity,
+                groupId: activity.group,
+                user: user,
+                isSynced: true,
+            });
         }
     }, []);
 

@@ -1,4 +1,4 @@
-import { DEEP_LINK_URL } from '@env';
+import { WEBSITE_URL } from '@env';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
@@ -80,9 +80,11 @@ const GroupScreen = ({
         setGroup((prev) => ({ ...prev, name: groupRef.current }));
     };
 
-    const shareGroupLink = () => {
+    const shareGroupLink = async () => {
+        const shareUrl = await apiHelper.get(`/group/${group._id}/token`);
+
         Share.share({
-            message: 'Join the group at Amigo: ' + `${DEEP_LINK_URL}join?groupId=${group._id}`,
+            message: 'Join the group at Amigo: ' + `${WEBSITE_URL}/invite/#/join?groupId=${shareUrl.data}`,
         });
     };
 
@@ -183,6 +185,20 @@ const GroupScreen = ({
                 <TouchableOpacity style={styles.memberItem} onPress={shareGroupLink}>
                     <Image source={ShareImage} style={styles.icon} />
                     <Text style={styles.buttonText}>Share Group Link</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.memberItem}
+                    onPress={() =>
+                        navigation.push(PAGES.GROUP_QR_SCREEN, {
+                            groupId: group._id,
+                            groupName,
+                        })
+                    }
+                >
+                    <View style={[styles.icon, styles.qrCodeIcon]}>
+                        <Ionicons name="qr-code-outline" size={calcHeight(2.7)} color="white" />
+                    </View>
+                    <Text style={styles.buttonText}>Show QR code</Text>
                 </TouchableOpacity>
             </>
         );
@@ -305,6 +321,12 @@ const styles = StyleSheet.create({
     icon: { height: calcHeight(5), width: calcHeight(5) },
     leaveGroupText: { color: 'rgba(253 ,64,9, 0.59)', marginLeft: calcWidth(3) },
     faltListContainer: { flex: 1 },
+    qrCodeIcon: {
+        backgroundColor: COLOR.BUTTON,
+        borderRadius: calcHeight(2.5),
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 
 export default GroupScreen;

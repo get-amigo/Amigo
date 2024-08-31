@@ -6,6 +6,7 @@ import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import COLOR from './constants/Colors';
 import RootNavigator from './navigator/RootNavigator';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -26,7 +27,7 @@ Sentry.init({
 function App() {
     return (
         <GestureHandlerRootView>
-            <SafeAreaProvider>
+            <SafeAreaProvider style={{ backgroundColor: COLOR.APP_BACKGROUND }}>
                 <StatusBar style="auto" />
                 <KeyboardAvoidingView
                     onLayout={hideSplashScreen}

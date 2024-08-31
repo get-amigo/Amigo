@@ -22,6 +22,16 @@ const useBalanceStore = create(
                     totalBalances: parseInt(userTotalBalance),
                 });
             },
+            updateBalances: async (transactionHistory, userId) => {
+                if (!transactionHistory) set({ loading: true });
+                const { groups, userTotalBalance } = await groupBalancesAndCalculateTotal(transactionHistory, userId);
+                console.log(userTotalBalance);
+                set({
+                    loading: false,
+                    balances: groups,
+                    totalBalances: parseInt(userTotalBalance),
+                });
+            },
         }),
         {
             name: 'balance',

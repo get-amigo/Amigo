@@ -214,7 +214,12 @@ function TransactionFormScreen({ navigation }) {
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.verticalScrollView}>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.verticalScrollView}
+                keyboardShouldPersistTaps="always"
+            >
                 {Categories.map((item, index) => (
                     <Pressable
                         key={index}

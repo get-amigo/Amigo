@@ -17,14 +17,14 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
-
+import { useBalance } from '../stores/balance';
 function TransactionFormScreen({ navigation }) {
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
-
+    const { updateBalances } = useBalance();
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
@@ -138,10 +138,11 @@ function TransactionFormScreen({ navigation }) {
                     addToPending: false,
                 });
                 const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
-
                 apiHelper
                     .post('/transaction', newTransactionWithId)
-                    .then(() => {
+                    .then((value) => {
+                        const transactionHistory = value.data.transactionHistory;
+                        updateBalances(transactionHistory, user._id);
                         setUpiParams({});
                         //                         setActivitiesHash(newTransaction.group, [
                         //                             {

@@ -1,0 +1,10 @@
+appId: app.amigo.app
+---
+- launchApp
+- assertVisible: 'Group payments made easy'
+- assertVisible: 'Keep track of your shared expenses and balances'
+- assertVisible: 'Continue with Phone number'
+- tapOn:
+      text: 'Continue with Phone number'
+      waitToSettleTimeoutMs: 500
+- assertVisible: 'Hi there!'

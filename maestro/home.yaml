@@ -1,0 +1,4 @@
+appId: app.amigo.app
+---
+- launchApp
+- assertVisible: 'Total Balance'

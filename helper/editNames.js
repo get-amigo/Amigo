@@ -20,7 +20,8 @@ function editNames(usersArray, currentUserId, contacts) {
                 user.name = 'Unknown';
             }
         }
-
+        usersArray = usersArray.filter((user) => user._id !== currentUserId);
+        usersArray.sort((a, b) => a.name.localeCompare(b.name));
         return usersArray;
     } catch (error) {
         console.error('Error in updateNamesInArray function:', error);

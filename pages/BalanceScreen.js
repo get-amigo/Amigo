@@ -11,6 +11,8 @@ import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { calcHeight, calcWidth } from '../helper/res';
+import useReceivePushNotification from '../hooks/useReceivePushNotification';
+import useRegisterForPushNotification from '../hooks/useRegisterPushNotification';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
 
@@ -32,6 +34,9 @@ function BalanceScreen({ navigation }) {
         await fetchData(user);
         setRefreshing(false);
     }, [user]);
+
+    useRegisterForPushNotification();
+    useReceivePushNotification();
 
     if (loading)
         return (

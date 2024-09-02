@@ -2337,6 +2337,11 @@
   dependencies:
     plist "^3.1.0"
 
+"@react-native-firebase/messaging@^20.4.0":
+  version "20.4.0"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-20.4.0.tgz#4f616bd5df0bf3feffc768968bec763ed2f702eb"
+  integrity sha512-Ju0rQLoJIzur+QQSQ3O2q/7aBnJa9dyT7kY1tt52vRJ38Bm3/W1NKcYPbbfqMV+N6Nelonlxs1/kaQmo/p+/AA==
+
 "@react-native-picker/picker@2.7.6":
   version "2.7.6"
   resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.7.6.tgz#fda996742f6878660277b995e878711641e778f4"
@@ -5332,10 +5337,10 @@ expo-network@~6.0.1:
   resolved "https://registry.yarnpkg.com/expo-network/-/expo-network-6.0.1.tgz#0e1f8e2476d8094ae7eada651a58219eda2ec4e8"
   integrity sha512-WXXvkt1H75ojHVa263Jq+qjIyMzCfaoRzHKzOBMuSyDDcma9WpvKJpR1YpEQZH/zDhSfkKvh7Q3wRGOJr1J+dQ==
 
-expo-notifications@~0.28.3:
-  version "0.28.10"
-  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.28.10.tgz#5db8ba41f5fd09db7db8323997f2185feb1830cc"
-  integrity sha512-DK+Edc7lQajsD7//0ivP68bCijyQV7QEk7mCaORXMltM9Ec516CrWKP1v3rRX6RvXVP1s5t6K/aEooiz6AhM+A==
+expo-notifications@^0.28.16:
+  version "0.28.16"
+  resolved "https://registry.yarnpkg.com/expo-notifications/-/expo-notifications-0.28.16.tgz#2c712a1634c707945eb6c9f31af593c5939f87dc"
+  integrity sha512-sj4oDip+uFNmxieGHkfS2Usrwbw2jfOTfQ22a7z5tdSo/vD6jWMlCHOnJifqYLjPxyqf9SLTsQWO3bmk7MY2Yg==
   dependencies:
     "@expo/image-utils" "^0.5.0"
     "@ide/backoff" "^1.0.0"

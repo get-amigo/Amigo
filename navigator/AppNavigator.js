@@ -6,6 +6,7 @@ import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { getFontSizeByWindowWidth } from '../helper/res';
 import { ContactsProvider } from '../hooks/useContacts';
+import useNotificationResponse from '../hooks/useNotificationResponse';
 import About from '../pages/About';
 import AccountScreen from '../pages/AccountScreen';
 import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
@@ -32,6 +33,7 @@ const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
     const { user } = useAuth();
 
+    useNotificationResponse();
     return (
         <ContactsProvider>
             <Stack.Navigator

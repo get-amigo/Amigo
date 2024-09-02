@@ -17,14 +17,14 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
-
+import { useBalance } from '../stores/balance';
 function TransactionFormScreen({ navigation }) {
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
-
+    const { updateBalances } = useBalance();
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
 
@@ -138,10 +138,11 @@ function TransactionFormScreen({ navigation }) {
                     addToPending: false,
                 });
                 const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
-
                 apiHelper
                     .post('/transaction', newTransactionWithId)
-                    .then(() => {
+                    .then((value) => {
+                        const transactionHistory = value.data.transactionHistory;
+                        updateBalances(transactionHistory, user._id);
                         setUpiParams({});
                         //                         setActivitiesHash(newTransaction.group, [
                         //                             {
@@ -193,7 +194,7 @@ function TransactionFormScreen({ navigation }) {
     };
 
     return (
-        <ScrollView style={styles.container} alwaysBounceVertical={false}>
+        <ScrollView style={styles.container} alwaysBounceVertical={false} keyboardShouldPersistTaps="always">
             <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
             <View style={styles.rowCentered}>
@@ -214,7 +215,12 @@ function TransactionFormScreen({ navigation }) {
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.verticalScrollView}>
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.verticalScrollView}
+                keyboardShouldPersistTaps="always"
+            >
                 {Categories.map((item, index) => (
                     <Pressable
                         key={index}

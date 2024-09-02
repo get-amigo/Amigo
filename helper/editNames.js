@@ -17,7 +17,7 @@ function editNames(usersArray, currentUserId, contacts) {
             } else if (user.name) {
                 user.name = sliceText(user.name);
             } else {
-                user.name = 'Unknown';
+                user.name = user.phoneNumber;
             }
         }
         usersArray = usersArray.filter((user) => user._id !== currentUserId);

@@ -14,6 +14,7 @@ import AddPeople from '../pages/AddPeople';
 import CreateGroup from '../pages/CreateGroup';
 import FAQ from '../pages/FAQ';
 import GroupBalance from '../pages/GroupBalanceScreen';
+import GroupQrScreen from '../pages/GroupQrScreen';
 import GroupSettings from '../pages/GroupSettings';
 import GroupSplitScreen from '../pages/GroupSplitScreen';
 import InvitationLandingScreen from '../pages/InvitationLandingScreen';
@@ -273,6 +274,19 @@ const AppNavigator = () => {
                                 animation: 'fade',
                                 title: null,
                                 headerTintColor: '#fff',
+                            }}
+                        />
+                        <Stack.Screen
+                            name={PAGES.GROUP_QR_SCREEN}
+                            component={GroupQrScreen}
+                            options={{
+                                headerStyle: {
+                                    backgroundColor: COLOR.APP_BACKGROUND,
+                                },
+                                animation: 'fade',
+                                title: null,
+                                headerTintColor: '#fff',
+                                headerTitle: 'QR code',
                             }}
                         />
                     </Stack.Group>

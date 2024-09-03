@@ -9,8 +9,12 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import getMembersString from '../utility/getMembersString';
 import GroupIcon from './GroupIcon';
+
 function GroupCard({ group, loading }) {
-    if (loading)
+    const navigation = useNavigation();
+    const { setGroup } = useGroup();
+
+    if (loading) {
         return (
             <View style={styles.container}>
                 <GroupIcon />
@@ -38,8 +42,8 @@ function GroupCard({ group, loading }) {
                 </View>
             </View>
         );
-    const navigation = useNavigation();
-    const { setGroup } = useGroup();
+    }
+
     return (
         <Pressable
             onPress={() => {

@@ -22,7 +22,7 @@ import { useAuth } from '../stores/auth';
 const TransactionDetail = ({
     navigation,
     route: {
-        params: { transaction, handleDelete },
+        params: { transaction, handleDelete,activity },
     },
 }) => {
     const [date, setDate] = useState();
@@ -56,7 +56,7 @@ const TransactionDetail = ({
         try {
             const response = await apiHelper.get(`/transaction/${transactionId}`);
             const transactionData = response.data;
-            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing });
+            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing,activity });
             setModalVisible(!modalVisible);
         } catch (error) {
             console.error('Error fetching transaction:', error);
@@ -312,7 +312,6 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(12),
         padding: calcWidth(3),
-        fontWeight: 'bold',
     },
     modalBackground: {
         flex: 1,

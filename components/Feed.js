@@ -246,6 +246,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         ...editedTransaction,
                         creator,
                     },
+                    activity:activityId,
                     handleDelete,
                     handleEdit,
                 });

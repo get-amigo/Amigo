@@ -2,7 +2,19 @@ import { AntDesign, EvilIcons, MaterialIcons, Octicons } from '@expo/vector-icon
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
-import { Alert, Image, Modal, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+import {
+    Alert,
+    Image,
+    Modal,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    TouchableWithoutFeedback,
+    UIManager,
+    Vibration,
+    View,
+} from 'react-native';
 import Toast from 'react-native-root-toast';
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
@@ -175,6 +187,17 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
             console.error('Error fetching transaction:', error);
         }
     };
+
+    const hapticFeedback = async () => {
+        if (Platform.OS === 'ios') {
+            const feedbackGenerator = new UIManager.UIImpactFeedbackGenerator();
+            await feedbackGenerator.prepare();
+            feedbackGenerator.impactOccurred(UIManager.UImpactFeedbackGenerator.FeedbackStyle.Light);
+        } else if (Platform.OS === 'android') {
+            Vibration.vibrate(50);
+        }
+    };
+
     const renderModal = () => {
         if (user._id === creator._id) {
             return (
@@ -200,6 +223,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                                             onPress={() => {
                                                 setModalVisible(false);
                                                 handleEdit();
+                                                hapticFeedback();
                                             }}
                                         >
                                             <Text style={[styles.modalButtonText, { color: COLOR.PRIMARY }]}>Edit</Text>
@@ -233,6 +257,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 setSelectedTransaction(transaction);
                 setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
                 setModalVisible(true);
+                hapticFeedback();
             }}
             onPress={() => {
                 const editedTransaction = transaction;
@@ -246,7 +271,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         ...editedTransaction,
                         creator,
                     },
-                    activity:activityId,
+                    activity: activityId,
                     handleDelete,
                     handleEdit,
                 });
@@ -423,6 +448,16 @@ function ChatActivity({ chat, synced }) {
         }
     };
 
+    const hapticFeedback = async () => {
+        if (Platform.OS === 'ios') {
+            const feedbackGenerator = new UIManager.UIImpactFeedbackGenerator();
+            await feedbackGenerator.prepare();
+            feedbackGenerator.impactOccurred(UIManager.UImpactFeedbackGenerator.FeedbackStyle.Light);
+        } else if (Platform.OS === 'android') {
+            Vibration.vibrate(50);
+        }
+    };
+
     const renderModal = () => {
         if (user._id === chat.creator._id) {
             return (
@@ -463,6 +498,7 @@ function ChatActivity({ chat, synced }) {
                     setSelectedChat(chat);
                     setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
                     setModalVisible(true);
+                    hapticFeedback();
                 }}
             >
                 <ChatActivityDetails chat={chat} synced={synced} />

@@ -58,7 +58,7 @@ function ExpenseScreen() {
                                 fontSize: getFontSizeByWindowWidth(10),
                             }}
                         >
-                            Reset
+                            Reset Filter
                         </Text>
                     </View>
                 </View>
@@ -94,7 +94,7 @@ function ExpenseScreen() {
                     }}
                 >
                     <FontAwesome5 name="redo" size={calcWidth(3)} color={isFilterApplied ? COLOR.TEXT : COLOR.BUTTON_DISABLED} />
-                    <Text style={isFilterApplied ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>Reset</Text>
+                    <Text style={isFilterApplied ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>Reset Filter</Text>
                 </TouchableOpacity>
             </View>
 

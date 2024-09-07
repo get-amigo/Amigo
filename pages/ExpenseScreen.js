@@ -41,26 +41,28 @@ function ExpenseScreen() {
                         <TypeSelector />
                         <DatePickerSelector />
                     </View>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            gap: calcWidth(1),
-                            backgroundColor: COLOR.SKELETON_MASK_COLOR,
-                            borderRadius: 10,
-                        }}
-                    >
-                        <FontAwesome5 name="redo" size={calcWidth(3)} color="rgba(255,255,255,0.66)" style={{ opacity: 0 }} />
-                        <Text
+                    {isFilterApplied && (
+                        <View
                             style={{
-                                color: COLOR.TEXT,
-                                opacity: 0,
-                                fontSize: getFontSizeByWindowWidth(10),
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                gap: calcWidth(1),
+                                backgroundColor: COLOR.SKELETON_MASK_COLOR,
+                                borderRadius: 10,
                             }}
                         >
-                            Reset
-                        </Text>
-                    </View>
+                            <FontAwesome5 name="redo" size={calcWidth(3)} color="rgba(255,255,255,0.66)" style={{ opacity: 0 }} />
+                            <Text
+                                style={{
+                                    color: COLOR.TEXT,
+                                    opacity: 0,
+                                    fontSize: getFontSizeByWindowWidth(10),
+                                }}
+                            >
+                                Reset Filter
+                            </Text>
+                        </View>
+                    )}
                 </View>
                 <FlatList data={[{}, {}, {}]} renderItem={({ item }) => <ExpenseCard item={item} loading />} style={styles.list} />
             </View>
@@ -83,19 +85,20 @@ function ExpenseScreen() {
                     <TypeSelector />
                     <DatePickerSelector />
                 </View>
-
-                <TouchableOpacity
-                    disabled={!isFilterApplied}
-                    onPress={resetParams}
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: calcWidth(1),
-                    }}
-                >
-                    <FontAwesome5 name="redo" size={calcWidth(3)} color={isFilterApplied ? COLOR.TEXT : COLOR.BUTTON_DISABLED} />
-                    <Text style={isFilterApplied ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>Reset</Text>
-                </TouchableOpacity>
+                {isFilterApplied && (
+                    <TouchableOpacity
+                        disabled={!isFilterApplied}
+                        onPress={resetParams}
+                        style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            gap: calcWidth(1),
+                        }}
+                    >
+                        <FontAwesome5 name="redo" size={calcWidth(3)} color={isFilterApplied ? COLOR.TEXT : COLOR.BUTTON_DISABLED} />
+                        <Text style={isFilterApplied ? { color: COLOR.TEXT } : { color: COLOR.BUTTON_DISABLED }}>Reset Filter</Text>
+                    </TouchableOpacity>
+                )}
             </View>
 
             {expense.length === 0 ? (

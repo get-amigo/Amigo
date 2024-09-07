@@ -1,7 +1,7 @@
 // React Native Components and Utilities
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 
 // Custom Components and Utility Functions
 import GroupIcon from '../components/GroupIcon';
@@ -68,7 +68,7 @@ function ExpenseCard({ item, loading }) {
     }
 
     return (
-        <Pressable style={styles.cardContainer} onPress={onClick}>
+        <TouchableOpacity style={styles.cardContainer} onPress={onClick}>
             <View style={styles.cardInnerContainer}>
                 <GroupIcon size={5} groupId={item?.group?._id} />
                 <View style={styles.textContainer}>
@@ -81,7 +81,7 @@ function ExpenseCard({ item, loading }) {
                 </View>
             </View>
             <Text style={styles.amountText}>₹{item.amount}</Text>
-        </Pressable>
+        </TouchableOpacity>
     );
 }
 

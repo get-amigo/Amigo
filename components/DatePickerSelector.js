@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { DatePickerModal } from 'react-native-paper-dates';
 
@@ -20,14 +20,27 @@ const getStartOfMonth = () => {
     startOfMonth.setHours(0, 0, 0, 0);
     return startOfMonth;
 };
+const getDayMonthYear = (date) => {
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();
+
+    return `${day}/${month}/${year}`;
+};
 
 const DatePickerSelector = () => {
     const { range, setRange, loading, fetchExpense } = useExpense();
     const [modalState, setModalState] = useState(null);
+    const [optionSelected, setOptionSelected] = useState('Date');
+    useEffect(() => {
+        if (range.startDate === undefined && range.endDate === undefined) {
+            setOptionSelected('Date');
+        }
+    }, [range.startDate, range.endDate]);
     if (loading)
         return (
             <View style={styles.buttonContainer}>
-                <Text style={[styles.buttonText, { opacity: 0 }]}>Date</Text>
+                <Text style={[styles.buttonText, { opacity: 0 }]}>{optionSelected}</Text>
             </View>
         );
 
@@ -38,6 +51,7 @@ const DatePickerSelector = () => {
     const onConfirm = ({ startDate, endDate }) => {
         setModalState(null);
         setRange({ startDate, endDate });
+
         fetchExpense();
     };
 
@@ -48,7 +62,7 @@ const DatePickerSelector = () => {
     const renderButtons = () => (
         <>
             <TouchableOpacity style={styles.buttonContainer} onPress={() => setModalState('model')}>
-                <Text style={styles.buttonText}>Date</Text>
+                <Text style={styles.buttonText}>{optionSelected}</Text>
             </TouchableOpacity>
 
             <Modal
@@ -67,6 +81,7 @@ const DatePickerSelector = () => {
                                     startDate: undefined,
                                     endDate: undefined,
                                 });
+                                setOptionSelected('All Transactions');
                             }}
                             style={styles.dateTypeContainer}
                         >
@@ -78,6 +93,7 @@ const DatePickerSelector = () => {
                                     startDate: getStartOfWeek(),
                                     endDate: new Date(),
                                 });
+                                setOptionSelected('This Week');
                             }}
                             style={styles.dateTypeContainer}
                         >
@@ -90,6 +106,7 @@ const DatePickerSelector = () => {
                                     startDate: getStartOfMonth(),
                                     endDate: new Date(),
                                 });
+                                setOptionSelected('This Month');
                             }}
                             style={styles.dateTypeContainer}
                         >
@@ -109,7 +126,11 @@ const DatePickerSelector = () => {
                 onDismiss={onDismiss}
                 startDate={range.startDate}
                 endDate={range.endDate}
-                onConfirm={onConfirm}
+                onConfirm={({ startDate, endDate }) => {
+                    console.log(startDate, endDate);
+                    onConfirm({ startDate: startDate, endDate: endDate });
+                    setOptionSelected(`${getDayMonthYear(startDate)}-${getDayMonthYear(endDate)}`);
+                }}
             />
         </>
     );

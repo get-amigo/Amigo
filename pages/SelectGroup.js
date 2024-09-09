@@ -45,6 +45,7 @@ function GroupListScreen({ navigation }) {
                     <Search search={search} setSearch={setSearch} />
                 </View>
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="always"
                     style={styles.list}
                     data={filterGroups(groups)}

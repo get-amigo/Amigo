@@ -45,7 +45,9 @@ function GroupListScreen({ navigation }) {
                     <Search search={search} setSearch={setSearch} />
                 </View>
                 <FlatList
+                    showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="always"
+                    style={styles.list}
                     data={filterGroups(groups)}
                     ListHeaderComponent={
                         <GroupSelectCard
@@ -96,7 +98,10 @@ function GroupListScreen({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
     },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
@@ -126,6 +131,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         color: 'white',
+    },
+    list: {
+        flex: 1,
     },
 });
 

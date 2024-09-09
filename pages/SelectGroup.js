@@ -46,6 +46,7 @@ function GroupListScreen({ navigation }) {
                 </View>
                 <FlatList
                     keyboardShouldPersistTaps="always"
+                    style={styles.list}
                     data={filterGroups(groups)}
                     ListHeaderComponent={
                         <GroupSelectCard
@@ -126,6 +127,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginLeft: 10,
         color: 'white',
+    },
+    list: {
+        height: calcHeight(100),
     },
 });
 

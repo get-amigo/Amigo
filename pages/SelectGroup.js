@@ -98,7 +98,10 @@ function GroupListScreen({ navigation }) {
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
     },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
@@ -130,7 +133,7 @@ const styles = StyleSheet.create({
         color: 'white',
     },
     list: {
-        height: calcHeight(100),
+        flex: 1,
     },
 });
 

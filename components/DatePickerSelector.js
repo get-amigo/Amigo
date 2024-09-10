@@ -161,6 +161,7 @@ const styles = {
         borderTopRightRadius: 20,
         padding: calcHeight(4),
         paddingBottom: calcHeight(7),
+        backgroundColor: COLOR.APP_BACKGROUND,
     },
     dateTypeText: {
         fontSize: getFontSizeByWindowWidth(15),

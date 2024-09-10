@@ -113,7 +113,11 @@ const DatePickerSelector = () => {
                             <Text style={styles.dateTypeText}>This Month</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={showCustomDateModal} style={styles.dateTypeContainer}>
-                            <Text style={styles.dateTypeText}>Custom Date</Text>
+                            <Text style={styles.dateTypeText}>
+                                {optionSelected === 'Custom'
+                                    ? `${getDayMonthYear(range.startDate)}-${getDayMonthYear(range.endDate)}`
+                                    : 'Custom'}
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </Pressable>
@@ -129,7 +133,7 @@ const DatePickerSelector = () => {
                 onConfirm={({ startDate, endDate }) => {
                     console.log(startDate, endDate);
                     onConfirm({ startDate: startDate, endDate: endDate });
-                    setOptionSelected(`${getDayMonthYear(startDate)}-${getDayMonthYear(endDate)}`);
+                    setOptionSelected('Custom');
                 }}
             />
         </>

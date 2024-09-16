@@ -1,11 +1,10 @@
 // React Native Components and Utilities
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 // Custom Components and Utility Functions
 import GroupIcon from '../components/GroupIcon';
-import { getCategoryIcon } from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import apiHelper from '../helper/apiHelper';
@@ -73,9 +72,6 @@ function ExpenseCard({ item, loading }) {
                 <GroupIcon size={5} groupId={item?.group?._id} />
                 <View style={styles.textContainer}>
                     <Text style={styles.descriptionText}>{sliceText(item.description, 20)}</Text>
-                    <Text style={styles.groupText}>
-                        {sliceText(item.category, 25)} {getCategoryIcon(item.category)}
-                    </Text>
 
                     <Text style={styles.dateText}>{convertISODateToCustomFormat(item.date)}</Text>
                 </View>

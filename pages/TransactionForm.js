@@ -6,7 +6,6 @@ import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
 import Button from '../components/Button';
-import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
@@ -16,8 +15,8 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
-import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import { useBalance } from '../stores/balance';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 function TransactionFormScreen({ navigation }) {
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
@@ -76,13 +75,6 @@ function TransactionFormScreen({ navigation }) {
     };
 
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
-
-    const handleCategorySelect = (category) => {
-        setTransactionData((prev) => ({
-            ...prev,
-            type: category,
-        }));
-    };
 
     const handleSubmit = async () => {
         if (!transactionData.amount) {
@@ -215,23 +207,6 @@ function TransactionFormScreen({ navigation }) {
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.verticalScrollView}
-                keyboardShouldPersistTaps="always"
-            >
-                {Categories.map((item, index) => (
-                    <Pressable
-                        key={index}
-                        style={[styles.categoryItem, transactionData.type === item.name && styles.selectedCategory]}
-                        onPress={() => handleCategorySelect(item.name)}
-                    >
-                        {item.icon}
-                        <Text style={styles.categoryText}>{item.name}</Text>
-                    </Pressable>
-                ))}
-            </ScrollView>
             {getPreviousPageName(navigation) != PAGES.GROUP && (
                 <View>
                     <Pressable
@@ -283,6 +258,7 @@ const styles = StyleSheet.create({
     },
     rowCentered: {
         justifyContent: 'center',
+        paddingBottom: calcHeight(2),
     },
     amount: {
         color: COLOR.TEXT,

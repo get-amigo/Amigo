@@ -12,6 +12,7 @@ import PAGES from '../constants/pages';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
+import throttle from '../helper/throttle';
 
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
@@ -20,7 +21,7 @@ function GroupListScreen({ navigation }) {
 
     useFocusEffect(
         useCallback(() => {
-            fetchData(user);
+            throttle(fetchData(user), 300);
         }, []),
     );
 

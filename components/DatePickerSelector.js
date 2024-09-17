@@ -21,8 +21,8 @@ const getStartOfMonth = () => {
     return startOfMonth;
 };
 const getDayMonthYear = (date) => {
-    const day = date.getDate();
-    const month = date.getMonth() + 1;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
 
     return `${day}/${month}/${year}`;
@@ -32,17 +32,20 @@ const DatePickerSelector = () => {
     const { range, setRange, loading, fetchExpense } = useExpense();
     const [modalState, setModalState] = useState(null);
     const [optionSelected, setOptionSelected] = useState('Date');
+
     useEffect(() => {
         if (range.startDate === undefined && range.endDate === undefined) {
             setOptionSelected('Date');
         }
     }, [range.startDate, range.endDate]);
-    if (loading)
+
+    if (loading) {
         return (
             <View style={styles.buttonContainer}>
                 <Text style={[styles.buttonText, { opacity: 0 }]}>{optionSelected}</Text>
             </View>
         );
+    }
 
     const onDismiss = () => {
         setModalState(null);
@@ -62,7 +65,11 @@ const DatePickerSelector = () => {
     const renderButtons = () => (
         <>
             <TouchableOpacity style={styles.buttonContainer} onPress={() => setModalState('model')}>
-                <Text style={styles.buttonText}>{optionSelected}</Text>
+                <Text style={styles.buttonText}>
+                    {optionSelected === 'Custom'
+                        ? `${getDayMonthYear(range.startDate)} - ${getDayMonthYear(range.endDate)}`
+                        : optionSelected}
+                </Text>
             </TouchableOpacity>
 
             <Modal
@@ -113,11 +120,7 @@ const DatePickerSelector = () => {
                             <Text style={styles.dateTypeText}>This Month</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={showCustomDateModal} style={styles.dateTypeContainer}>
-                            <Text style={styles.dateTypeText}>
-                                {optionSelected === 'Custom'
-                                    ? `${getDayMonthYear(range.startDate)}-${getDayMonthYear(range.endDate)}`
-                                    : 'Custom'}
-                            </Text>
+                            <Text style={styles.dateTypeText}>Custom</Text>
                         </TouchableOpacity>
                     </View>
                 </Pressable>
@@ -131,7 +134,6 @@ const DatePickerSelector = () => {
                 startDate={range.startDate}
                 endDate={range.endDate}
                 onConfirm={({ startDate, endDate }) => {
-                    console.log(startDate, endDate);
                     onConfirm({ startDate: startDate, endDate: endDate });
                     setOptionSelected('Custom');
                 }}

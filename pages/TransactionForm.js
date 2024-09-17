@@ -89,15 +89,10 @@ function TransactionFormScreen({ navigation, route }) {
             return;
         }
 
-        if (!transactionData.type) {
-            Alert.alert('Category Missing');
-            return;
-        }
-
         try {
-            // Create a new object with modifications, leaving original transactionData unchanged
             const newTransaction = {
                 ...transactionData,
+                type: 'General', // set to default for now
                 amount: parseInt(transactionData.amount, 10),
                 group: transactionData.group._id,
                 paidBy: transactionData.paidBy._id,

@@ -13,7 +13,7 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
 
-function GroupListScreen({ navigation, route }) {
+function SelectGroup({ navigation, route }) {
     const { shouldOpenUpi } = route.params || {};
     const [search, setSearch] = useState('');
     const { setTransactionData } = useTransaction();
@@ -37,18 +37,64 @@ function GroupListScreen({ navigation, route }) {
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.container}>
-                <View
-                    style={{
-                        marginVertical: calcHeight(2),
-                    }}
-                >
-                    <Search search={search} setSearch={setSearch} />
+            <>
+                <View style={styles.container}>
+                    <View
+                        style={{
+                            marginVertical: calcHeight(2),
+                        }}
+                    >
+                        <Search search={search} setSearch={setSearch} />
+                    </View>
+                    <FlatList
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="always"
+                        style={styles.list}
+                        data={filterGroups(groups)}
+                        ListHeaderComponent={
+                            <GroupSelectCard
+                                name="Create new group"
+                                image={
+                                    <View
+                                        style={{
+                                            backgroundColor: 'white',
+                                            height: calcHeight(5),
+                                            width: calcHeight(5),
+                                            borderRadius: calcHeight(5),
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <Octicons name="people" size={calcHeight(3)} color="black" />
+                                    </View>
+                                }
+                                onPress={() => {
+                                    navigation.navigate(PAGES.CREATE_GROUP);
+                                }}
+                            />
+                        }
+                        renderItem={({ item: group }) => (
+                            <GroupSelectCard
+                                name={group.name}
+                                onPress={() => {
+                                    setTransactionData((prev) => ({ ...prev, group }));
+                                    navigation.navigate(PAGES.ADD_TRANSACTION);
+                                }}
+                                image={<GroupIcon groupId={group._id} />}
+                            />
+                        )}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                                tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                                progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                            />
+                        }
+                    />
                 </View>
                 <FlatList
-                    showsVerticalScrollIndicator={false}
-                    keyboardShouldPersistTaps="always"
-                    style={styles.list}
                     data={filterGroups(groups)}
                     ListHeaderComponent={
                         <GroupSelectCard
@@ -77,7 +123,9 @@ function GroupListScreen({ navigation, route }) {
                             name={group.name}
                             onPress={() => {
                                 setTransactionData((prev) => ({ ...prev, group }));
-                                navigation.navigate(PAGES.ADD_TRANSACTION);
+                                navigation.navigate(PAGES.ADD_TRANSACTION, {
+                                    shouldOpenUpi,
+                                });
                             }}
                             image={<GroupIcon groupId={group._id} />}
                         />
@@ -92,53 +140,7 @@ function GroupListScreen({ navigation, route }) {
                         />
                     }
                 />
-            </View>
-            <FlatList
-                data={filterGroups(groups)}
-                ListHeaderComponent={
-                    <GroupSelectCard
-                        name="Create new group"
-                        image={
-                            <View
-                                style={{
-                                    backgroundColor: 'white',
-                                    height: calcHeight(5),
-                                    width: calcHeight(5),
-                                    borderRadius: calcHeight(5),
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Octicons name="people" size={calcHeight(3)} color="black" />
-                            </View>
-                        }
-                        onPress={() => {
-                            navigation.navigate(PAGES.CREATE_GROUP);
-                        }}
-                    />
-                }
-                renderItem={({ item: group }) => (
-                    <GroupSelectCard
-                        name={group.name}
-                        onPress={() => {
-                            setTransactionData((prev) => ({ ...prev, group }));
-                            navigation.navigate(PAGES.ADD_TRANSACTION, {
-                                shouldOpenUpi,
-                            });
-                        }}
-                        image={<GroupIcon groupId={group._id} />}
-                    />
-                )}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        colors={[COLOR.REFRESH_INDICATOR_ARROW]}
-                        tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
-                        progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
-                    />
-                }
-            />
+            </>
         </TouchableWithoutFeedback>
     );
 }
@@ -184,4 +186,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default GroupListScreen;
+export default SelectGroup;

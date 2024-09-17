@@ -1,6 +1,6 @@
 import sliceText from './sliceText';
 
-function editNames(usersArray, currentUserId, contacts) {
+function editNames(usersArray, currentUserId, contacts, allowCurrentUserInfo = true) {
     if (!Array.isArray(usersArray) || typeof currentUserId !== 'string') {
         console.error('Invalid input to updateNamesInArray function');
         return [];
@@ -17,11 +17,13 @@ function editNames(usersArray, currentUserId, contacts) {
             } else if (user.name) {
                 user.name = sliceText(user.name);
             } else {
-                user.name = 'Unknown';
+                user.name = user.phoneNumber;
             }
         }
-
-        return usersArray;
+        if (allowCurrentUserInfo) {
+            return usersArray;
+        }
+        return usersArray.filter((user) => user._id !== currentUserId).sort((a, b) => a.name.localeCompare(b.name));
     } catch (error) {
         console.error('Error in updateNamesInArray function:', error);
         return [];

@@ -8,7 +8,6 @@ import editIcon from '../assets/icons/editIcon.png';
 import AmountInput from '../components/AmountInput';
 import SharedList from '../components/SharedList';
 import TransactionDetailsButton from '../components/TransactionDetailsButton';
-import { getCategoryIcon } from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
 import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
@@ -104,27 +103,6 @@ const TransactionDetail = ({
                             }}
                         >
                             {formatDateToDDMMYYYY(date)}
-                        </Text>
-                    </View>
-                    <View
-                        style={{
-                            backgroundColor: '#4D426C',
-                            flexDirection: 'row',
-                            borderRadius: 10,
-                            paddingVertical: calcWidth(2),
-                            paddingHorizontal: calcWidth(4),
-                            gap: calcWidth(1),
-                            alignItems: 'center',
-                        }}
-                    >
-                        {getCategoryIcon(transaction.type)}
-                        <Text
-                            style={{
-                                fontSize: getFontSizeByWindowWidth(10),
-                                color: 'white',
-                            }}
-                        >
-                            {transaction.type}
                         </Text>
                     </View>
                 </View>
@@ -241,10 +219,6 @@ const styles = StyleSheet.create({
         alignContent: 'center',
         justifyContent: 'space-between',
         alignItems: 'center',
-    },
-    categoryContainer: {
-        backgroundColor: 'white',
-        flexDirection: 'row',
     },
     createdByText: {
         color: COLOR.TEXT,

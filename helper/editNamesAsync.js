@@ -6,9 +6,9 @@ import getNamesFromContacts from './getNamesFromContacts';
  * @param {string} currentUserId - The ID of the current user.
  * @returns {Array} The updated usersArray with modified names.
  */
-async function editNamesAsync(usersArray, currentUserId) {
+async function editNamesAsync(usersArray, currentUserId, allowCurrentUserInfo = true) {
     const contacts = await getNamesFromContacts();
-    return editNames(usersArray, currentUserId, contacts);
+    return editNames(usersArray, currentUserId, contacts, allowCurrentUserInfo);
 }
 
 export default editNamesAsync;

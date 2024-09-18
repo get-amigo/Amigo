@@ -1,17 +1,31 @@
 import { CameraView } from 'expo-camera';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import { useFocusEffect } from '@react-navigation/native';
 import getLocalImage from '../helper/getLocalImage';
 import getQrDataFromImage from '../helper/getQrDataFromImage';
 import { calcHeight, calcWidth } from '../helper/res';
 import QRFooterButton from './QRFooterButton';
 import QRIndicator from './QRIndicator';
 
-const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
+const CameraScanner = ({ handleBarCodeScanned }) => {
     const { bottom } = useSafeAreaInsets();
+
+    const [scanned, setScanned] = useState(false);
+    const [isTorchOn, setTorchOn] = useState(false);
+
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                setTorchOn(false);
+            };
+        }, []),
+    );
+
     async function getImage() {
+        setTorchOn(false);
         const image = await getLocalImage();
         const scannedResults = await getQrDataFromImage(image);
         if (scannedResults.length > 0) {
@@ -20,7 +34,6 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
         }
         Alert.alert('Alert', 'No QR code found in image');
     }
-    const [scanned, setScanned] = useState(false);
 
     const handleBarCode = (event) => {
         setScanned(true);
@@ -39,11 +52,16 @@ const CameraScanner = ({ handleBarCodeScanned, isLit, setIsLit }) => {
                     barcodeTypes: ['qr'],
                 }}
                 onBarcodeScanned={scanned ? null : handleBarCode}
+                enableTorch={isTorchOn}
             >
                 <View style={styles.buttonContainer}>
                     <QRIndicator />
                     <View style={[styles.footer, { bottom: 30 + bottom }]}>
-                        <QRFooterButton onPress={() => setIsLit((isLit) => !isLit)} isActive={isLit} iconName="flashlight-sharp" />
+                        <QRFooterButton
+                            onPress={() => setTorchOn((isTorchOn) => !isTorchOn)}
+                            isActive={isTorchOn}
+                            iconName="flashlight-sharp"
+                        />
                         <QRFooterButton onPress={getImage} iconName="image" />
                     </View>
                 </View>

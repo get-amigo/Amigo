@@ -6,7 +6,6 @@ import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
 import Button from '../components/Button';
-import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
@@ -16,9 +15,11 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
-import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import { useBalance } from '../stores/balance';
-function TransactionFormScreen({ navigation }) {
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+
+function TransactionFormScreen({ navigation, route }) {
+    const { shouldOpenUpi } = route.params || {};
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
@@ -77,13 +78,6 @@ function TransactionFormScreen({ navigation }) {
 
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
-    const handleCategorySelect = (category) => {
-        setTransactionData((prev) => ({
-            ...prev,
-            type: category,
-        }));
-    };
-
     const handleSubmit = async () => {
         if (!transactionData.amount) {
             Alert.alert('Amount Missing');
@@ -95,15 +89,10 @@ function TransactionFormScreen({ navigation }) {
             return;
         }
 
-        if (!transactionData.type) {
-            Alert.alert('Category Missing');
-            return;
-        }
-
         try {
-            // Create a new object with modifications, leaving original transactionData unchanged
             const newTransaction = {
                 ...transactionData,
+                type: 'General', // set to default for now
                 amount: parseInt(transactionData.amount, 10),
                 group: transactionData.group._id,
                 paidBy: transactionData.paidBy._id,
@@ -171,11 +160,12 @@ function TransactionFormScreen({ navigation }) {
             }
 
             if (upiParams.receiverId) {
-                setUpiParams((prev) => ({
-                    ...prev,
+                const upiData = {
+                    ...upiParams,
                     am: transactionData.amount.toString(),
-                }));
-                navigation.navigate(PAGES.UPI_APP_SELECTION);
+                };
+                setUpiParams({});
+                navigation.navigate(PAGES.UPI_APP_SELECTION, upiData);
                 return;
             }
             Toast.show('Transaction Added', {
@@ -215,29 +205,14 @@ function TransactionFormScreen({ navigation }) {
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.verticalScrollView}
-                keyboardShouldPersistTaps="always"
-            >
-                {Categories.map((item, index) => (
-                    <Pressable
-                        key={index}
-                        style={[styles.categoryItem, transactionData.type === item.name && styles.selectedCategory]}
-                        onPress={() => handleCategorySelect(item.name)}
-                    >
-                        {item.icon}
-                        <Text style={styles.categoryText}>{item.name}</Text>
-                    </Pressable>
-                ))}
-            </ScrollView>
             {getPreviousPageName(navigation) != PAGES.GROUP && (
                 <View>
                     <Pressable
                         style={styles.addGroupBtn}
                         onPress={() => {
-                            navigation.navigate(PAGES.SELECT_GROUP);
+                            navigation.navigate(PAGES.SELECT_GROUP, {
+                                shouldOpenUpi,
+                            });
                         }}
                     >
                         <View style={styles.buttonWrapper}>
@@ -283,6 +258,7 @@ const styles = StyleSheet.create({
     },
     rowCentered: {
         justifyContent: 'center',
+        paddingBottom: calcHeight(2),
     },
     amount: {
         color: COLOR.TEXT,

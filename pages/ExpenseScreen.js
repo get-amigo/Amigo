@@ -5,7 +5,6 @@ import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } fr
 
 import DatePickerSelector from '../components/DatePickerSelector';
 import ExpenseCard from '../components/ExpenseCard';
-import TypeSelector from '../components/TypeSelector';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useExpense } from '../stores/expense';
@@ -38,7 +37,7 @@ function ExpenseScreen() {
                     }}
                 >
                     <View style={styles.selectorContainer}>
-                        <TypeSelector />
+                        {/* <TypeSelector /> */}
                         <DatePickerSelector />
                     </View>
                     {isFilterApplied && (
@@ -82,7 +81,7 @@ function ExpenseScreen() {
                 }}
             >
                 <View style={styles.selectorContainer}>
-                    <TypeSelector />
+                    {/* <TypeSelector /> */}
                     <DatePickerSelector />
                 </View>
                 {isFilterApplied && (

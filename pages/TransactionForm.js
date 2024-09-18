@@ -79,8 +79,12 @@ function TransactionFormScreen({ navigation, route }) {
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
     const handleSubmit = async () => {
-        if (!transactionData.amount) {
+        if (!transactionData.amount || transactionData.amount == 0) {
             Alert.alert('Amount Missing');
+            return;
+        }
+        if (!transactionData.description || transactionData.description == '' || transactionData.description === undefined) {
+            Alert.alert('Description Missing');
             return;
         }
 

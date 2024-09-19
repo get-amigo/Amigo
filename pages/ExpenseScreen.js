@@ -1,5 +1,4 @@
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,16 +7,13 @@ import ExpenseCard from '../components/ExpenseCard';
 import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useExpense } from '../stores/expense';
+import useFocusThrottledFetch from '../hooks/useFocusThrottledFetch';
 
 function ExpenseScreen() {
     const { expense, resetParams, loading, fetchExpense, type, range } = useExpense();
     const [refreshing, setRefreshing] = useState(false);
 
-    useFocusEffect(
-        useCallback(() => {
-            resetParams();
-        }, []),
-    );
+    useFocusThrottledFetch(() => resetParams(), 800);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);

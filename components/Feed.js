@@ -18,6 +18,7 @@ import offlineMessage from '../helper/offlineMessage';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import SwipeableWrapper from './SwipeableWrapper.js';
 
 const SELECTOR_SIZE = 3.4;
 
@@ -45,71 +46,78 @@ function ActivityHeader({ icon, size, text }) {
 function TransactionActivityDetails({ transaction, createdAt, synced, highlightColor }) {
     return (
         <>
-            <View style={[styles.transactionCard, { backgroundColor: highlightColor }]}>
-                <ActivityHeader
-                    icon={Octicons}
-                    iconName="person"
-                    size={getFontSizeByWindowWidth(10.5)}
-                    text={`${transaction.splitAmong?.length}`}
-                />
-                <View style={styles.flexContainer}>
-                    <View>
-                        <Text style={styles.amount}>₹ {transaction.amount}</Text>
-                    </View>
-                </View>
-            </View>
-            <View
-                style={{
-                    marginLeft: calcWidth(1),
+            <SwipeableWrapper
+                onSwipe={() => {
+                    console.log('Transaction is:', transaction);
                 }}
+                chatContent={transaction}
             >
-                <View>
-                    {transaction.description && transaction.description != ' ' && (
-                        <Text style={styles.description}>{transaction.description}</Text>
-                    )}
+                <View style={[styles.transactionCard, { backgroundColor: highlightColor }]}>
+                    <ActivityHeader
+                        icon={Octicons}
+                        iconName="person"
+                        size={getFontSizeByWindowWidth(10.5)}
+                        text={`${transaction.splitAmong?.length}`}
+                    />
+                    <View style={styles.flexContainer}>
+                        <View>
+                            <Text style={styles.amount}>₹ {transaction.amount}</Text>
+                        </View>
+                    </View>
                 </View>
                 <View
                     style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        marginTop: calcWidth(3.3),
+                        marginLeft: calcWidth(1),
                     }}
                 >
+                    <View>
+                        {transaction.description && transaction.description != ' ' && (
+                            <Text style={styles.description}>{transaction.description}</Text>
+                        )}
+                    </View>
                     <View
                         style={{
                             flexDirection: 'row',
-                            gap: calcWidth(1.2),
+                            justifyContent: 'space-between',
+                            marginTop: calcWidth(3.3),
                         }}
                     >
-                        <View>
-                            <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginLeft: calcWidth(-1) }} />
-                        </View>
-                        <Text
+                        <View
                             style={{
-                                color: 'white',
-                                fontSize: getFontSizeByWindowWidth(10.8),
-                                fontWeight: '400',
+                                flexDirection: 'row',
+                                gap: calcWidth(1.2),
                             }}
                         >
-                            {getDateAndMonth(createdAt)}
-                        </Text>
+                            <View>
+                                <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginLeft: calcWidth(-1) }} />
+                            </View>
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    fontSize: getFontSizeByWindowWidth(10.8),
+                                    fontWeight: '400',
+                                }}
+                            >
+                                {getDateAndMonth(createdAt)}
+                            </Text>
+                        </View>
+                    </View>
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            justifyContent: 'flex-end',
+                            marginRight: calcWidth(1),
+                        }}
+                    >
+                        <View style={{ flexDirection: 'row' }}>
+                            <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
+                                {formatTo12HourTime(createdAt)}
+                            </Text>
+                            {synced === false && <Image source={ClockIcon} style={styles.syncIcon} />}
+                        </View>
                     </View>
                 </View>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        justifyContent: 'flex-end',
-                        marginRight: calcWidth(1),
-                    }}
-                >
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
-                            {formatTo12HourTime(createdAt)}
-                        </Text>
-                        {synced === false && <Image source={ClockIcon} style={styles.syncIcon} />}
-                    </View>
-                </View>
-            </View>
+            </SwipeableWrapper>
         </>
     );
 }
@@ -332,53 +340,139 @@ function PaymentActivity({ payment, contacts, highlightColor }) {
 
 function ChatActivity({ chat, synced }) {
     return (
-        <View
-            style={{
-                maxWidth: calcWidth(50),
-                flexDirection: 'row',
-                flexWrap: 'wrap',
-                alignItems: 'flex-end',
+        <SwipeableWrapper
+            onSwipe={() => {
+                console.log(chat);
             }}
+            chatContent={chat}
         >
-            <Text
-                style={{
-                    color: 'white',
-                    fontSize: getFontSizeByWindowWidth(10.7),
-                    fontWeight: '400',
-                }}
-            >
-                {chat.message}
-            </Text>
-            <View
-                style={{
-                    marginLeft: 'auto',
-                    flexDirection: 'row',
-                }}
-            >
-                <Text
+            {chat.replyingMessage ? (
+                <View
                     style={{
-                        color: 'white',
-                        fontSize: getFontSizeByWindowWidth(7),
-                        fontWeight: '300',
-                        marginLeft: calcWidth(3),
+                        maxWidth: calcWidth(60),
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        alignItems: 'flex-end',
+                        // paddingHorizontal: 4,
+                        fontSize: 20,
                     }}
                 >
-                    {formatTo12HourTime(chat.createdAt)}
-                </Text>
-                {/* incase sync is missing for the data comming from the backend it should have the right sync */}
-                {synced === false && (
-                    <Image
-                        source={ClockIcon}
+                    <View
                         style={{
-                            height: calcWidth(2.2),
-                            width: calcWidth(2.2),
-                            margin: 'auto',
-                            marginLeft: calcWidth(1),
+                            backgroundColor: '#461e63',
+                            padding: 5,
+                            borderRadius: 10,
+                            width: '100%',
                         }}
-                    />
-                )}
-            </View>
-        </View>
+                    >
+                        <Text
+                            style={{
+                                color: '#cf9af5',
+                                fontWeight: 700,
+                                fontSize: 17,
+                            }}
+                        >
+                            {chat.replyTo}
+                        </Text>
+                        <Text
+                            style={{
+                                color: '#ccbff5',
+                                fontSize: 12,
+                                fontWeight: 500,
+                            }}
+                        >
+                            {chat.replyingMessage}
+                        </Text>
+                    </View>
+                    <Text
+                        style={{
+                            color: 'white',
+                            fontSize: getFontSizeByWindowWidth(11.7),
+                            fontWeight: '400',
+                        }}
+                    >
+                        {chat.message}
+                    </Text>
+                    <View
+                        style={{
+                            marginLeft: 'auto',
+                            flexDirection: 'row',
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontSize: getFontSizeByWindowWidth(7),
+                                fontWeight: '300',
+                                marginLeft: calcWidth(3),
+                            }}
+                        >
+                            {formatTo12HourTime(chat.createdAt)}
+                        </Text>
+                        {synced === false && (
+                            <Image
+                                source={ClockIcon}
+                                style={{
+                                    height: calcWidth(2.2),
+                                    width: calcWidth(2.2),
+                                    margin: 'auto',
+                                    marginLeft: calcWidth(1),
+                                }}
+                            />
+                        )}
+                    </View>
+                </View>
+            ) : (
+                <View
+                    style={{
+                        maxWidth: calcWidth(57),
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        alignItems: 'flex-end',
+                        paddingHorizontal: 8,
+                        fontSize: 20,
+                    }}
+                >
+                    <Text
+                        style={{
+                            color: 'white',
+                            fontSize: getFontSizeByWindowWidth(10.7),
+                            fontWeight: '400',
+                        }}
+                    >
+                        {chat.message}
+                    </Text>
+                    <View
+                        style={{
+                            marginLeft: 'auto',
+                            flexDirection: 'row',
+                        }}
+                    >
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontSize: getFontSizeByWindowWidth(7),
+                                fontWeight: '300',
+                                marginLeft: calcWidth(3),
+                            }}
+                        >
+                            {formatTo12HourTime(chat.createdAt)}
+                        </Text>
+                        {synced === false && (
+                            <Image
+                                source={ClockIcon}
+                                style={{
+                                    height: calcWidth(2.2),
+                                    width: calcWidth(2.2),
+                                    margin: 'auto',
+                                    marginLeft: calcWidth(1),
+                                }}
+                            />
+                        )}
+                    </View>
+                </View>
+            )}
+        </SwipeableWrapper>
     );
 }
 
@@ -509,6 +603,8 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
                         chat={{
                             creator,
                             message: relatedId?.message,
+                            replyTo: relatedId?.replyTo,
+                            replyingMessage: relatedId?.replyingMessage,
                             createdAt,
                         }}
                         synced={synced}

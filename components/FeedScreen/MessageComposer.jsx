@@ -1,6 +1,10 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+<<<<<<< HEAD
 import React, { useCallback, useEffect, useState } from 'react';
+=======
+import React, { useCallback, useState, useRef, useEffect } from 'react';
+>>>>>>> ece70aa (Reply feature implemented)
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,6 +17,8 @@ import { calcWidth, getFontSizeByWindowWidth } from '../../helper/res';
 import useNetwork from '../../hooks/useNetwork';
 import { useAuth } from '../../stores/auth';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
+import useReplyStore from '../../stores/replyStore';
+import ReplyingInfo from '../ReplyingInfo';
 
 const MessageComposer = ({ chatData, activityId }) => {
     const insets = useSafeAreaInsets();
@@ -25,7 +31,12 @@ const MessageComposer = ({ chatData, activityId }) => {
     const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
     const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
     const [text, setText] = useState('');
+<<<<<<< HEAD
     const [editing, setEditing] = useState(false);
+=======
+    const { isReplying, setIsReplying, replyingTo, toReplyMessage } = useReplyStore();
+    const textInputRef = useRef(null);
+>>>>>>> ece70aa (Reply feature implemented)
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
@@ -55,7 +66,16 @@ const MessageComposer = ({ chatData, activityId }) => {
         setText(text);
     }, []);
 
+    useEffect(() => {
+        if (isReplying && textInputRef.current) {
+            textInputRef.current.focus();
+        } else if (!isReplying && textInputRef.current) {
+            textInputRef.current.blur();
+        }
+    }, [isReplying]);
+
     const sendChatMessage = async (message) => {
+<<<<<<< HEAD
         if (message.replace(/^\s+|\s+$/g, '') === '') {
             return;
         }
@@ -85,10 +105,42 @@ const MessageComposer = ({ chatData, activityId }) => {
                         activityId,
                         chatId: relatedId,
                     });
+=======
+        const trimmedMessage = message.trim();
+        if (trimmedMessage === '') {
+            return;
+        }
+
+        if (!isReplying) {
+            setText('');
+
+            const activityData = {
+                activity: { activityType: 'chat', relatedId: { message: trimmedMessage } },
+                groupId: group._id,
+                user: user,
+                isSynced: false,
+                addToPending: !isConnected,
+            };
+
+            if (isConnected) {
+                const { activityId, relatedId } = addActivityToLocalDB({
+                    ...activityData,
+                    addToPending: false,
+                });
+
+                try {
+                    await apiHelper.post(`/group/${group._id}/chat`, {
+                        message: trimmedMessage,
+                        activityId,
+                        chatId: relatedId,
+                    });
+
+>>>>>>> ece70aa (Reply feature implemented)
                     updateIsSynced({
                         _id: activityId,
                         group: group._id,
                     });
+<<<<<<< HEAD
                 }
             } else {
                 // No network connection
@@ -106,6 +158,56 @@ const MessageComposer = ({ chatData, activityId }) => {
         } finally {
             setText('');
             setEditing(false);
+=======
+                } catch (err) {
+                    console.error(err);
+                }
+            } else {
+                addActivityToLocalDB(activityData);
+            }
+        } else {
+            setText('');
+            const activityData = {
+                activity: {
+                    activityType: 'chat',
+                    relatedId: {
+                        message: trimmedMessage,
+                        replyTo: replyingTo,
+                        replyingMessage: toReplyMessage,
+                    },
+                },
+                groupId: group._id,
+                user: user,
+                isSynced: false,
+                addToPending: !isConnected,
+            };
+
+            if (isConnected) {
+                const { activityId, relatedId } = addActivityToLocalDB({
+                    ...activityData,
+                    addToPending: false,
+                });
+
+                try {
+                    await apiHelper.post(`/group/${group._id}/chat`, {
+                        message: trimmedMessage,
+                        activityId,
+                        chatId: relatedId,
+                        replyTo: replyingTo,
+                        replyingMessage: toReplyMessage,
+                    });
+
+                    updateIsSynced({
+                        _id: activityId,
+                        group: group._id,
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
+            } else {
+                addActivityToLocalDB(activityData);
+            }
+>>>>>>> ece70aa (Reply feature implemented)
         }
     };
 
@@ -135,69 +237,86 @@ const MessageComposer = ({ chatData, activityId }) => {
                     },
                 ]}
             >
-                <View style={styles.row}>
-                    <Pressable
-                        style={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            display: !isExpenseBtnVisible ? 'flex' : 'none',
-                            marginLeft: calcWidth(4),
-                        }}
-                        onPress={() => setIsExpenseBtnVisible(true)}
-                    >
-                        <FontAwesome name="angle-right" size={getFontSizeByWindowWidth(27)} color="white" />
-                    </Pressable>
-                    <Pressable
-                        style={[styles.button, { display: isExpenseBtnVisible ? 'flex' : 'none' }]}
-                        onPress={() => {
-                            setText('');
-                            resetTransaction();
-                            // If it's a number, strip out non-digit characters
-                            let amt = parseInt(text);
-                            if (amt <= 0) {
-                                amt = '';
-                            }
-                            setTransactionData((prev) => ({
-                                ...prev,
-                                group,
-                                amount: amt ? '' + amt : '',
-                            }));
-                            navigation.navigate(PAGES.ADD_TRANSACTION);
-                        }}
-                    >
-                        <Text
+                <View
+                    style={{
+                        width: '100%',
+                        position: 'relative',
+                        height: 'auto',
+                    }}
+                >
+                    {isReplying ? <ReplyingInfo to={replyingTo} message={toReplyMessage} /> : null}
+
+                    <View style={styles.row}>
+                        <Pressable
                             style={{
-                                fontSize: getFontSizeByWindowWidth(15),
-                                color: 'white',
-                                marginRight: 4,
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                display: !isExpenseBtnVisible ? 'flex' : 'none',
+                                marginLeft: calcWidth(4),
+                            }}
+                            onPress={() => setIsExpenseBtnVisible(true)}
+                        >
+                            <FontAwesome name="angle-right" size={getFontSizeByWindowWidth(27)} color="white" />
+                        </Pressable>
+                        <Pressable
+                            style={[styles.button, { display: isExpenseBtnVisible ? 'flex' : 'none' }]}
+                            onPress={() => {
+                                setText('');
+                                resetTransaction();
+                                let amt = parseInt(text);
+                                if (amt <= 0) {
+                                    amt = '';
+                                }
+                                setTransactionData((prev) => ({
+                                    ...prev,
+                                    group,
+                                    amount: amt ? '' + amt : '',
+                                }));
+                                navigation.navigate(PAGES.ADD_TRANSACTION);
                             }}
                         >
-                            +
-                        </Text>
-                        <Text style={styles.buttonText}> Expense</Text>
-                    </Pressable>
-                    <View style={styles.textInputContainer}>
-                        <TextInput
-                            style={styles.input}
-                            placeholderTextColor="#ccc"
-                            placeholder="Message..."
-                            value={text}
-                            onChangeText={handleTextInputAndToggleExpenseButton}
-                            onFocus={() => {
-                                if (text.length === 0) setIsExpenseBtnVisible(false);
-                            }}
-                            onBlur={() => {
-                                if (text === '') {
-                                    setIsExpenseBtnVisible(true);
-                                }
-                            }}
-                        />
-                    </View>
-                    {isSendBtnVisible && (
-                        <Pressable style={styles.sendBtn} onPress={() => sendChatMessage(text)}>
-                            <Ionicons name="send" size={calcWidth(5.5)} color="white" />
+                            <Text
+                                style={{
+                                    fontSize: getFontSizeByWindowWidth(15),
+                                    color: 'white',
+                                    marginRight: 4,
+                                }}
+                            >
+                                +
+                            </Text>
+                            <Text style={styles.buttonText}> Expense</Text>
                         </Pressable>
-                    )}
+
+                        <View style={styles.textInputContainer}>
+                            <TextInput
+                                ref={textInputRef}
+                                style={styles.input}
+                                placeholderTextColor="#ccc"
+                                placeholder="Message..."
+                                value={text}
+                                onChangeText={handleTextInputAndToggleExpenseButton}
+                                onFocus={() => {
+                                    if (text.length === 0) setIsExpenseBtnVisible(false);
+                                }}
+                                onBlur={() => {
+                                    if (text === '') {
+                                        setIsExpenseBtnVisible(true);
+                                    }
+                                }}
+                            />
+                        </View>
+                        {isSendBtnVisible && (
+                            <Pressable
+                                style={styles.sendBtn}
+                                onPress={() => {
+                                    sendChatMessage(text);
+                                    setIsReplying(false);
+                                }}
+                            >
+                                <Ionicons name="send" size={calcWidth(5.5)} color="white" />
+                            </Pressable>
+                        )}
+                    </View>
                 </View>
             </View>
         </View>

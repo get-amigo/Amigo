@@ -22,6 +22,8 @@ const groupActivitiesStore = (set, get) => ({
         // acts is an array of activities fetched by api
         if (!acts || acts.length === 0) {
             return;
+        } else {
+            console.log('acts');
         }
 
         set((state) => {
@@ -53,15 +55,24 @@ const groupActivitiesStore = (set, get) => ({
 
             const unstoredIds = [];
             acts.forEach((act) => {
+                // console.log('act outside the if', act);
+
+                newActivitiesById[act._id] = {
+                    ...newActivitiesById[act._id],
+                    ...act,
+                };
+
                 if (!(act._id in newActivitiesById)) {
                     unstoredIds.push(act._id);
-                    newActivitiesById[act._id] = act;
+                    newActivitiesById[act._id] = {};
                 }
             });
 
             // "low" variable stores the correct position where the new activity should be stored
 
             newActivityOrder.splice(low, 0, ...unstoredIds);
+
+            console.log(newActivitiesById, 'These are activities updated');
 
             return {
                 activities: {
@@ -83,7 +94,11 @@ const groupActivitiesStore = (set, get) => ({
 
     addActivityToLocalDB: (params) => {
         const { activity, groupId, user, isSynced = false, addToPending = false } = params;
+<<<<<<< HEAD
         console.log(activity, 'Inside the add activity to local db');
+=======
+        console.log('Now we are in the next step', activity);
+>>>>>>> ece70aa (Reply feature implemented)
 
         if (isSynced) {
             set((state) => {
@@ -117,6 +132,7 @@ const groupActivitiesStore = (set, get) => ({
 
             const activityId = generateUniqueId();
             const relatedId = generateUniqueId();
+
             switch (activityType) {
                 case 'transaction':
                     generatedActivity = {
@@ -170,6 +186,8 @@ const groupActivitiesStore = (set, get) => ({
                             _id: relatedId,
                             createdAt: now,
                             message: activity.relatedId.message,
+                            replyTo: activity.relatedId.replyTo,
+                            replyingMessage: activity.relatedId.replyingMessage,
                             updatedAt: now,
                         },
                         updatedAt: now,
@@ -212,6 +230,7 @@ const groupActivitiesStore = (set, get) => ({
                     };
                 });
             }
+
             return { activityId, relatedId };
         }
     },
@@ -273,7 +292,7 @@ const groupActivitiesStore = (set, get) => ({
                             chatId: activity.relatedId._id,
                         })
                         .then(() => {
-                            // remove from pendingMessages
+                            console.log('Activity is ', activity);
                             get().updateIsSynced(activity);
                             set((state) => {
                                 const newPendingActivities = { ...state.pendingActivities };

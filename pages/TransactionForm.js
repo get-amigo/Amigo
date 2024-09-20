@@ -272,6 +272,7 @@ const styles = StyleSheet.create({
     },
     description: {
         color: 'white',
+        paddingVertical: 0,
         paddingHorizontal: calcWidth(3),
     },
     descriptionContainer: {

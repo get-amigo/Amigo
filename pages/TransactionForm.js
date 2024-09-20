@@ -277,7 +277,8 @@ const styles = StyleSheet.create({
     },
     descriptionContainer: {
         alignSelf: 'center',
-        padding: calcWidth(2.2),
+        paddingHorizontal: calcWidth(2.2),
+        paddingVertical: calcHeight(1.8),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,

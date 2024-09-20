@@ -324,6 +324,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        width: calcWidth(90),
+        marginTop: calcHeight(2),
     },
     buttonWrapper: {
         flexDirection: 'row',

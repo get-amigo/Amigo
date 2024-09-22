@@ -3,7 +3,7 @@
         "name": "Amigo",
         "slug": "amigo",
         "scheme": "amigo",
-        "version": "1.2.17",
+        "version": "1.2.18",
         "orientation": "portrait",
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "automatic",
@@ -16,7 +16,7 @@
         "ios": {
             "googleServicesFile": "./GoogleService-Info.plist",
             "bundleIdentifier": "app.amigo.app",
-            "buildNumber": "27",
+            "buildNumber": "28",
             "infoPlist": {
                 "LSApplicationQueriesSchemes": ["tez", "phonepe", "paytmmp", "amazonpay", "bhim", "upi"],
                 "UIBackgroundModes": ["remote-notification"]
@@ -28,7 +28,7 @@
                 "foregroundImage": "./assets/icon.png",
                 "backgroundColor": "#000"
             },
-            "versionCode": 27,
+            "versionCode": 28,
             "package": "app.amigo.app",
             "permissions": [
                 "android.permission.READ_CONTACTS",

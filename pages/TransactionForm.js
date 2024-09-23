@@ -272,11 +272,13 @@ const styles = StyleSheet.create({
     },
     description: {
         color: 'white',
+        paddingVertical: 0,
         paddingHorizontal: calcWidth(3),
     },
     descriptionContainer: {
         alignSelf: 'center',
-        padding: calcWidth(2.2),
+        paddingHorizontal: calcWidth(2.2),
+        paddingVertical: calcHeight(1.8),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
@@ -322,6 +324,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        width: calcWidth(90),
+        marginTop: calcHeight(2),
     },
     buttonWrapper: {
         flexDirection: 'row',

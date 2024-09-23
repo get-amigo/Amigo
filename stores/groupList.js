@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import apiHelper from '../helper/apiHelper';
 import editNamesAsync from '../helper/editNamesAsync';
 import { create } from '../helper/zustand'; // Import create instead of createStore
+import shallowEquals from '../helper/shallowEquals';
 
 const useGroupStore = create(
     persist(
@@ -20,6 +21,7 @@ const useGroupStore = create(
                 }
                 const { data } = await apiHelper('/group');
                 for (const group of data) group.members = await editNamesAsync(group.members, user._id, false);
+                if (shallowEquals({ obj1: groups, obj2: data })) return;
                 set({ groups: data, loading: false });
             },
             updateMember: async ({ groupId, newMembers, userId }) => {
@@ -34,6 +36,7 @@ const useGroupStore = create(
                 if (groupIndex !== -1) {
                     for (const newMemberWithName of newMembersWithName) newGroups[groupIndex].members.push(newMemberWithName);
                 }
+
                 set({ groups: newGroups });
             },
         }),

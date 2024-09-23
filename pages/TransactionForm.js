@@ -145,6 +145,7 @@ function TransactionFormScreen({ navigation, route }) {
                 if (isEditing && transaction._id) {
                     // Update existing transaction
                     const newTransactionWithId = { ...newTransaction, activityId: activity, transactionId: transaction._id };
+
                     apiHelper
                         .put(`/transaction/${transactionData._id}`, newTransactionWithId)
                         .then(() => {
@@ -152,6 +153,7 @@ function TransactionFormScreen({ navigation, route }) {
                                 activityId: activity,
                                 groupId: newTransactionWithId.group,
                                 updatedActivity: newTransactionWithId,
+                                allNewActivity: newActivity,
                             });
                             setUpiParams({});
                             updateIsSynced({
@@ -164,6 +166,8 @@ function TransactionFormScreen({ navigation, route }) {
                         })
                         .catch((err) => {
                             console.log('error in api put', err);
+                            console.log('Error response:', err.response?.data);
+                            console.log('Error status:', err.response?.status);
                             Alert.alert('Error', JSON.stringify(err));
                         });
                 } else {

@@ -22,7 +22,7 @@ import { useAuth } from '../stores/auth';
 const TransactionDetail = ({
     navigation,
     route: {
-        params: { transaction, handleDelete,activity },
+        params: { transaction, handleDelete, activity },
     },
 }) => {
     const [date, setDate] = useState();
@@ -30,7 +30,7 @@ const TransactionDetail = ({
     const [modalVisible, setModalVisible] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const transactionId = transaction._id;
- const {user} = useAuth()
+    const { user } = useAuth();
     const generateColor = useCustomColor();
 
     useLayoutEffect(() => {
@@ -49,14 +49,15 @@ const TransactionDetail = ({
 
     useEffect(() => {
         setDate(new Date(transaction.date));
-        console.log("T",transaction)
+        console.log('T', transaction, isEditing);
     }, [transaction]);
 
     const handleEdit = async () => {
         try {
             const response = await apiHelper.get(`/transaction/${transactionId}`);
             const transactionData = response.data;
-            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing,activity });
+
+            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing, activity });
             setModalVisible(!modalVisible);
         } catch (error) {
             console.error('Error fetching transaction:', error);

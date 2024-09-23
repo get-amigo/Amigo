@@ -83,6 +83,8 @@ const groupActivitiesStore = (set, get) => ({
 
     addActivityToLocalDB: (params) => {
         const { activity, groupId, user, isSynced = false, addToPending = false } = params;
+        console.log(activity, 'Inside the add activity to local db');
+
         if (isSynced) {
             set((state) => {
                 const newActivitiesById = {
@@ -94,6 +96,8 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[activity._id] = activity;
+
+                console.log(newActivitiesById, 'Inside th final stage if add to localdb if is synced');
 
                 return {
                     activities: {
@@ -184,6 +188,7 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[generatedActivity._id] = generatedActivity;
+                console.log(generatedActivity, 'Inside the final stage of adding');
 
                 return {
                     activities: {
@@ -380,7 +385,8 @@ const groupActivitiesStore = (set, get) => ({
     },
 
     editTransaction: (params) => {
-        const { activityId, groupId, updatedActivity } = params;
+        const { activityId, groupId, updatedActivity, allNewActivity } = params;
+
         set((state) => {
             const newActivitiesById = {
                 ...(state.activities[groupId]?.activitiesById || {}),
@@ -388,6 +394,11 @@ const groupActivitiesStore = (set, get) => ({
 
             // Ensure the activity exists before updating
             if (newActivitiesById[activityId]) {
+                let updatedSplitAmong = allNewActivity.relatedId.splitAmong.map((details) => {
+                    return details;
+                });
+                let updatedPaidby = allNewActivity.relatedId.paidBy;
+
                 newActivitiesById[activityId] = {
                     ...newActivitiesById[activityId],
                     relatedId: {
@@ -403,6 +414,8 @@ const groupActivitiesStore = (set, get) => ({
                     updatedAt: updatedActivity.updatedAt,
                     isSynced: updatedActivity.isSynced,
                 };
+                newActivitiesById[activityId].relatedId.splitAmong = updatedSplitAmong;
+                newActivitiesById[activityId].relatedId.paidBy = updatedPaidby;
 
                 return {
                     activities: {

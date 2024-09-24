@@ -17,11 +17,10 @@ function editNames(usersArray, currentUserId, contacts) {
             } else if (user.name) {
                 user.name = sliceText(user.name);
             } else {
-                user.name = 'Unknown';
+                user.name = user.phoneNumber;
             }
         }
-
-        return usersArray;
+        return usersArray.sort((a, b) => a.name.localeCompare(b.name));
     } catch (error) {
         console.error('Error in updateNamesInArray function:', error);
         return [];

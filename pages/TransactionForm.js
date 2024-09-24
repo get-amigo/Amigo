@@ -6,7 +6,6 @@ import Toast from 'react-native-root-toast';
 
 import AmountInput from '../components/AmountInput';
 import Button from '../components/Button';
-import Categories from '../constants/Categories';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { useGroup } from '../context/GroupContext';
@@ -16,15 +15,17 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
+import { useBalance } from '../stores/balance';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 function TransactionFormScreen({ navigation, route }) {
+    const { shouldOpenUpi } = route.params || {};
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
-
+    const { updateBalances } = useBalance();
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
     const editTransaction = useGroupActivitiesStore((state) => state.editTransaction);
@@ -90,16 +91,13 @@ function TransactionFormScreen({ navigation, route }) {
 
     const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
 
-    const handleCategorySelect = (category) => {
-        setTransactionData((prev) => ({
-            ...prev,
-            type: category,
-        }));
-    };
-
     const handleSubmit = async () => {
-        if (!transactionData.amount) {
+        if (!transactionData.amount || transactionData.amount == 0) {
             Alert.alert('Amount Missing');
+            return;
+        }
+        if (!transactionData.description || transactionData.description == '' || transactionData.description === undefined) {
+            Alert.alert('Description Missing');
             return;
         }
 
@@ -108,14 +106,10 @@ function TransactionFormScreen({ navigation, route }) {
             return;
         }
 
-        if (!transactionData.type) {
-            Alert.alert('Category Missing');
-            return;
-        }
         try {
-            // Create a new object with modifications, leaving original transactionData unchanged
             const newTransaction = {
                 ...transactionData,
+                type: 'General', // set to default for now
                 amount: parseInt(transactionData.amount, 10),
                 group: transactionData.group._id,
                 paidBy: transactionData.paidBy._id,
@@ -182,7 +176,10 @@ function TransactionFormScreen({ navigation, route }) {
                     const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
                     apiHelper
                         .post('/transaction', newTransactionWithId)
-                        .then(() => {
+                        .then((value) => {
+                            const transactionHistory = value.data.transactionHistory;
+                            updateBalances(transactionHistory, user._id);
+
                             setUpiParams({});
                             updateIsSynced({
                                 _id: activityId,
@@ -205,11 +202,12 @@ function TransactionFormScreen({ navigation, route }) {
             }
 
             if (upiParams.receiverId) {
-                setUpiParams((prev) => ({
-                    ...prev,
+                const upiData = {
+                    ...upiParams,
                     am: transactionData.amount.toString(),
-                }));
-                navigation.navigate(PAGES.UPI_APP_SELECTION);
+                };
+                setUpiParams({});
+                navigation.navigate(PAGES.UPI_APP_SELECTION, upiData);
                 return;
             }
             Toast.show('Transaction Added', {
@@ -230,7 +228,7 @@ function TransactionFormScreen({ navigation, route }) {
     };
 
     return (
-        <ScrollView style={styles.container} alwaysBounceVertical={false}>
+        <ScrollView style={styles.container} alwaysBounceVertical={false} keyboardShouldPersistTaps="always">
             <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
             <View style={styles.rowCentered}>
@@ -251,24 +249,14 @@ function TransactionFormScreen({ navigation, route }) {
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.verticalScrollView}>
-                {Categories.map((item, index) => (
-                    <Pressable
-                        key={index}
-                        style={[styles.categoryItem, transactionData.type === item.name && styles.selectedCategory]}
-                        onPress={() => handleCategorySelect(item.name)}
-                    >
-                        {item.icon}
-                        <Text style={styles.categoryText}>{item.name}</Text>
-                    </Pressable>
-                ))}
-            </ScrollView>
             {getPreviousPageName(navigation) !== PAGES.GROUP && getPreviousPageName(navigation) !== PAGES.TRANSACTION_DETAIL && (
                 <View>
                     <Pressable
                         style={styles.addGroupBtn}
                         onPress={() => {
-                            navigation.navigate(PAGES.SELECT_GROUP);
+                            navigation.navigate(PAGES.SELECT_GROUP, {
+                                shouldOpenUpi,
+                            });
                         }}
                     >
                         <View style={styles.buttonWrapper}>
@@ -314,6 +302,7 @@ const styles = StyleSheet.create({
     },
     rowCentered: {
         justifyContent: 'center',
+        paddingBottom: calcHeight(2),
     },
     amount: {
         color: COLOR.TEXT,
@@ -323,11 +312,13 @@ const styles = StyleSheet.create({
     },
     description: {
         color: 'white',
+        paddingVertical: 0,
         paddingHorizontal: calcWidth(3),
     },
     descriptionContainer: {
         alignSelf: 'center',
-        padding: calcWidth(2.2),
+        paddingHorizontal: calcWidth(2.2),
+        paddingVertical: calcHeight(1.8),
         borderWidth: 1,
         borderColor: 'gray',
         borderRadius: 5,
@@ -373,6 +364,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
+        width: calcWidth(90),
+        marginTop: calcHeight(2),
     },
     buttonWrapper: {
         flexDirection: 'row',

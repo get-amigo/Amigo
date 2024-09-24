@@ -724,7 +724,7 @@ const styles = StyleSheet.create({
     modalButtons: {
         position: 'absolute',
         top: calcHeight(16.8),
-        left: calcWidth(8),
+        left: calcWidth(2.5),
     },
     modalButton: {
         flexDirection: 'row',

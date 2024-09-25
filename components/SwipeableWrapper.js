@@ -3,12 +3,12 @@ import { Animated, View, StyleSheet } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import useReplyStore from '../stores/replyStore';
-import { useAuth } from '../stores/auth';
+// import { useAuth } from '../stores/auth';
 
-function SwipeableWrapper({ children, chatContent }) {
+function SwipeableWrapper({ children, chatContent, creator }) {
     const { setIsReplying, setReplyingTo, setToReplyMessage } = useReplyStore();
     const swipeableRef = useRef(null);
-    const { user } = useAuth();
+    // const { user } = useAuth();
     const [hasCrossedThreshold, setHasCrossedThreshold] = useState(false);
     const hasTriggeredHaptic = useRef(false);
 
@@ -26,6 +26,7 @@ function SwipeableWrapper({ children, chatContent }) {
                 hasTriggeredHaptic.current = true;
             }
         });
+        // console.log(creator);
 
         return (
             <Animated.View
@@ -43,11 +44,8 @@ function SwipeableWrapper({ children, chatContent }) {
         if (direction === 'left' && !hasCrossedThreshold) {
             setHasCrossedThreshold(true);
             setIsReplying(true);
-            if (chatContent.creator) {
-                setReplyingTo(chatContent.creator.name);
-            } else {
-                setReplyingTo(user.name);
-            }
+            setReplyingTo(creator);
+
             if (chatContent.message) {
                 setToReplyMessage(chatContent.message);
             } else {

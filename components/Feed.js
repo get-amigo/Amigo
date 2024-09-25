@@ -387,6 +387,8 @@ function PaymentActivity({ payment, contacts, highlightColor }) {
 function ChatActivityDetails({ chat, synced }) {
 =======
 function ChatActivity({ chat, synced }) {
+    let { user } = useAuth();
+
     const [upperViewWidth, setUpperViewWidth] = useState(0);
     const [lowerViewWidth, setLowerViewWidth] = useState(0);
     const [maxWidth, setMaxWidth] = useState(0);
@@ -411,7 +413,7 @@ function ChatActivity({ chat, synced }) {
                     {/* Upper view containing replyTo and replyingMessage */}
                     <View
                         style={{
-                            backgroundColor: '#461e63',
+                            backgroundColor: user._id === chat.creator?._id ? '#461e63' : '#221b2e',
                             borderRadius: 10,
                             padding: 10,
                             width: maxWidth > 0 ? maxWidth : 'auto',
@@ -644,7 +646,7 @@ function Feed(props) {
         return null;
     };
 
-    // console.log(props.relatedId.replyTo, 'props are', renderActivity,'acticity' );
+    // console.log(props.relatedId, 'props are', creator,'creator' );
 
     return (
         <>
@@ -700,12 +702,12 @@ function Feed(props) {
                         </View>
                     )}
 
-                    <SwipeableWrapper chatContent={props.relatedId}>
+                    <SwipeableWrapper chatContent={props.relatedId} creator={creator.name}>
                         <View
                             style={{
                                 width: 320,
-                                justifyContent: 'flex-end',
-                                alignItems: 'flex-end',
+                                justifyContent: user._id === creator?._id ? 'flex-end' : 'flex-start',
+                                alignItems: user._id === creator?._id ? 'flex-end' : 'flex-start',
                                 paddingVertical: 1,
                             }}
                         >

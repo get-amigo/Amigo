@@ -1,21 +1,23 @@
 import React from 'react';
-import { Alert, Linking, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Alert, Linking, Platform, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 import UPIApps from '../constants/UpiApps';
 import PAGES from '../constants/pages';
-import { useTransaction } from '../context/TransactionContext';
 import { getFontSizeByWindowWidth } from '../helper/res';
 
-const UPIAppSelection = ({ navigation }) => {
-    const { upiParams } = useTransaction();
+const UPIAppSelection = ({ navigation, route }) => {
+    const upiParams = route.params;
 
     const handleSelectApp = async (appName, generateDeeplink) => {
         const deepLink = generateDeeplink(upiParams);
         try {
             const canOpenURL = await Linking.canOpenURL(deepLink);
             console.log(canOpenURL);
-            if (canOpenURL) {
+            if (Platform.OS === 'android' && canOpenURL) {
                 Linking.openURL(deepLink);
+                navigation.navigate(PAGES.BALANCE);
+            } else if (Platform.OS === 'ios') {
+                Linking.openURL(deepLink).catch((err) => console.log('error', err));
                 navigation.navigate(PAGES.BALANCE);
             } else {
                 Alert.alert('Alert', 'App not found');

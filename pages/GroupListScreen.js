@@ -1,6 +1,5 @@
-import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, Keyboard, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Keyboard, RefreshControl, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
 import NoGroupsImage from '../assets/NoGroups.png';
 import EmptyScreen from '../components/EmptyScreen';
@@ -12,17 +11,14 @@ import PAGES from '../constants/pages';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
+import useFocusThrottledFetch from '../hooks/useFocusThrottledFetch';
 
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
     const { user } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchData(user);
-        }, []),
-    );
+    useFocusThrottledFetch(() => fetchData(user), 800);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
@@ -69,50 +65,53 @@ function GroupListScreen({ navigation }) {
         );
 
     return (
-        <View style={{ flex: 1 }}>
-            <Text style={styles.header}>Groups</Text>
-            {groups && groups.length == 0 ? (
-                <EmptyScreen
-                    onPress={() => {
-                        navigation.navigate(PAGES.CREATE_GROUP);
-                    }}
-                    image={NoGroupsImage}
-                    title="No Groups Yet"
-                />
-            ) : (
-                <>
-                    <View style={styles.searchContainer}>
-                        <Search search={search} setSearch={setSearch} />
-                    </View>
-                    <FlatList
-                        data={filterGroups(groups)}
-                        renderItem={({ item }) => <GroupCard group={item} />}
-                        keyExtractor={(item) => item.id} // Replace 'item.id' with the appropriate key property from your group objects
-                        onScroll={() => {
-                            Keyboard.dismiss();
-                        }}
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={refreshing}
-                                onRefresh={onRefresh}
-                                colors={[COLOR.REFRESH_INDICATOR_ARROW]}
-                                tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
-                                progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
-                            />
-                        }
-                    />
-                </>
-            )}
-            {groups && groups.length != 0 && (
-                <FabIcon
-                    onPress={() => {
-                        {
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <View style={{ flex: 1 }}>
+                <Text style={styles.header}>Groups</Text>
+                {groups && groups.length == 0 ? (
+                    <EmptyScreen
+                        onPress={() => {
                             navigation.navigate(PAGES.CREATE_GROUP);
-                        }
-                    }}
-                />
-            )}
-        </View>
+                        }}
+                        image={NoGroupsImage}
+                        title="No Groups Yet"
+                    />
+                ) : (
+                    <>
+                        <View style={styles.searchContainer}>
+                            <Search search={search} setSearch={setSearch} />
+                        </View>
+                        <FlatList
+                            data={filterGroups(groups)}
+                            renderItem={({ item }) => <GroupCard group={item} />}
+                            keyExtractor={(item) => item.id} // Replace 'item.id' with the appropriate key property from your group objects
+                            onScroll={() => {
+                                Keyboard.dismiss();
+                            }}
+                            keyboardShouldPersistTaps="always"
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={onRefresh}
+                                    colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                                    tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                                    progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                                />
+                            }
+                        />
+                    </>
+                )}
+                {groups && groups.length != 0 && (
+                    <FabIcon
+                        onPress={() => {
+                            {
+                                navigation.navigate(PAGES.CREATE_GROUP);
+                            }
+                        }}
+                    />
+                )}
+            </View>
+        </TouchableWithoutFeedback>
     );
 }
 

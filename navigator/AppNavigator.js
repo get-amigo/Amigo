@@ -1,10 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Entypo from '@expo/vector-icons/Entypo';
 import TabBarIcon from '../components/TabBarIcon';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { getFontSizeByWindowWidth } from '../helper/res';
+import { calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { ContactsProvider } from '../hooks/useContacts';
 import About from '../pages/About';
 import AccountScreen from '../pages/AccountScreen';
@@ -14,6 +15,7 @@ import CreateGroup from '../pages/CreateGroup';
 import DraftList from '../pages/DraftList';
 import FAQ from '../pages/FAQ';
 import GroupBalance from '../pages/GroupBalanceScreen';
+import GroupQrScreen from '../pages/GroupQrScreen';
 import GroupSettings from '../pages/GroupSettings';
 import GroupSplitScreen from '../pages/GroupSplitScreen';
 import InvitationLandingScreen from '../pages/InvitationLandingScreen';
@@ -29,7 +31,19 @@ import TransactionFormScreen from '../pages/TransactionForm';
 import UPIAppSelection from '../pages/UPIAppSelection';
 import { useAuth } from '../stores/auth';
 import TabNavigator from './TabNavigator';
+import { useNavigation } from '@react-navigation/native';
 const Stack = createNativeStackNavigator();
+const BackButton = () => {
+    const navigation = useNavigation();
+    const Pressed = () => {
+        navigation.goBack();
+    };
+    return (
+        <TouchableOpacity onPress={Pressed}>
+            <Entypo name="chevron-left" size={24} color="white" style={{ marginEnd: calcWidth(3) }} />
+        </TouchableOpacity>
+    );
+};
 const AppNavigator = () => {
     const { user } = useAuth();
 
@@ -78,6 +92,7 @@ const AppNavigator = () => {
                                 },
                                 animation: 'ios',
                                 headerTintColor: '#fff',
+                                headerLeft: () => <BackButton />,
                             }}
                         />
                         <Stack.Screen
@@ -211,6 +226,7 @@ const AppNavigator = () => {
                                     fontWeight: 'bold', // Makes the title bold
                                     fontSize: getFontSizeByWindowWidth(20),
                                 },
+                                headerLeft: () => <BackButton />,
                                 headerTintColor: '#fff',
                                 animation: 'ios',
                             }}
@@ -226,6 +242,7 @@ const AppNavigator = () => {
                                 animation: 'fade',
                                 title: null,
                                 headerTintColor: '#fff',
+                                headerLeft: () => <BackButton />,
                             }}
                         />
                         <Stack.Screen
@@ -238,6 +255,7 @@ const AppNavigator = () => {
                                 title: 'New group',
                                 headerTintColor: '#fff',
                                 animation: 'ios',
+                                headerLeft: () => <BackButton />,
                                 headerTitleStyle: {
                                     color: 'white',
                                 },
@@ -250,6 +268,8 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                headerLeft: () => <BackButton />,
+
                                 headerTintColor: '#fff',
                                 title: null,
                                 animation: 'ios',
@@ -274,7 +294,7 @@ const AppNavigator = () => {
                                 headerTintColor: '#fff',
                             }}
                         />
-                        <Stack.Screen
+                          <Stack.Screen
                             name={PAGES.DRAFT_LIST}
                             component={DraftList}
                             options={{
@@ -285,6 +305,20 @@ const AppNavigator = () => {
                                 headerTintColor: '#fff',
                             }}
                         />
+                         <Stack.Screen
+                            name={PAGES.GROUP_QR_SCREEN}
+                            component={GroupQrScreen}
+                            options={{
+                                headerStyle: {
+                                    backgroundColor: COLOR.APP_BACKGROUND,
+                                },
+                                animation: 'fade',
+                                title: null,
+                                headerTintColor: '#fff',
+                                headerTitle: 'QR code',
+                            }}
+                        />
+                        
                     </Stack.Group>
                 ) : (
                     <Stack.Screen

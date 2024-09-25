@@ -1,7 +1,7 @@
 import { Octicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { FlatList, Keyboard, RefreshControl, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import GroupIcon from '../components/GroupIcon';
 import GroupSelectCard from '../components/GroupSelectCard';
@@ -13,7 +13,8 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
 
-function GroupListScreen({ navigation }) {
+function SelectGroup({ navigation, route }) {
+    const { shouldOpenUpi } = route.params || {};
     const [search, setSearch] = useState('');
     const { setTransactionData } = useTransaction();
     const { groups, fetchData } = useGroupList();
@@ -35,65 +36,77 @@ function GroupListScreen({ navigation }) {
     }, []);
 
     return (
-        <View style={styles.container}>
-            <View
-                style={{
-                    marginVertical: calcHeight(2),
-                }}
-            >
-                <Search search={search} setSearch={setSearch} />
-            </View>
-            <FlatList
-                data={filterGroups(groups)}
-                ListHeaderComponent={
-                    <GroupSelectCard
-                        name="Create new group"
-                        image={
-                            <View
-                                style={{
-                                    backgroundColor: 'white',
-                                    height: calcHeight(5),
-                                    width: calcHeight(5),
-                                    borderRadius: calcHeight(5),
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <>
+                <View style={styles.container}>
+                    <View
+                        style={{
+                            marginVertical: calcHeight(2),
+                        }}
+                    >
+                        <Search search={search} setSearch={setSearch} />
+                    </View>
+                    <FlatList
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="always"
+                        style={styles.list}
+                        data={filterGroups(groups)}
+                        ListHeaderComponent={
+                            <GroupSelectCard
+                                name="Create new group"
+                                image={
+                                    <View
+                                        style={{
+                                            backgroundColor: 'white',
+                                            height: calcHeight(5),
+                                            width: calcHeight(5),
+                                            borderRadius: calcHeight(5),
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <Octicons name="people" size={calcHeight(3)} color="black" />
+                                    </View>
+                                }
+                                onPress={() => {
+                                    navigation.navigate(PAGES.CREATE_GROUP);
                                 }}
-                            >
-                                <Octicons name="people" size={calcHeight(3)} color="black" />
-                            </View>
+                            />
                         }
-                        onPress={() => {
-                            navigation.navigate(PAGES.CREATE_GROUP);
-                        }}
+                        renderItem={({ item: group }) => (
+                            <GroupSelectCard
+                                name={group.name}
+                                onPress={() => {
+                                    setTransactionData((prev) => ({ ...prev, group }));
+                                    navigation.navigate(PAGES.ADD_TRANSACTION, {
+                                        shouldOpenUpi,
+                                    });
+                                }}
+                                image={<GroupIcon groupId={group._id} />}
+                            />
+                        )}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                colors={[COLOR.REFRESH_INDICATOR_ARROW]}
+                                tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
+                                progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
+                            />
+                        }
                     />
-                }
-                renderItem={({ item: group }) => (
-                    <GroupSelectCard
-                        name={group.name}
-                        onPress={() => {
-                            setTransactionData((prev) => ({ ...prev, group }));
-                            navigation.navigate(PAGES.ADD_TRANSACTION);
-                        }}
-                        image={<GroupIcon groupId={group._id} />}
-                    />
-                )}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        colors={[COLOR.REFRESH_INDICATOR_ARROW]}
-                        tintColor={COLOR.REFRESH_INDICATOR_COLOR_IOS}
-                        progressBackgroundColor={COLOR.REFRESH_INDICATOR_BACKGROUND}
-                    />
-                }
-            />
-        </View>
+                </View>
+            </>
+        </TouchableWithoutFeedback>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
     },
     header: {
         fontSize: getFontSizeByWindowWidth(19),
@@ -124,6 +137,9 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         color: 'white',
     },
+    list: {
+        flex: 1,
+    },
 });
 
-export default GroupListScreen;
+export default SelectGroup;

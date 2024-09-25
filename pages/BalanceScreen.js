@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, Image, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 
@@ -15,6 +14,8 @@ import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
 import useDraftTransactionStore from '../stores/draftTransactionStore';
+import useFocusThrottledFetch from '../hooks/useFocusThrottledFetch';
+
 const headerIconSize = calcHeight(1);
 
 function BalanceScreen({ navigation }) {
@@ -25,8 +26,7 @@ function BalanceScreen({ navigation }) {
     const [loadingDrafts, setLoadingDrafts] = useState(true);
     const { getDraftsForUser } = useDraftTransactionStore();
 
-    useFocusEffect(
-        useCallback(() => {
+    useFocusThrottledFetch(() => {
             const loadData = async () => {
                 setLoadingDrafts(true);
                 await fetchData(user);
@@ -34,9 +34,8 @@ function BalanceScreen({ navigation }) {
                 setDrafts(draftsData);
                 setLoadingDrafts(false);
             };
-            loadData();
-        }, [user]),
-    );
+           , 800);
+
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);

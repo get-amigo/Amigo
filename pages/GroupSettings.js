@@ -1,7 +1,19 @@
 import { WEBSITE_URL } from '@env';
 import { Ionicons, Octicons } from '@expo/vector-icons';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Alert, FlatList, Image, Share, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+    Alert,
+    FlatList,
+    Image,
+    Keyboard,
+    Share,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View,
+} from 'react-native';
 
 import AddMembersImage from '../assets/icons/addMembers.png';
 import ShareImage from '../assets/icons/share.png';
@@ -174,6 +186,20 @@ const GroupScreen = ({
                     <Image source={ShareImage} style={styles.icon} />
                     <Text style={styles.buttonText}>Share Group Link</Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.memberItem}
+                    onPress={() =>
+                        navigation.push(PAGES.GROUP_QR_SCREEN, {
+                            groupId: group._id,
+                            groupName,
+                        })
+                    }
+                >
+                    <View style={[styles.icon, styles.qrCodeIcon]}>
+                        <Ionicons name="qr-code-outline" size={calcHeight(2.7)} color="white" />
+                    </View>
+                    <Text style={styles.buttonText}>Show QR code</Text>
+                </TouchableOpacity>
             </>
         );
     }
@@ -190,15 +216,23 @@ const GroupScreen = ({
     return loading ? (
         <Loader />
     ) : (
-        <View style={styles.faltListContainer}>
-            <FlatList
-                data={groupMembers}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={renderMemberItem}
-                ListHeaderComponent={renderListHeader()}
-                ListFooterComponent={renderListFooter}
-            />
-        </View>
+        <TouchableWithoutFeedback
+            onPress={() => {
+                Keyboard.dismiss();
+                setIsEditing(false);
+            }}
+        >
+            <View style={styles.faltListContainer}>
+                <FlatList
+                    keyboardShouldPersistTaps="always"
+                    data={groupMembers}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={renderMemberItem}
+                    ListHeaderComponent={renderListHeader()}
+                    ListFooterComponent={renderListFooter}
+                />
+            </View>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -287,6 +321,12 @@ const styles = StyleSheet.create({
     icon: { height: calcHeight(5), width: calcHeight(5) },
     leaveGroupText: { color: 'rgba(253 ,64,9, 0.59)', marginLeft: calcWidth(3) },
     faltListContainer: { flex: 1 },
+    qrCodeIcon: {
+        backgroundColor: COLOR.BUTTON,
+        borderRadius: calcHeight(2.5),
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
 });
 
 export default GroupScreen;

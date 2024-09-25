@@ -30,6 +30,8 @@ const PAGES = {
     ADD_PEOPLE: 'Add People',
     EDIT_PHONE_NUMBER: 'Edit Phone Number',
     DRAFT_LIST:"Draft list"
+    GROUP_QR_SCREEN: 'QR code',
+
 };
 
 export default PAGES;

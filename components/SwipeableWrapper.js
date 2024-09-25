@@ -1,18 +1,30 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import { Animated, View, StyleSheet } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
+import * as Haptics from 'expo-haptics';
 import useReplyStore from '../stores/replyStore';
+import { useAuth } from '../stores/auth';
 
 function SwipeableWrapper({ children, chatContent }) {
-    const { isReplying, setIsReplying, setReplyingTo, setToReplyMessage } = useReplyStore();
+    const { setIsReplying, setReplyingTo, setToReplyMessage } = useReplyStore();
     const swipeableRef = useRef(null);
-    // console.log(chatContent);
+    const { user } = useAuth();
+    const [hasCrossedThreshold, setHasCrossedThreshold] = useState(false);
+    const hasTriggeredHaptic = useRef(false);
 
-    const renderLeftActions = (progress, dragX) => {
+    const renderLeftActions = useCallback((progress, dragX) => {
         const trans = dragX.interpolate({
             inputRange: [-100, 0, 100],
             outputRange: [-50, 0, 0],
             extrapolate: 'clamp',
+        });
+
+        dragX.addListener(({ value }) => {
+            const dragDistance = Math.abs(value);
+            if (dragDistance >= 60 && !hasTriggeredHaptic.current) {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                hasTriggeredHaptic.current = true;
+            }
         });
 
         return (
@@ -25,38 +37,46 @@ function SwipeableWrapper({ children, chatContent }) {
                 ]}
             ></Animated.View>
         );
-    };
+    }, []);
 
-    const handleSwipeOpen = () => {
-        setIsReplying(true);
-        setReplyingTo(chatContent.creator.name);
-        if (chatContent.message) {
-            setToReplyMessage(chatContent.message);
-        } else {
-            let amount = chatContent.amount;
-            let splitAmong = chatContent.splitAmong?.length;
-            setToReplyMessage(`Transaction amount of ₹${amount} split among ${splitAmong} people`);
+    const handleSwipeWillOpen = (direction) => {
+        if (direction === 'left' && !hasCrossedThreshold) {
+            setHasCrossedThreshold(true);
+            setIsReplying(true);
+            if (chatContent.creator) {
+                setReplyingTo(chatContent.creator.name);
+            } else {
+                setReplyingTo(user.name);
+            }
+            if (chatContent.message) {
+                setToReplyMessage(chatContent.message);
+            } else {
+                let amount = chatContent.amount;
+                let splitAmong = chatContent.splitAmong?.length;
+                setToReplyMessage(`Transaction amount of ₹${amount} split among ${splitAmong} people`);
+            }
+            // Close the swipeable after a short delay
+            setTimeout(() => {
+                if (swipeableRef.current) {
+                    swipeableRef.current.close();
+                }
+            }, 50);
         }
     };
 
     const handleSwipeClose = () => {
-        setIsReplying(false);
+        setHasCrossedThreshold(false);
+        hasTriggeredHaptic.current = false;
     };
-
-    useEffect(() => {
-        if (!isReplying && swipeableRef.current) {
-            swipeableRef.current.close();
-        }
-    }, [isReplying]);
 
     return (
         <View>
             <Swipeable
                 ref={swipeableRef}
                 renderLeftActions={renderLeftActions}
-                onSwipeableLeftOpen={handleSwipeOpen}
+                onSwipeableWillOpen={handleSwipeWillOpen}
                 onSwipeableClose={handleSwipeClose}
-                leftThreshold={50}
+                leftThreshold={60}
             >
                 <View style={styles.wrapper}>{children}</View>
             </Swipeable>
@@ -70,7 +90,6 @@ const styles = StyleSheet.create({
     },
     leftAction: {
         flex: 1,
-        backgroundColor: '#381b5c',
         justifyContent: 'center',
         alignItems: 'flex-start',
         borderRadius: 8,

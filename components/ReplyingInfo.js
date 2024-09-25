@@ -1,6 +1,7 @@
 import React from 'react';
 import { Image, Text, View, TouchableOpacity, StyleSheet } from 'react-native';
 import useReplyStore from '../stores/replyStore';
+import * as Haptics from 'expo-haptics';
 import cross from '../assets/icons/cross1.png';
 
 function ReplyingInfo({ to, message }) {
@@ -17,7 +18,12 @@ function ReplyingInfo({ to, message }) {
             <View style={styles.innerContainer}>
                 <View style={styles.header}>
                     <Text style={styles.toText}>{to}</Text>
-                    <TouchableOpacity onPress={handleClose}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                            handleClose();
+                        }}
+                    >
                         <Image source={cross} style={styles.crossIcon} />
                     </TouchableOpacity>
                 </View>
@@ -31,12 +37,13 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#272239',
         padding: 10,
-        borderRadius: 10,
+        borderTopLeftRadius: 15,
+        borderTopRightRadius: 15,
     },
     innerContainer: {
         backgroundColor: '#463e63',
-        padding: 10,
-        borderRadius: 10,
+        padding: 13,
+        borderRadius: 13,
     },
     header: {
         flexDirection: 'row',

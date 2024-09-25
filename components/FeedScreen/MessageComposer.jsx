@@ -246,7 +246,15 @@ const MessageComposer = ({ chatData, activityId }) => {
                 >
                     {isReplying ? <ReplyingInfo to={replyingTo} message={toReplyMessage} /> : null}
 
-                    <View style={styles.row}>
+                    <View
+                        style={[
+                            styles.row,
+                            {
+                                borderTopLeftRadius: isReplying ? 0 : calcWidth(6),
+                                borderTopRightRadius: isReplying ? 0 : calcWidth(6),
+                            },
+                        ]}
+                    >
                         <Pressable
                             style={{
                                 justifyContent: 'center',

@@ -1,6 +1,7 @@
 import { AntDesign, EvilIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import {
     Alert,
@@ -15,6 +16,10 @@ import {
     Vibration,
     View,
 } from 'react-native';
+=======
+import React, { useState, useEffect } from 'react';
+import { Alert, Image, Modal, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
+>>>>>>> 1580959 (Suggested changes implemented in reply feature)
 import Toast from 'react-native-root-toast';
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
@@ -58,78 +63,71 @@ function ActivityHeader({ icon, size, text }) {
 function TransactionActivityDetails({ transaction, createdAt, synced, highlightColor }) {
     return (
         <>
-            <SwipeableWrapper
-                onSwipe={() => {
-                    console.log('Transaction is:', transaction);
+            <View style={[styles.transactionCard, { backgroundColor: highlightColor }]}>
+                <ActivityHeader
+                    icon={Octicons}
+                    iconName="person"
+                    size={getFontSizeByWindowWidth(10.5)}
+                    text={`${transaction.splitAmong?.length}`}
+                />
+                <View style={styles.flexContainer}>
+                    <View>
+                        <Text style={styles.amount}>₹ {transaction.amount}</Text>
+                    </View>
+                </View>
+            </View>
+            <View
+                style={{
+                    marginLeft: calcWidth(1),
                 }}
-                chatContent={transaction}
             >
-                <View style={[styles.transactionCard, { backgroundColor: highlightColor }]}>
-                    <ActivityHeader
-                        icon={Octicons}
-                        iconName="person"
-                        size={getFontSizeByWindowWidth(10.5)}
-                        text={`${transaction.splitAmong?.length}`}
-                    />
-                    <View style={styles.flexContainer}>
+                <View>
+                    {transaction.description && transaction.description != ' ' && (
+                        <Text style={styles.description}>{transaction.description}</Text>
+                    )}
+                </View>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        marginTop: calcWidth(3.3),
+                    }}
+                >
+                    <View
+                        style={{
+                            flexDirection: 'row',
+                            gap: calcWidth(1.2),
+                        }}
+                    >
                         <View>
-                            <Text style={styles.amount}>₹ {transaction.amount}</Text>
+                            <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginLeft: calcWidth(-1) }} />
                         </View>
+                        <Text
+                            style={{
+                                color: 'white',
+                                fontSize: getFontSizeByWindowWidth(10.8),
+                                fontWeight: '400',
+                            }}
+                        >
+                            {getDateAndMonth(createdAt)}
+                        </Text>
                     </View>
                 </View>
                 <View
                     style={{
-                        marginLeft: calcWidth(1),
+                        flexDirection: 'row',
+                        justifyContent: 'flex-end',
+                        marginRight: calcWidth(1),
                     }}
                 >
-                    <View>
-                        {transaction.description && transaction.description != ' ' && (
-                            <Text style={styles.description}>{transaction.description}</Text>
-                        )}
-                    </View>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            justifyContent: 'space-between',
-                            marginTop: calcWidth(3.3),
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: 'row',
-                                gap: calcWidth(1.2),
-                            }}
-                        >
-                            <View>
-                                <EvilIcons name="calendar" size={calcWidth(5.2)} color="white" style={{ marginLeft: calcWidth(-1) }} />
-                            </View>
-                            <Text
-                                style={{
-                                    color: 'white',
-                                    fontSize: getFontSizeByWindowWidth(10.8),
-                                    fontWeight: '400',
-                                }}
-                            >
-                                {getDateAndMonth(createdAt)}
-                            </Text>
-                        </View>
-                    </View>
-                    <View
-                        style={{
-                            flexDirection: 'row',
-                            justifyContent: 'flex-end',
-                            marginRight: calcWidth(1),
-                        }}
-                    >
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
-                                {formatTo12HourTime(createdAt)}
-                            </Text>
-                            {synced === false && <Image source={ClockIcon} style={styles.syncIcon} />}
-                        </View>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ color: 'white', fontSize: getFontSizeByWindowWidth(7), fontWeight: '300' }}>
+                            {formatTo12HourTime(createdAt)}
+                        </Text>
+                        {synced === false && <Image source={ClockIcon} style={styles.syncIcon} />}
                     </View>
                 </View>
-            </SwipeableWrapper>
+            </View>
         </>
     );
 }
@@ -385,38 +383,51 @@ function PaymentActivity({ payment, contacts, highlightColor }) {
     );
 }
 
+<<<<<<< HEAD
 function ChatActivityDetails({ chat, synced }) {
+=======
+function ChatActivity({ chat, synced }) {
+    const [upperViewWidth, setUpperViewWidth] = useState(0);
+    const [lowerViewWidth, setLowerViewWidth] = useState(0);
+    const [maxWidth, setMaxWidth] = useState(0);
+
+    useEffect(() => {
+        setMaxWidth(Math.max(upperViewWidth, lowerViewWidth));
+    }, [upperViewWidth, lowerViewWidth]);
+
+>>>>>>> 1580959 (Suggested changes implemented in reply feature)
     return (
-        <SwipeableWrapper
-            onSwipe={() => {
-                console.log(chat);
-            }}
-            chatContent={chat}
-        >
+        <>
             {chat.replyingMessage ? (
                 <View
                     style={{
-                        maxWidth: calcWidth(60),
-                        flexDirection: 'row',
-                        flexWrap: 'wrap',
+                        maxWidth: calcWidth(70),
+                        minWidth: calcWidth(30),
                         alignItems: 'flex-end',
-                        // paddingHorizontal: 4,
                         fontSize: 20,
+                        width: 'auto',
                     }}
                 >
+                    {/* Upper view containing replyTo and replyingMessage */}
                     <View
                         style={{
                             backgroundColor: '#461e63',
-                            padding: 5,
                             borderRadius: 10,
-                            width: '100%',
+                            padding: 10,
+                            width: maxWidth > 0 ? maxWidth : 'auto',
+                        }}
+                        onLayout={(event) => {
+                            const { width } = event.nativeEvent.layout;
+                            setUpperViewWidth(width);
                         }}
                     >
                         <Text
                             style={{
                                 color: '#cf9af5',
-                                fontWeight: 700,
+                                fontWeight: '700',
                                 fontSize: 17,
+                                flexGrow: 1, // Ensure text grows within its available space
+                                flexShrink: 1, // Allow text to shrink only when necessary
                             }}
                         >
                             {chat.replyTo}
@@ -425,58 +436,77 @@ function ChatActivityDetails({ chat, synced }) {
                             style={{
                                 color: '#ccbff5',
                                 fontSize: 12,
-                                fontWeight: 500,
+                                fontWeight: '500',
+                                flexGrow: 1, // Ensure text grows within its available space
+                                flexShrink: 1, // Allow text to shrink only when necessary
                             }}
                         >
                             {chat.replyingMessage}
                         </Text>
                     </View>
-                    <Text
-                        style={{
-                            color: 'white',
-                            fontSize: getFontSizeByWindowWidth(11.7),
-                            fontWeight: '400',
-                        }}
-                    >
-                        {chat.message}
-                    </Text>
+
+                    {/* Lower view containing message and time */}
                     <View
                         style={{
-                            marginLeft: 'auto',
+                            width: maxWidth > 0 ? maxWidth : 'auto',
                             flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            paddingTop: 7,
+                            paddingLeft: 5,
+                        }}
+                        onLayout={(event) => {
+                            const { width } = event.nativeEvent.layout;
+                            setLowerViewWidth(width);
                         }}
                     >
-                        <Text
-                            style={{
-                                color: 'white',
-                                fontSize: getFontSizeByWindowWidth(7),
-                                fontWeight: '300',
-                                marginLeft: calcWidth(3),
-                            }}
-                        >
-                            {formatTo12HourTime(chat.createdAt)}
-                        </Text>
-                        {synced === false && (
-                            <Image
-                                source={ClockIcon}
+                        <View style={{ flexGrow: 1, flexShrink: 1 }}>
+                            <Text
                                 style={{
-                                    height: calcWidth(2.2),
-                                    width: calcWidth(2.2),
-                                    margin: 'auto',
-                                    marginLeft: calcWidth(1),
+                                    color: 'white',
+                                    fontSize: getFontSizeByWindowWidth(11.7),
+                                    fontWeight: '500',
                                 }}
-                            />
-                        )}
+                            >
+                                {chat.message}
+                            </Text>
+                        </View>
+
+                        <View style={{ flexDirection: 'row', alignItems: 'center', flexShrink: 0 }}>
+                            <Text
+                                style={{
+                                    color: 'white',
+                                    fontSize: getFontSizeByWindowWidth(7),
+                                    fontWeight: '300',
+                                    marginLeft: calcWidth(3),
+                                    flexShrink: 0, // Prevent shrinking for the timestamp
+                                }}
+                            >
+                                {formatTo12HourTime(chat.createdAt)}
+                            </Text>
+
+                            {synced === false && (
+                                <Image
+                                    source={ClockIcon}
+                                    style={{
+                                        height: calcWidth(2.2),
+                                        width: calcWidth(2.2),
+                                        marginLeft: calcWidth(1),
+                                    }}
+                                />
+                            )}
+                        </View>
                     </View>
                 </View>
             ) : (
                 <View
                     style={{
-                        maxWidth: calcWidth(57),
+                        maxWidth: calcWidth(70),
                         flexDirection: 'row',
                         flexWrap: 'wrap',
                         alignItems: 'flex-end',
-                        paddingHorizontal: 8,
+                        paddingHorizontal: 10,
+                        paddingVertical: 8,
                         fontSize: 20,
                     }}
                 >
@@ -519,7 +549,7 @@ function ChatActivityDetails({ chat, synced }) {
                     </View>
                 </View>
             )}
-        </SwipeableWrapper>
+        </>
     );
 }
 
@@ -613,6 +643,9 @@ function Feed(props) {
         }
         return null;
     };
+
+    // console.log(props.relatedId.replyTo, 'props are', renderActivity,'acticity' );
+
     return (
         <>
             {showDate && (
@@ -666,34 +699,46 @@ function Feed(props) {
                             </Text>
                         </View>
                     )}
-                    <View
-                        style={[
-                            styles.activityCard,
-                            {
-                                backgroundColor: user._id === creator?._id ? '#663CAB' : '#342F4F',
-                                ...(user._id === creator?._id
-                                    ? {
-                                          borderTopLeftRadius: calcWidth(3.85),
-                                          borderTopRightRadius: calcWidth(3.85),
-                                          borderBottomLeftRadius: calcWidth(3.85),
-                                      }
-                                    : {
-                                          borderTopLeftRadius: calcWidth(3.85),
-                                          borderTopRightRadius: calcWidth(3.85),
-                                          borderBottomRightRadius: calcWidth(3.85),
-                                      }),
-                            },
-                            activityType === 'transaction' || activityType === 'payment'
-                                ? {
-                                      paddingHorizontal: calcWidth(1.5),
-                                      paddingBottom: calcWidth(2.7),
-                                      paddingTop: calcWidth(1.5),
-                                  }
-                                : { paddingVertical: calcWidth(2.7), paddingHorizontal: calcWidth(3) },
-                        ]}
-                    >
-                        {renderActivity()}
-                    </View>
+
+                    <SwipeableWrapper chatContent={props.relatedId}>
+                        <View
+                            style={{
+                                width: 320,
+                                justifyContent: 'flex-end',
+                                alignItems: 'flex-end',
+                                paddingVertical: 1,
+                            }}
+                        >
+                            <View
+                                style={[
+                                    styles.activityCard,
+                                    {
+                                        backgroundColor: user._id === creator?._id ? '#663cac' : '#342F4F',
+                                        ...(user._id === creator?._id
+                                            ? {
+                                                  borderTopLeftRadius: calcWidth(3.85),
+                                                  borderTopRightRadius: calcWidth(3.85),
+                                                  borderBottomLeftRadius: calcWidth(3.85),
+                                              }
+                                            : {
+                                                  borderTopLeftRadius: calcWidth(3.85),
+                                                  borderTopRightRadius: calcWidth(3.85),
+                                                  borderBottomRightRadius: calcWidth(3.85),
+                                              }),
+                                    },
+                                    activityType === 'transaction' || activityType === 'payment'
+                                        ? {
+                                              paddingHorizontal: calcWidth(1.5),
+                                              paddingBottom: calcWidth(2.7),
+                                              paddingTop: calcWidth(1.5),
+                                          }
+                                        : { paddingVertical: calcWidth(2.7), paddingHorizontal: calcWidth(3) },
+                                ]}
+                            >
+                                {renderActivity()}
+                            </View>
+                        </View>
+                    </SwipeableWrapper>
                 </View>
             </View>
         </>
@@ -752,6 +797,14 @@ const styles = StyleSheet.create({
     },
     activityCard: {
         marginTop: calcWidth(2),
+        paddingHorizontal: calcWidth(1.5),
+        paddingVertical: calcWidth(1.5),
+        paddingBottom: calcWidth(2.7),
+        paddingTop: calcWidth(1.5),
+        paddingLeft: calcWidth(1.5),
+        paddingRight: calcWidth(1.5),
+        maxWidth: calcWidth(70),
+        width: 'auto',
     },
     description: {
         fontSize: getFontSizeByWindowWidth(10),

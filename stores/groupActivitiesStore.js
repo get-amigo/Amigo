@@ -23,7 +23,7 @@ const groupActivitiesStore = (set, get) => ({
         if (!acts || acts.length === 0) {
             return;
         } else {
-            console.log('acts');
+            console.log('Activities Fetched');
         }
 
         set((state) => {
@@ -72,8 +72,6 @@ const groupActivitiesStore = (set, get) => ({
 
             newActivityOrder.splice(low, 0, ...unstoredIds);
 
-            console.log(newActivitiesById, 'These are activities updated');
-
             return {
                 activities: {
                     ...state.activities,
@@ -95,10 +93,13 @@ const groupActivitiesStore = (set, get) => ({
     addActivityToLocalDB: (params) => {
         const { activity, groupId, user, isSynced = false, addToPending = false } = params;
 <<<<<<< HEAD
+<<<<<<< HEAD
         console.log(activity, 'Inside the add activity to local db');
 =======
         console.log('Now we are in the next step', activity);
 >>>>>>> ece70aa (Reply feature implemented)
+=======
+>>>>>>> 1580959 (Suggested changes implemented in reply feature)
 
         if (isSynced) {
             set((state) => {

@@ -292,14 +292,13 @@ function TransactionFormScreen({ navigation, route }) {
                 </View>
             )}
             <View style={styles.submitBtnContainer}>
-                {/* <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" /> */}
                 {isFormComplete() ? (
                     <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
                 ) : (
                     <Button
                         styleOverwrite={[styles.submitBtn, !transactionData.amount && styles.disabledButton]}
                         onPress={transactionData.amount ? handleSaveAsDraft : () => {}}
-                        title="SAVE AS DRAFT"
+                        title="SAVE DRAFT"
                         disabled={!transactionData.amount}
                     />
                 )}

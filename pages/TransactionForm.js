@@ -307,7 +307,12 @@ function TransactionFormScreen({ navigation, route }) {
                 {isFormComplete() ? (
                     <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
                 ) : (
-                    <Button styleOverwrite={styles.submitBtn} onPress={handleSaveAsDraft} title="SAVE AS DRAFT" />
+                    <Button
+                        styleOverwrite={[styles.submitBtn, !transactionData.amount && styles.disabledButton]}
+                        onPress={transactionData.amount ? handleSaveAsDraft : () => {}}
+                        title="SAVE AS DRAFT"
+                        disabled={!transactionData.amount}
+                    />
                 )}
             </View>
         </ScrollView>
@@ -409,6 +414,9 @@ const styles = StyleSheet.create({
     submitBtn: {
         width: calcWidth(90),
         marginTop: calcHeight(2),
+    },
+    disabledButton: {
+        backgroundColor: 'gray', // Faded background for disabled button
     },
 });
 

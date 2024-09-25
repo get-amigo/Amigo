@@ -4,7 +4,6 @@ import { SectionList, StyleSheet, Text, View } from 'react-native';
 import DraftCard from '../components/DraftCard';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
 import formatTo12HourTime from '../helper/formatTo12HourTime';
 import groupDraftsByDate from '../helper/getDraftsByDate';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
@@ -33,12 +32,12 @@ const DraftList = ({ navigation }) => {
                 sections={sections}
                 renderItem={({ item }) => {
                     const formattedTime = formatTo12HourTime(item.relatedId.date);
-                    const dateTime = `${formatDateToDDMMYYYY(item.relatedId.date)} at ${formattedTime}`;
+                    const dateTime = `${formattedTime}`;
                     return (
                         <DraftCard
                             groupName={item.relatedId.description}
-                            dateTime={dateTime}
                             amount={item.relatedId.amount}
+                            dateTime={dateTime}
                             onPress={() => {
                                 navigation.navigate(PAGES.ADD_TRANSACTION, { draft: item });
                             }}

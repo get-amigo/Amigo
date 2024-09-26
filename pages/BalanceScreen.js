@@ -23,18 +23,17 @@ function BalanceScreen({ navigation }) {
     const { fetchData, loading, totalBalances, balances } = useBalance();
     const [refreshing, setRefreshing] = useState(false);
     const [drafts, setDrafts] = useState([]);
-    const [loadingDrafts, setLoadingDrafts] = useState(true);
     const { getDraftsForUser } = useDraftTransactionStore();
 
     useFocusThrottledFetch(() => {
-            const loadData = async () => {
-                setLoadingDrafts(true);
-                await fetchData(user);
-                const draftsData = getDraftsForUser(user._id);
-                setDrafts(draftsData);
-                setLoadingDrafts(false);
-            };
-           , 800);
+    const loadData = async () => {
+        await fetchData(user); 
+        const draftsData = getDraftsForUser(user._id); 
+        setDrafts(draftsData); 
+    };
+
+    loadData(); 
+}, 800);
 
 
     const onRefresh = useCallback(async () => {
@@ -45,7 +44,7 @@ function BalanceScreen({ navigation }) {
         setRefreshing(false);
     }, [user]);
 
-    if (loading || loadingDrafts)
+    if (loading)
         return (
             <>
                 <View

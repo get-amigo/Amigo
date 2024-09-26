@@ -62,7 +62,6 @@ function TransactionFormScreen({ navigation, route }) {
         return (
             transactionData.amount &&
             transactionData.description &&
-            transactionData.type &&
             transactionData.group._id &&
             transactionData.paidBy._id &&
             transactionData.splitAmong.length > 0

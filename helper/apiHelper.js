@@ -4,8 +4,8 @@ import axios from 'axios';
 import { getToken } from '../stores/auth';
 
 const config = {
-    baseURL: 'https://38b8-2409-40c2-103c-eed3-6184-f97f-efcf-a6be.ngrok-free.app/',
-    timeout: 10000, // env value is a string so we need to convert it to a number
+    baseURL: 'https://e28c-2409-40c2-116b-2591-9f0b-dc3d-37a5-b81b.ngrok-free.app/',
+    timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
     },

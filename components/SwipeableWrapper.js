@@ -3,7 +3,6 @@ import { Animated, View, StyleSheet } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 import useReplyStore from '../stores/replyStore';
-// import { useAuth } from '../stores/auth';
 
 function SwipeableWrapper({ children, chatContent, creator }) {
     const { setIsReplying, setReplyingTo, setToReplyMessage } = useReplyStore();

@@ -48,7 +48,7 @@ const TransactionDetail = ({
 
     useEffect(() => {
         setDate(new Date(transaction.date));
-        console.log('T', transaction, isEditing);
+        console.log(isEditing);
     }, [transaction]);
 
     const handleEdit = async () => {

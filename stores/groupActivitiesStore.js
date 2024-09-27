@@ -394,9 +394,7 @@ const groupActivitiesStore = (set, get) => ({
 
             // Ensure the activity exists before updating
             if (newActivitiesById[activityId]) {
-                let updatedSplitAmong = allNewActivity.relatedId.splitAmong.map((details) => {
-                    return details;
-                });
+                let updatedSplitAmong = allNewActivity.relatedId.splitAmong;
                 let updatedPaidby = allNewActivity.relatedId.paidBy;
 
                 newActivitiesById[activityId] = {

@@ -15,19 +15,58 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
-import { useBalance } from '../stores/balance';
+import useDraftTransactionStore from '../stores/draftTransactionStore';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
+import { useBalance } from '../stores/balance';
 
 function TransactionFormScreen({ navigation, route }) {
     const { shouldOpenUpi } = route.params || {};
+
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
     const descriptionRef = useRef();
     const { user } = useAuth();
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
-    const { updateBalances } = useBalance();
+
+    const { draft } = route.params || {};
+
+   const { updateBalances } = useBalance();
+
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
+    const { addDraft, removeDraft } = useDraftTransactionStore();
+
+    const handleSaveAsDraft = () => {
+        addDraft(transactionData, user, transactionData.group);
+        Toast.show('Transaction saved as draft', {
+            duration: Toast.durations.LONG,
+        });
+        navigation.goBack();
+    };
+
+    useEffect(() => {
+        if (draft) {
+            setTransactionData((prev) => ({
+                ...prev,
+                amount: draft.relatedId.amount,
+                description: draft.relatedId.description,
+                type: draft.relatedId.type,
+                group: draft.relatedId.group,
+                paidBy: draft.relatedId.paidBy,
+                splitAmong: draft.relatedId.splitAmong,
+            }));
+        }
+    }, [draft]);
+
+    const isFormComplete = () => {
+        return (
+            transactionData.amount &&
+            transactionData.description &&
+            transactionData.group._id &&
+            transactionData.paidBy._id &&
+            transactionData.splitAmong.length > 0
+        );
+    };
 
     useEffect(() => {
         const { group } = transactionData;
@@ -153,6 +192,10 @@ function TransactionFormScreen({ navigation, route }) {
                         console.log('error in api post', err);
                         Alert.alert('Error', JSON.stringify(err));
                     });
+
+                if (draft) {
+                    removeDraft(draft._id);
+                }
             } else {
                 addActivityToLocalDB({
                     activity: newActivity,
@@ -248,7 +291,16 @@ function TransactionFormScreen({ navigation, route }) {
                 </View>
             )}
             <View style={styles.submitBtnContainer}>
-                <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
+                {isFormComplete() ? (
+                    <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
+                ) : (
+                    <Button
+                        styleOverwrite={[styles.submitBtn, !transactionData.amount && styles.disabledButton]}
+                        onPress={transactionData.amount ? handleSaveAsDraft : () => {}}
+                        title="SAVE DRAFT"
+                        disabled={!transactionData.amount}
+                    />
+                )}
             </View>
         </ScrollView>
     );
@@ -354,6 +406,9 @@ const styles = StyleSheet.create({
     submitBtn: {
         width: calcWidth(90),
         marginTop: calcHeight(2),
+    },
+    disabledButton: {
+        backgroundColor: 'gray', // Faded background for disabled button
     },
 });
 

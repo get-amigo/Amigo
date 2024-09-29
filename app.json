@@ -8,7 +8,7 @@
         "icon": "./assets/icon.png",
         "userInterfaceStyle": "automatic",
         "splash": {
-            "image": "./assets/Splashh.png",
+            "image": "./assets/splash.png",
             "backgroundColor": "#000",
             "resizeMode": "cover"
         },
@@ -20,12 +20,13 @@
             "infoPlist": {
                 "LSApplicationQueriesSchemes": ["tez", "phonepe", "paytmmp", "amazonpay", "bhim", "upi"],
                 "UIBackgroundModes": ["remote-notification"]
-            }
+            },
+            "icon": "./assets/appstore.png"
         },
         "android": {
             "googleServicesFile": "./google-services.json",
             "adaptiveIcon": {
-                "foregroundImage": "./assets/icon.png",
+                "foregroundImage": "./assets/playstore.png",
                 "backgroundColor": "#000"
             },
             "versionCode": 28,

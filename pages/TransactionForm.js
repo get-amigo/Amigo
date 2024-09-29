@@ -28,6 +28,19 @@ function TransactionFormScreen({ navigation, route }) {
     const { updateBalances } = useBalance();
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
+    const editTransaction = useGroupActivitiesStore((state) => state.editTransaction);
+    const { transaction, isEditing, activity } = route.params || {};
+
+    useEffect(() => {
+        if (transaction) {
+            setTransactionData({
+                ...transaction,
+                paidBy: { _id: user?._id, name: 'You' },
+                group: { _id: transaction.group._id, name: transaction.group.name, members: transaction.group.members },
+                amount: transaction.amount.toString(),
+            });
+        }
+    }, [transaction]);
 
     useEffect(() => {
         const { group } = transactionData;
@@ -123,36 +136,61 @@ function TransactionFormScreen({ navigation, route }) {
             };
 
             if (isConnected) {
-                const { activityId, relatedId } = addActivityToLocalDB({
-                    activity: newActivity,
-                    groupId: newActivity.relatedId.group._id,
-                    user: user,
-                    isSynced: false,
-                    addToPending: false,
-                });
-                const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
-                apiHelper
-                    .post('/transaction', newTransactionWithId)
-                    .then((value) => {
-                        const transactionHistory = value.data.transactionHistory;
-                        updateBalances(transactionHistory, user._id);
-                        setUpiParams({});
-                        //                         setActivitiesHash(newTransaction.group, [
-                        //                             {
-                        //                                 ...newActivity,
-                        //                                 synced: true,
-                        //                             },
-                        //                             ...activities,
-                        //                         ]);
-                        updateIsSynced({
-                            _id: activityId,
-                            group: newActivity.relatedId.group._id,
+                if (isEditing && transaction._id) {
+                    // Update existing transaction
+                    const newTransactionWithId = { ...newTransaction, activityId: activity, transactionId: transaction._id };
+
+                    apiHelper
+                        .put(`/transaction/${transactionData._id}`, newTransactionWithId)
+                        .then(() => {
+                            editTransaction({
+                                activityId: activity,
+                                groupId: newTransactionWithId.group,
+                                updatedActivity: newTransactionWithId,
+                                allNewActivity: newActivity,
+                            });
+                            setUpiParams({});
+                            updateIsSynced({
+                                _id: activity,
+                                group: newActivity.relatedId.group._id,
+                            });
+                            Toast.show('Transaction Updated', {
+                                duration: Toast.durations.LONG,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log('error in api put', err);
+                            console.log('Error response:', err.response?.data);
+                            console.log('Error status:', err.response?.status);
+                            Alert.alert('Error', JSON.stringify(err));
                         });
-                    })
-                    .catch((err) => {
-                        console.log('error in api post', err);
-                        Alert.alert('Error', JSON.stringify(err));
+                } else {
+                    // Create new transaction
+                    const { activityId, relatedId } = addActivityToLocalDB({
+                        activity: newActivity,
+                        groupId: newActivity.relatedId.group._id,
+                        user,
+                        isSynced: false,
+                        addToPending: false,
                     });
+                    const newTransactionWithId = { ...newTransaction, activityId, transactionId: relatedId };
+                    apiHelper
+                        .post('/transaction', newTransactionWithId)
+                        .then((value) => {
+                            const transactionHistory = value.data.transactionHistory;
+                            updateBalances(transactionHistory, user._id);
+
+                            setUpiParams({});
+                            updateIsSynced({
+                                _id: activityId,
+                                group: newActivity.relatedId.group._id,
+                            });
+                        })
+                        .catch((err) => {
+                            console.log('error in api post', err);
+                            Alert.alert('Error', JSON.stringify(err));
+                        });
+                }
             } else {
                 addActivityToLocalDB({
                     activity: newActivity,
@@ -184,6 +222,8 @@ function TransactionFormScreen({ navigation, route }) {
         } catch (error) {
             console.log('error', error);
             Alert.alert('Error', JSON.stringify(error));
+        } finally {
+            setTransactionData({});
         }
     };
 
@@ -209,7 +249,7 @@ function TransactionFormScreen({ navigation, route }) {
                 <Text style={styles.remainingCharacters}>{remainingCharacters} characters left</Text>
             </View>
 
-            {getPreviousPageName(navigation) != PAGES.GROUP && (
+            {getPreviousPageName(navigation) !== PAGES.GROUP && getPreviousPageName(navigation) !== PAGES.TRANSACTION_DETAIL && (
                 <View>
                     <Pressable
                         style={styles.addGroupBtn}

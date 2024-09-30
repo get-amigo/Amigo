@@ -1,7 +1,6 @@
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
-
 import NoBalance from '../assets/NoBalance.png';
 import ScanIcon from '../assets/icons/scan.png';
 import EmptyScreen from '../components/EmptyScreen';
@@ -11,8 +10,6 @@ import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { calcHeight, calcWidth } from '../helper/res';
-import useReceivePushNotification from '../hooks/useReceivePushNotification';
-import useRegisterForPushNotification from '../hooks/useRegisterPushNotification';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
 
@@ -34,9 +31,6 @@ function BalanceScreen({ navigation }) {
         await fetchData(user);
         setRefreshing(false);
     }, [user]);
-
-    useRegisterForPushNotification();
-    useReceivePushNotification();
 
     if (loading)
         return (

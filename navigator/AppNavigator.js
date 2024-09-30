@@ -30,10 +30,11 @@ import TransactionFormScreen from '../pages/TransactionForm';
 import UPIAppSelection from '../pages/UPIAppSelection';
 import { useAuth } from '../stores/auth';
 import TabNavigator from './TabNavigator';
+import useRegisterForPushNotification from '../hooks/useRegisterPushNotification';
 const Stack = createNativeStackNavigator();
 const AppNavigator = () => {
     const { user } = useAuth();
-
+    useRegisterForPushNotification();
     useNotificationResponse();
     return (
         <ContactsProvider>

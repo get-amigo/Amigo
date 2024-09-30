@@ -9,6 +9,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import './index';
 import COLOR from './constants/Colors';
 import RootNavigator from './navigator/RootNavigator';
+import useReceivePushNotification from './hooks/useReceivePushNotification';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -26,6 +27,8 @@ Sentry.init({
 });
 
 function App() {
+    useReceivePushNotification();
+
     return (
         <GestureHandlerRootView>
             <SafeAreaProvider style={{ backgroundColor: COLOR.APP_BACKGROUND }}>

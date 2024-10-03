@@ -1,5 +1,6 @@
+import * as Contacts from 'expo-contacts';
 import { parsePhoneNumber } from 'libphonenumber-js';
-import React from 'react';
+import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Modal from 'react-native-modal';
 
@@ -17,17 +18,30 @@ const AddMemberModal = ({
     phoneNumber,
 }) => {
     const { setSelectedContacts } = useContacts();
+    const [contactName, setContactName] = useState('');
 
-    const addToSelectedContacts = (phoneNumber) => {
+    const addToSelectedContacts = async () => {
         // validate phone number
         if (phoneNumber && !isNaN(Number(phoneNumber))) {
-            phoneNumber = phoneNumber.substring(0, 10);
+            //  phoneNumber = phoneNumber.substring(0, 10);
             const parsedNumber = parsePhoneNumber(phoneNumber, 'IN');
             if (parsedNumber && parsedNumber.isPossible() && phoneNumber.length == 10) {
                 // if phone number is valid
-                setSelectedContacts((prev) => [...prev, { phoneNumber, countryCode: '+91' }]);
-                toggleBottomSheet();
-                setError();
+                try {
+                    const contact = {
+                        [Contacts.Fields.FirstName]: contactName, // Use contact name
+                        [Contacts.Fields.PhoneNumbers]: [{ number: phoneNumber, isPrimary: true }],
+                    };
+                    const contactId = await Contacts.addContactAsync(contact);
+                    console.log('Contact saved with ID:', contactId);
+
+                    setSelectedContacts((prev) => [...prev, { phoneNumber, countryCode: '+91', name: contactName }]);
+                    toggleBottomSheet();
+                    setError('');
+                } catch (err) {
+                    console.error('Error saving contact:', err);
+                    setError('Failed to save contact');
+                }
             } else {
                 // if phone number is not valid
                 setError('Invalid Phone Number');
@@ -59,6 +73,13 @@ const AddMemberModal = ({
                     <View style={bottomSheetStyle.barIcon} />
                 </View>
                 <View style={bottomSheetStyle.wrapper}>
+                    <Text style={bottomSheetStyle.modalText}>Enter Contact Name</Text>
+                    <TextInput
+                        style={bottomSheetStyle.textInput}
+                        onChangeText={setContactName}
+                        value={contactName}
+                        placeholder="Contact Name"
+                    />
                     <Text style={bottomSheetStyle.modalText}>Enter Phone Number</Text>
                     <TextInput
                         keyboardType="number-pad"
@@ -67,13 +88,14 @@ const AddMemberModal = ({
                         onChangeText={setPhoneNumber}
                         value={phoneNumber}
                         textContentType="telephoneNumber"
-                        onSubmitEditing={() => addToSelectedContacts(phoneNumber)}
+                        onSubmitEditing={addToSelectedContacts} // Add contact on submit
                     />
+
                     <View>
                         <Text style={bottomSheetStyle.errorText}>{error}</Text>
                     </View>
                     <View style={bottomSheetStyle.buttonWrapper}>
-                        <Pressable style={bottomSheetStyle.button} onPress={() => addToSelectedContacts(phoneNumber)}>
+                        <Pressable style={bottomSheetStyle.button} onPress={addToSelectedContacts}>
                             <Text style={bottomSheetStyle.textStyle}>Add</Text>
                         </Pressable>
                     </View>

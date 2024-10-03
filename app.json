@@ -19,7 +19,8 @@
             "buildNumber": "28",
             "infoPlist": {
                 "LSApplicationQueriesSchemes": ["tez", "phonepe", "paytmmp", "amazonpay", "bhim", "upi"],
-                "UIBackgroundModes": ["remote-notification"]
+                "UIBackgroundModes": ["remote-notification"],
+                "NSContactsUsageDescription": "This app needs access to your contacts."
             },
             "icon": "./assets/appstore.png"
         },
@@ -31,12 +32,7 @@
             },
             "versionCode": 28,
             "package": "app.amigo.app",
-            "permissions": [
-                "android.permission.READ_CONTACTS",
-                "android.permission.WRITE_CONTACTS",
-                "android.permission.CAMERA",
-                "android.permission.RECORD_AUDIO"
-            ]
+            "permissions": ["READ_CONTACTS", "WRITE_CONTACTS"]
         },
         "web": {
             "favicon": "./assets/favicon.png"

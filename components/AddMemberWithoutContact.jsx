@@ -34,7 +34,7 @@ const AddMemberWithoutContact = () => {
         if (isNumber) {
             setPhoneNumber(number);
         } else {
-            setPhoneNumber();
+            setPhoneNumber('');
         }
         // open bottom sheet
         toggleBottomSheet();
@@ -56,7 +56,7 @@ const AddMemberWithoutContact = () => {
                             Add "<Text style={styles.phoneNuber}>{search}</Text>" to Amigo
                         </Text>
                     ) : (
-                        <Text style={styles.text}>Not in your contact list? Add here </Text>
+                        <Text style={styles.text}>Add New Contact </Text>
                     )}
                 </View>
             </Pressable>

@@ -11,6 +11,7 @@ import ContactCard from './ContactCard';
 import Search from './Search';
 const ContactList = ({ eliminatedContacts }) => {
     const { search, setSearch, contacts, selectedContacts, handleSelectContact, setSelectedContacts, contactPermission } = useContacts();
+
     const flatListRef = useRef(null);
 
     useEffect(() => {
@@ -42,7 +43,7 @@ const ContactList = ({ eliminatedContacts }) => {
                         marginTop: calcWidth(1.5),
                     }}
                     data={sortArrayWithTargetAndTargetProp({ arr: eliminateContacts(), target: search, targetProp: 'name' })}
-                    keyExtractor={(item) => item.phoneNumber}
+                    keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
                         <Pressable onPress={() => handleSelectContact(item)}>
                             <ContactCard

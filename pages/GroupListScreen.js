@@ -1,4 +1,3 @@
-import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, Keyboard, RefreshControl, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
 
@@ -12,17 +11,14 @@ import PAGES from '../constants/pages';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useGroupList } from '../stores/groupList';
+import useFocusThrottledFetch from '../hooks/useFocusThrottledFetch';
 
 function GroupListScreen({ navigation }) {
     const { groups, loading, search, setSearch, fetchData } = useGroupList();
     const { user } = useAuth();
     const [refreshing, setRefreshing] = useState(false);
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchData(user);
-        }, []),
-    );
+    useFocusThrottledFetch(() => fetchData(user), 800);
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);

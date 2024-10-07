@@ -1,10 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
-
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import Entypo from '@expo/vector-icons/Entypo';
 import TabBarIcon from '../components/TabBarIcon';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { getFontSizeByWindowWidth } from '../helper/res';
+import { calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { ContactsProvider } from '../hooks/useContacts';
 import useNotificationResponse from '../hooks/useNotificationResponse';
 import About from '../pages/About';
@@ -31,7 +32,19 @@ import UPIAppSelection from '../pages/UPIAppSelection';
 import { useAuth } from '../stores/auth';
 import TabNavigator from './TabNavigator';
 import useRegisterForPushNotification from '../hooks/useRegisterPushNotification';
+import { useNavigation } from '@react-navigation/native';
 const Stack = createNativeStackNavigator();
+const BackButton = () => {
+    const navigation = useNavigation();
+    const Pressed = () => {
+        navigation.goBack();
+    };
+    return (
+        <TouchableOpacity onPress={Pressed}>
+            <Entypo name="chevron-left" size={24} color="white" style={{ marginEnd: calcWidth(3) }} />
+        </TouchableOpacity>
+    );
+};
 const AppNavigator = () => {
     const { user } = useAuth();
     useRegisterForPushNotification();
@@ -81,6 +94,7 @@ const AppNavigator = () => {
                                 },
                                 animation: 'ios',
                                 headerTintColor: '#fff',
+                                headerLeft: () => <BackButton />,
                             }}
                         />
                         <Stack.Screen
@@ -214,6 +228,7 @@ const AppNavigator = () => {
                                     fontWeight: 'bold', // Makes the title bold
                                     fontSize: getFontSizeByWindowWidth(20),
                                 },
+                                headerLeft: () => <BackButton />,
                                 headerTintColor: '#fff',
                                 animation: 'ios',
                             }}
@@ -229,6 +244,7 @@ const AppNavigator = () => {
                                 animation: 'fade',
                                 title: null,
                                 headerTintColor: '#fff',
+                                headerLeft: () => <BackButton />,
                             }}
                         />
                         <Stack.Screen
@@ -241,6 +257,7 @@ const AppNavigator = () => {
                                 title: 'New group',
                                 headerTintColor: '#fff',
                                 animation: 'ios',
+                                headerLeft: () => <BackButton />,
                                 headerTitleStyle: {
                                     color: 'white',
                                 },
@@ -253,6 +270,8 @@ const AppNavigator = () => {
                                 headerStyle: {
                                     backgroundColor: COLOR.APP_BACKGROUND,
                                 },
+                                headerLeft: () => <BackButton />,
+
                                 headerTintColor: '#fff',
                                 title: null,
                                 animation: 'ios',

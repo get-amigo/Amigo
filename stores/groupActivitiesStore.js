@@ -83,6 +83,8 @@ const groupActivitiesStore = (set, get) => ({
 
     addActivityToLocalDB: (params) => {
         const { activity, groupId, user, isSynced = false, addToPending = false } = params;
+        console.log(activity, 'Inside the add activity to local db');
+
         if (isSynced) {
             set((state) => {
                 const newActivitiesById = {
@@ -94,6 +96,8 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[activity._id] = activity;
+
+                console.log(newActivitiesById, 'Inside th final stage if add to localdb if is synced');
 
                 return {
                     activities: {
@@ -184,6 +188,7 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[generatedActivity._id] = generatedActivity;
+                console.log(generatedActivity, 'Inside the final stage of adding');
 
                 return {
                     activities: {
@@ -350,6 +355,80 @@ const groupActivitiesStore = (set, get) => ({
                     },
                 },
             };
+        });
+    },
+
+    updateChat: (params) => {
+        const { activityId, groupId, newMessage } = params;
+        set((state) => {
+            const newActivitiesById = {
+                ...(state.activities[groupId]?.activitiesById || {}),
+            };
+            const updatedActivity = {
+                ...newActivitiesById[activityId],
+                relatedId: {
+                    ...newActivitiesById[activityId].relatedId,
+                    message: newMessage,
+                },
+            };
+            newActivitiesById[activityId] = updatedActivity;
+            return {
+                activities: {
+                    ...state.activities,
+                    [groupId]: {
+                        ...state.activities[groupId],
+                        activitiesById: newActivitiesById,
+                    },
+                },
+            };
+        });
+    },
+
+    editTransaction: (params) => {
+        const { activityId, groupId, updatedActivity, allNewActivity } = params;
+
+        set((state) => {
+            const newActivitiesById = {
+                ...(state.activities[groupId]?.activitiesById || {}),
+            };
+
+            // Ensure the activity exists before updating
+            if (newActivitiesById[activityId]) {
+                let updatedSplitAmong = allNewActivity.relatedId.splitAmong;
+                let updatedPaidby = allNewActivity.relatedId.paidBy;
+
+                newActivitiesById[activityId] = {
+                    ...newActivitiesById[activityId],
+                    relatedId: {
+                        ...newActivitiesById[activityId].relatedId,
+                        amount: updatedActivity.amount,
+                        creator: updatedActivity.creator,
+                        description: updatedActivity.description,
+                        paidBy: updatedActivity.paidBy,
+                        splitAmong: updatedActivity.splitAmong,
+                        type: updatedActivity.type,
+                        updatedAt: updatedActivity.updatedAt,
+                    },
+                    updatedAt: updatedActivity.updatedAt,
+                    isSynced: updatedActivity.isSynced,
+                };
+                newActivitiesById[activityId].relatedId.splitAmong = updatedSplitAmong;
+                newActivitiesById[activityId].relatedId.paidBy = updatedPaidby;
+
+                return {
+                    activities: {
+                        ...state.activities,
+                        [groupId]: {
+                            ...state.activities[groupId],
+                            activitiesById: newActivitiesById,
+                        },
+                    },
+                };
+            } else {
+                // Handle case where activity does not exist
+                console.error(`Activity with ID ${activityId} not found in group ${groupId}`);
+                return state;
+            }
         });
     },
 });

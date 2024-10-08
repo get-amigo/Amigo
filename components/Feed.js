@@ -637,7 +637,7 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
             };
         case 'chat':
             return {
-                renderActivity: ({ creator, relatedId, createdAt, isSynced: synced }) => (
+                renderActivity: ({ creator, relatedId, createdAt, isSynced: synced, _id }) => (
                     <ChatActivity
                         chat={{
                             creator,
@@ -646,6 +646,7 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
                             replyingMessage: relatedId?.replyingMessage,
                             createdAt,
                             _id: relatedId?._id,
+                            activityId: _id,
                         }}
                         synced={synced}
                     />

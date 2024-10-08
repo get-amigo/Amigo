@@ -48,16 +48,16 @@ const AddMemberWithoutContact = () => {
         <>
             <Pressable style={styles.container} onPress={() => handleOpenSheet(search)}>
                 <View style={styles.row}>
-                    <View style={[styles.placeHolderView, { backgroundColor: 'white' }]}>
-                        <AntDesign name="adduser" size={calcHeight(selectorSize - 2.2)} color="black" />
-                    </View>
                     {!isContactFound && search?.length > 0 ? (
-                        <Text style={styles.text}>
-                            Add "<Text style={styles.phoneNuber}>{search}</Text>" to Amigo
-                        </Text>
-                    ) : (
-                        <Text style={styles.text}>Add New Contact </Text>
-                    )}
+                        <>
+                            <View style={[styles.placeHolderView, { backgroundColor: 'white' }]}>
+                                <AntDesign name="adduser" size={calcHeight(selectorSize - 2.2)} color="black" />
+                            </View>
+                            <Text style={styles.text}>
+                                Add "<Text style={styles.phoneNuber}>{search}</Text>" to Contact
+                            </Text>
+                        </>
+                    ) : null}
                 </View>
             </Pressable>
 

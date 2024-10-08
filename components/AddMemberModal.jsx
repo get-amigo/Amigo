@@ -74,17 +74,12 @@ const AddMemberModal = ({
                 </View>
                 <View style={bottomSheetStyle.wrapper}>
                     <Text style={bottomSheetStyle.modalText}>Enter Contact Name</Text>
-                    <TextInput
-                        style={bottomSheetStyle.textInput}
-                        onChangeText={setContactName}
-                        value={contactName}
-                        placeholder="Contact Name"
-                    />
+                    <TextInput style={bottomSheetStyle.textInput} onChangeText={setContactName} value={contactName} />
                     <Text style={bottomSheetStyle.modalText}>Enter Phone Number</Text>
                     <TextInput
                         keyboardType="number-pad"
                         maxLength={10}
-                        style={[bottomSheetStyle.textInput, error && { borderColor: COLOR.ERROR_BORDER }]}
+                        style={[bottomSheetStyle.textInput, error]}
                         onChangeText={setPhoneNumber}
                         value={phoneNumber}
                         textContentType="telephoneNumber"
@@ -118,7 +113,7 @@ const bottomSheetStyle = StyleSheet.create({
         paddingHorizontal: 12,
         borderTopRightRadius: 20,
         borderTopLeftRadius: 20,
-        minHeight: calcHeight(70),
+        minHeight: calcHeight(40),
         paddingBottom: 20,
     },
     center: {
@@ -146,16 +141,17 @@ const bottomSheetStyle = StyleSheet.create({
         fontSize: getFontSizeByWindowWidth(14),
     },
     modalText: {
-        color: COLOR.PRIMARY,
-        fontWeight: 'bold',
-        fontSize: getFontSizeByWindowWidth(17),
+        color: '#7F7F7F',
+        // fontWeight: 'bold',
+        fontSize: getFontSizeByWindowWidth(12),
+        paddingTop: 20,
     },
     textInput: {
         color: COLOR.PRIMARY,
         borderBottomWidth: 0.8,
         borderBottomColor: 'gray',
-        fontSize: getFontSizeByWindowWidth(16),
-        marginTop: calcHeight(2),
+        fontSize: getFontSizeByWindowWidth(14),
+        marginTop: calcHeight(0.5),
     },
     buttonWrapper: {
         marginTop: calcHeight(5),
@@ -171,6 +167,6 @@ const bottomSheetStyle = StyleSheet.create({
     errorText: {
         marginTop: calcHeight(0.7),
         color: COLOR.ERROR_BORDER,
-        fontSize: getFontSizeByWindowWidth(14),
+        fontSize: getFontSizeByWindowWidth(10),
     },
 });

@@ -6,13 +6,16 @@ import generateUniqueId from '../helper/generateUniqueId';
 const draftTransactionStore = (set, get) => ({
     drafts: {},
 
-    addDraft: (transaction, user, groupId) => {
+    addDraft: (transaction, user, groupId, relatedId = null) => {
         const now = new Date().toISOString();
-        const draftId = generateUniqueId();
-        const relatedId = generateUniqueId();
+        const newRelatedId = relatedId || generateUniqueId();
+
+        console.log('Draft Transaction:');
+        console.log(transaction);
+        console.log(newRelatedId);
 
         const draftActivity = {
-            _id: draftId,
+            _id: newRelatedId,
             activityType: 'transaction',
             createdAt: now,
             creator: {
@@ -23,7 +26,7 @@ const draftTransactionStore = (set, get) => ({
             group: groupId,
             onModel: 'Transaction',
             relatedId: {
-                _id: relatedId,
+                _id: newRelatedId,
                 amount: transaction.amount,
                 createdAt: now,
                 creator: {
@@ -34,7 +37,7 @@ const draftTransactionStore = (set, get) => ({
                 },
                 date: now,
                 description: transaction.description,
-                group: groupId,
+                group: transaction.group,
                 paidBy: {
                     _id: transaction.paidBy._id,
                     name: transaction.paidBy.name,
@@ -46,24 +49,61 @@ const draftTransactionStore = (set, get) => ({
             updatedAt: now,
             isSynced: false,
         };
+        console.log('New Draft Activity:', draftActivity);
 
         set((state) => ({
             drafts: {
                 ...state.drafts,
-                [draftId]: draftActivity,
+                [newRelatedId]: draftActivity,
             },
         }));
 
-        return { draftId, relatedId };
+        //return { relatedId: newRelatedId };
     },
 
-    removeDraft: (draftId) => {
+    updateDraft: (relatedId, updatedTransaction) => {
+        set((state) => {
+            const existingDraft = state.drafts[relatedId];
+            console.log('Update Transaction:');
+            console.log(updatedTransaction);
+            console.log(relatedId);
+            console.log(existingDraft);
+            if (existingDraft) {
+                const now = new Date().toISOString();
+                const updatedDraftActivity = {
+                    ...existingDraft,
+                    group: { ...existingDraft.group, ...updatedTransaction.group },
+                    updatedAt: now,
+                    relatedId: {
+                        ...existingDraft.relatedId,
+                        amount: updatedTransaction.amount,
+                        description: updatedTransaction.description,
+                        group: updatedTransaction.group, // Group information
+                        paidBy: updatedTransaction.paidBy, // Paid by information
+                        splitAmong: updatedTransaction.splitAmong, // Split among information
+                        type: updatedTransaction.type, // Type field added
+                        date: now,
+                    },
+                };
+                console.log('Updated Draft Activity:', updatedDraftActivity); // Add this line
+                return {
+                    drafts: {
+                        ...state.drafts,
+                        [relatedId]: updatedDraftActivity,
+                    },
+                };
+            }
+            return state; // No changes if the draft doesn't exist
+        });
+    },
+
+    removeDraft: (relatedId) => {
         set((state) => {
             const newDrafts = { ...state.drafts };
-            delete newDrafts[draftId];
+            delete newDrafts[relatedId];
             return { drafts: newDrafts };
         });
-        console.log("DONE")
+        console.log('DONE');
     },
 
     clearDrafts: () => {
@@ -72,9 +112,7 @@ const draftTransactionStore = (set, get) => ({
 
     getDraftsForUser: (userId) => {
         const { drafts } = get();
-        return Object.values(drafts).filter(
-            (draft) => draft.creator._id === userId
-        );
+        return Object.values(drafts).filter((draft) => draft.creator._id === userId);
     },
 });
 

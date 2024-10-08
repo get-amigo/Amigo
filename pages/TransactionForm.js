@@ -15,11 +15,12 @@ import getPreviousPageName from '../helper/getPreviousPageName';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import useNetwork from '../hooks/useNetwork';
 import { useAuth } from '../stores/auth';
+import { useBalance } from '../stores/balance';
 import useDraftTransactionStore from '../stores/draftTransactionStore';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
-import { useBalance } from '../stores/balance';
 
 function TransactionFormScreen({ navigation, route }) {
+    console.log('Route params:', route.params);
     const { shouldOpenUpi } = route.params || {};
 
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
@@ -30,14 +31,31 @@ function TransactionFormScreen({ navigation, route }) {
 
     const { draft } = route.params || {};
 
-   const { updateBalances } = useBalance();
+    const { updateBalances } = useBalance();
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
-    const { addDraft, removeDraft } = useDraftTransactionStore();
+    const { addDraft, removeDraft, updateDraft } = useDraftTransactionStore();
+    //const [relatedId, setRelatedId] = useState(null);
 
+    // const clearDraftsForUser = () => {clearDrafts();}
     const handleSaveAsDraft = () => {
-        addDraft(transactionData, user, transactionData.group);
+        const relatedId = draft ? draft.relatedId._id : null;
+        console.log('Related ID:', relatedId);
+        const draftData = {
+            ...transactionData,
+            group: transactionData.group || {},
+            paidBy: transactionData.paidBy || {},
+            splitAmong: transactionData.splitAmong || [],
+        };
+
+        if (relatedId) {
+            console.log('Updating draft', relatedId);
+            updateDraft(relatedId, draftData);
+        } else {
+            console.log('Adding draft');
+            addDraft(draftData, user, draftData.group._id);
+        }
         Toast.show('Transaction saved as draft', {
             duration: Toast.durations.LONG,
         });
@@ -48,13 +66,14 @@ function TransactionFormScreen({ navigation, route }) {
         if (draft) {
             setTransactionData((prev) => ({
                 ...prev,
-                amount: draft.relatedId.amount,
-                description: draft.relatedId.description,
-                type: draft.relatedId.type,
-                group: draft.relatedId.group,
-                paidBy: draft.relatedId.paidBy,
-                splitAmong: draft.relatedId.splitAmong,
+                amount: draft.relatedId.amount || prev.amount,
+                description: draft.relatedId.description || prev.description,
+                type: draft.relatedId.type || prev.type,
+                group: draft.relatedId.group || prev.group || {},
+                paidBy: draft.relatedId.paidBy || prev.paidBy || {},
+                splitAmong: draft.relatedId.splitAmong || prev.splitAmong || [],
             }));
+            // setRelatedId(draft.relatedId._id);
         }
     }, [draft]);
 
@@ -302,6 +321,7 @@ function TransactionFormScreen({ navigation, route }) {
                     />
                 )}
             </View>
+            {/* <Button onPress={clearDraftsForUser}></Button> */}
         </ScrollView>
     );
 }

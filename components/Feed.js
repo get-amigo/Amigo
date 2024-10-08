@@ -1,25 +1,8 @@
 import { AntDesign, EvilIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { BlurView } from '@react-native-community/blur';
 import { useNavigation } from '@react-navigation/native';
-<<<<<<< HEAD
-import React, { useState } from 'react';
-import {
-    Alert,
-    Image,
-    Modal,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TouchableWithoutFeedback,
-    UIManager,
-    Vibration,
-    View,
-} from 'react-native';
-=======
 import React, { useState, useEffect } from 'react';
 import { Alert, Image, Modal, Pressable, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native';
->>>>>>> 1580959 (Suggested changes implemented in reply feature)
 import Toast from 'react-native-root-toast';
 import ClockIcon from '../assets/icons/clock.png';
 import UserAvatar from '../components/UserAvatar';
@@ -183,28 +166,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
             { cancelable: false },
         );
     };
-
-    const handleEdit = async () => {
-        try {
-            const response = await apiHelper.get(`/transaction/${transactionId}`);
-            const transactionData = response.data;
-            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, activity: activityId });
-        } catch (error) {
-            console.error('Error fetching transaction:', error);
-        }
-    };
-
-    const hapticFeedback = async () => {
-        if (Platform.OS === 'ios') {
-            const feedbackGenerator = new UIManager.UIImpactFeedbackGenerator();
-            await feedbackGenerator.prepare();
-            feedbackGenerator.impactOccurred(UIManager.UImpactFeedbackGenerator.FeedbackStyle.Light);
-        } else if (Platform.OS === 'android') {
-            Vibration.vibrate(50);
-        }
-    };
-
-    const renderModal = () => {
+    const renderDeleteModal = () => {
         if (user._id === creator._id) {
             return (
                 <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
@@ -224,17 +186,6 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                                         />
                                     )}
                                     <View style={styles.modalButtons}>
-                                        <Pressable
-                                            style={styles.modalButton}
-                                            onPress={() => {
-                                                setModalVisible(false);
-                                                handleEdit();
-                                                hapticFeedback();
-                                            }}
-                                        >
-                                            <Text style={[styles.modalButtonText, { color: COLOR.PRIMARY }]}>Edit</Text>
-                                            <MaterialIcons name="edit" size={calcWidth(6)} color="white" />
-                                        </Pressable>
                                         <Pressable
                                             style={styles.modalButton}
                                             onPress={() => {
@@ -263,7 +214,6 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 setSelectedTransaction(transaction);
                 setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
                 setModalVisible(true);
-                hapticFeedback();
             }}
             onPress={() => {
                 const editedTransaction = transaction;
@@ -277,9 +227,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                         ...editedTransaction,
                         creator,
                     },
-                    activity: activityId,
                     handleDelete,
-                    handleEdit,
                 });
             }}
             style={styles.transactionActivityContainer}
@@ -292,7 +240,7 @@ function TransactionActivity({ transaction, createdAt, contacts, synced, creator
                 creator={creator}
                 highlightColor={highlightColor}
             />
-            {renderModal()}
+            {renderDeleteModal()}
         </Pressable>
     );
 }
@@ -383,11 +331,9 @@ function PaymentActivity({ payment, contacts, highlightColor }) {
     );
 }
 
-<<<<<<< HEAD
-function ChatActivityDetails({ chat, synced }) {
-=======
 function ChatActivity({ chat, synced }) {
     let { user } = useAuth();
+    // console.log('Inside chat activity');
 
     const [upperViewWidth, setUpperViewWidth] = useState(0);
     const [lowerViewWidth, setLowerViewWidth] = useState(0);
@@ -397,7 +343,6 @@ function ChatActivity({ chat, synced }) {
         setMaxWidth(Math.max(upperViewWidth, lowerViewWidth));
     }, [upperViewWidth, lowerViewWidth]);
 
->>>>>>> 1580959 (Suggested changes implemented in reply feature)
     return (
         <>
             {chat.replyingMessage ? (
@@ -555,85 +500,6 @@ function ChatActivity({ chat, synced }) {
     );
 }
 
-function ChatActivity({ chat, synced }) {
-    const { user } = useAuth();
-    const navigation = useNavigation();
-    const [isModalVisible, setModalVisible] = useState(false);
-    const [selectedChat, setSelectedChat] = useState(null);
-    const [modalPosition, setModalPosition] = useState({ x: 0, y: 0 });
-    const chatId = chat._id;
-    const activityId = chat.activityId;
-
-    const chatEdit = async () => {
-        try {
-            const response = await apiHelper.get(`/chat/${chatId}`);
-            const chatData = response.data;
-            navigation.navigate(PAGES.GROUP, { chatData, activityId });
-        } catch (error) {
-            console.error('Error fetching chat:', error);
-        }
-    };
-
-    const hapticFeedback = async () => {
-        if (Platform.OS === 'ios') {
-            const feedbackGenerator = new UIManager.UIImpactFeedbackGenerator();
-            await feedbackGenerator.prepare();
-            feedbackGenerator.impactOccurred(UIManager.UImpactFeedbackGenerator.FeedbackStyle.Light);
-        } else if (Platform.OS === 'android') {
-            Vibration.vibrate(50);
-        }
-    };
-
-    const renderModal = () => {
-        if (user._id === chat.creator._id) {
-            return (
-                <Modal animationType="fade" transparent={true} visible={isModalVisible} onRequestClose={() => setModalVisible(false)}>
-                    <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-                        <View style={styles.modalOverlay}>
-                            <BlurView style={styles.absolute} blurType="regular" blurAmount={10} reducedTransparencyFallbackColor="white" />
-                            <TouchableWithoutFeedback>
-                                <View style={[styles.modalContainer, { top: modalPosition.y - 140, right: calcWidth(8) }]}>
-                                    {selectedChat && <ChatActivityDetails chat={selectedChat} synced={synced} />}
-                                    <View style={[styles.modalButtons, { top: calcHeight(6), left: calcWidth(-24) }]}>
-                                        <Pressable
-                                            style={styles.modalButton}
-                                            onPress={() => {
-                                                setModalVisible(false);
-                                                chatEdit();
-                                            }}
-                                        >
-                                            <Text style={[styles.modalButtonText, { color: COLOR.PRIMARY }]}>Edit</Text>
-                                            <MaterialIcons name="edit" size={calcWidth(6)} color="white" />
-                                        </Pressable>
-                                    </View>
-                                </View>
-                            </TouchableWithoutFeedback>
-                        </View>
-                    </TouchableWithoutFeedback>
-                </Modal>
-            );
-        } else {
-            return null;
-        }
-    };
-
-    return (
-        <>
-            <Pressable
-                onLongPress={(event) => {
-                    setSelectedChat(chat);
-                    setModalPosition({ x: event.nativeEvent.pageX, y: event.nativeEvent.pageY });
-                    setModalVisible(true);
-                    hapticFeedback();
-                }}
-            >
-                <ChatActivityDetails chat={chat} synced={synced} />
-            </Pressable>
-            {renderModal()}
-        </>
-    );
-}
-
 function Feed(props) {
     const { user } = useAuth();
     const { creator, activityType, createdAt, showCreatorName, showCreatorAvatar, showDate } = props;
@@ -771,7 +637,7 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
             };
         case 'chat':
             return {
-                renderActivity: ({ creator, relatedId, createdAt, isSynced: synced, _id }) => (
+                renderActivity: ({ creator, relatedId, createdAt, isSynced: synced }) => (
                     <ChatActivity
                         chat={{
                             creator,
@@ -779,8 +645,6 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
                             replyTo: relatedId?.replyTo,
                             replyingMessage: relatedId?.replyingMessage,
                             createdAt,
-                            _id: relatedId?._id,
-                            activityId: _id,
                         }}
                         synced={synced}
                     />
@@ -855,6 +719,7 @@ const styles = StyleSheet.create({
     modalContainer: {
         position: 'absolute',
         backgroundColor: '#663CAB',
+        borderWidth: 1,
         borderRadius: calcHeight(1),
         borderBottomEndRadius: calcHeight(0),
         paddingHorizontal: calcWidth(1),
@@ -875,7 +740,7 @@ const styles = StyleSheet.create({
     modalButtons: {
         position: 'absolute',
         top: calcHeight(16.8),
-        left: calcWidth(2.5),
+        left: calcWidth(8),
     },
     modalButton: {
         flexDirection: 'row',

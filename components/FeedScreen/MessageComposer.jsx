@@ -1,10 +1,6 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-<<<<<<< HEAD
-import React, { useCallback, useEffect, useState } from 'react';
-=======
 import React, { useCallback, useState, useRef, useEffect } from 'react';
->>>>>>> ece70aa (Reply feature implemented)
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,7 +16,7 @@ import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 import useReplyStore from '../../stores/replyStore';
 import ReplyingInfo from '../ReplyingInfo';
 
-const MessageComposer = ({ chatData, activityId }) => {
+const MessageComposer = () => {
     const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
@@ -31,26 +27,11 @@ const MessageComposer = ({ chatData, activityId }) => {
     const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
     const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
     const [text, setText] = useState('');
-<<<<<<< HEAD
-    const [editing, setEditing] = useState(false);
-=======
     const { isReplying, setIsReplying, replyingTo, toReplyMessage } = useReplyStore();
     const textInputRef = useRef(null);
->>>>>>> ece70aa (Reply feature implemented)
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
-    const updateChat = useGroupActivitiesStore((state) => state.updateChat);
-
-    useEffect(() => {
-        if (chatData) {
-            setText(chatData.message);
-            setEditing(true);
-            console.log('chat', chatData);
-        } else {
-            setEditing(false);
-        }
-    }, [chatData]);
 
     const handleTextInputAndToggleExpenseButton = useCallback((text) => {
         if (text.length === 0) {
@@ -75,37 +56,6 @@ const MessageComposer = ({ chatData, activityId }) => {
     }, [isReplying]);
 
     const sendChatMessage = async (message) => {
-<<<<<<< HEAD
-        if (message.replace(/^\s+|\s+$/g, '') === '') {
-            return;
-        }
-        const currentTime = new Date().toISOString();
-        try {
-            if (isConnected) {
-                if (editing) {
-                    await apiHelper.patch(`/chat/${chatData._id}`, {
-                        message,
-                        updatedAt: currentTime,
-                    });
-                    updateIsSynced({
-                        _id: chatData._id,
-                        group: group._id,
-                    });
-                    updateChat({ activityId: activityId, groupId: group._id, newMessage: message });
-                } else {
-                    const { activityId, relatedId } = addActivityToLocalDB({
-                        activity: { activityType: 'chat', relatedId: { message } },
-                        groupId: group._id,
-                        user,
-                        isSynced: false,
-                        addToPending: false,
-                    });
-                    await apiHelper.post(`/group/${group._id}/chat`, {
-                        message,
-                        activityId,
-                        chatId: relatedId,
-                    });
-=======
         const trimmedMessage = message.trim();
         if (trimmedMessage === '') {
             return;
@@ -135,30 +85,10 @@ const MessageComposer = ({ chatData, activityId }) => {
                         chatId: relatedId,
                     });
 
->>>>>>> ece70aa (Reply feature implemented)
                     updateIsSynced({
                         _id: activityId,
                         group: group._id,
                     });
-<<<<<<< HEAD
-                }
-            } else {
-                // No network connection
-                addActivityToLocalDB({
-                    activity: { activityType: 'chat', relatedId: { message } },
-                    groupId: group._id,
-                    user,
-                    isSynced: false,
-                    addToPending: false,
-                });
-                console.warn('No network connection. Activity saved locally.');
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setText('');
-            setEditing(false);
-=======
                 } catch (err) {
                     console.error(err);
                 }
@@ -207,12 +137,15 @@ const MessageComposer = ({ chatData, activityId }) => {
             } else {
                 addActivityToLocalDB(activityData);
             }
->>>>>>> ece70aa (Reply feature implemented)
         }
     };
 
     return (
-        <View style={{ marginTop: calcWidth(2) }}>
+        <View
+            style={{
+                marginTop: calcWidth(2),
+            }}
+        >
             {/* <View style={styles.payContainer}>
                 **** will be required when we add "Pay to XYZ rs. 500 feature" ****
                 <Pressable style={styles.payBtn}>

@@ -3,10 +3,9 @@ import { ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import BalanceGroupPin from '../components/BalanceGroupPin';
-import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import FeedsContainer from '../components/FeedScreen/FeedsContainer';
+import FeedScreenHeader from '../components/FeedScreen/FeedScreenHeader';
 import MessageComposer from '../components/FeedScreen/MessageComposer';
-import { MESSAGE_COMPOSER_PADDING } from '../constants/constants';
 import safeAreaStyle from '../constants/safeAreaStyle';
 import { useGroup } from '../context/GroupContext';
 import apiHelper from '../helper/apiHelper';
@@ -17,7 +16,9 @@ import { useAuth } from '../stores/auth';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 import groupBalancesAndCalculateTotal from '../utility/groupBalancesAndCalculateTotal';
 
-const ActivitiesFeedScreen = ({ route }) => {
+import { MESSAGE_COMPOSER_PADDING } from '../constants/constants';
+
+const ActivitiesFeedScreen = () => {
     const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
@@ -25,13 +26,11 @@ const ActivitiesFeedScreen = ({ route }) => {
 
     const [totalBalance, setTotalBalance] = useState();
     const [balances, setBalances] = useState();
-    const { chatData, activityId } = route?.params || {};
 
     // activity store
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const syncAllPendingActivities = useGroupActivitiesStore((state) => state.syncAllPendingActivities);
-    // console.log("ss",activities[group._id].activitiesById[0])
 
     useEffect(() => {
         async function fetchBalance() {
@@ -101,7 +100,7 @@ const ActivitiesFeedScreen = ({ route }) => {
 
                 <FeedsContainer />
 
-                <MessageComposer chatData={chatData} activityId={activityId} />
+                <MessageComposer />
             </KeyboardAvoidingView>
         </SafeAreaView>
     );

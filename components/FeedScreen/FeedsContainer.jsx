@@ -27,6 +27,8 @@ const FeedsContainer = () => {
     const activityOrder = useGroupActivitiesStore((state) => state.activities[group._id]?.activityOrder || []);
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
 
+    // console.log(activityOrder,'inside component');
+
     const toggleStickyDateAndScrollButton = useCallback((event) => {
         const yOffset = event.nativeEvent.contentOffset.y;
         setShowScrollToBottom(yOffset > 100);

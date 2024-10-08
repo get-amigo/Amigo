@@ -4,7 +4,7 @@ import axios from 'axios';
 import { getToken } from '../stores/auth';
 
 const config = {
-    baseURL: 'https://e28c-2409-40c2-116b-2591-9f0b-dc3d-37a5-b81b.ngrok-free.app/',
+    baseURL: 'https://cda7-2409-40c2-116d-be87-828d-78c8-ea80-66b9.ngrok-free.app/',
     timeout: 10000,
     headers: {
         'Content-Type': 'application/json',

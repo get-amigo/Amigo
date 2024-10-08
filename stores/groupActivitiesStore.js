@@ -28,49 +28,40 @@ const groupActivitiesStore = (set, get) => ({
 
         set((state) => {
             const groupId = acts[0].group;
-
             const newActivitiesById = {
                 ...(state.activities[groupId]?.activitiesById || {}),
             };
+            let newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
+            // const fetchedDate = new Date(acts[0].createdAt);
 
-            const newActivityOrder = [...(state.activities[groupId]?.activityOrder || [])];
+            // Create a set of existing activity IDs for faster lookup
+            const existingIds = new Set(newActivityOrder);
 
-            const fetchedDate = new Date(acts[0].createdAt);
-            let low = 0;
-            let high = newActivityOrder.length - 1;
+            // Sort acts by createdAt in descending order (newest first)
+            const sortedActs = acts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-            while (low <= high) {
-                const mid = Math.floor(low + (high - low) / 2);
-                const midDate = new Date(
-                    state.activities[groupId]?.activitiesById[state.activities[groupId]?.activityOrder[mid]]?.createdAt ??
-                        '2000-06-19T09:08:12.155Z',
-                );
-
-                if (midDate < fetchedDate) {
-                    high = mid - 1;
-                } else {
-                    low = mid + 1;
-                }
-            }
-
-            const unstoredIds = [];
-            acts.forEach((act) => {
-                // console.log('act outside the if', act);
-
+            sortedActs.forEach((act) => {
                 newActivitiesById[act._id] = {
                     ...newActivitiesById[act._id],
                     ...act,
                 };
 
-                if (!(act._id in newActivitiesById)) {
-                    unstoredIds.push(act._id);
-                    newActivitiesById[act._id] = {};
+                if (!existingIds.has(act._id)) {
+                    // If the activity is new, find its correct position in the order
+                    const insertIndex = newActivityOrder.findIndex(
+                        (id) => new Date(newActivitiesById[id].createdAt) <= new Date(act.createdAt),
+                    );
+
+                    if (insertIndex === -1) {
+                        // If no suitable position found, add to the end
+                        newActivityOrder.push(act._id);
+                    } else {
+                        // Insert at the correct position
+                        newActivityOrder.splice(insertIndex, 0, act._id);
+                    }
+                    existingIds.add(act._id);
                 }
             });
-
-            // "low" variable stores the correct position where the new activity should be stored
-
-            newActivityOrder.splice(low, 0, ...unstoredIds);
 
             return {
                 activities: {
@@ -92,14 +83,6 @@ const groupActivitiesStore = (set, get) => ({
 
     addActivityToLocalDB: (params) => {
         const { activity, groupId, user, isSynced = false, addToPending = false } = params;
-<<<<<<< HEAD
-<<<<<<< HEAD
-        console.log(activity, 'Inside the add activity to local db');
-=======
-        console.log('Now we are in the next step', activity);
->>>>>>> ece70aa (Reply feature implemented)
-=======
->>>>>>> 1580959 (Suggested changes implemented in reply feature)
 
         if (isSynced) {
             set((state) => {
@@ -112,8 +95,6 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[activity._id] = activity;
-
-                console.log(newActivitiesById, 'Inside th final stage if add to localdb if is synced');
 
                 return {
                     activities: {
@@ -207,7 +188,6 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[generatedActivity._id] = generatedActivity;
-                console.log(generatedActivity, 'Inside the final stage of adding');
 
                 return {
                     activities: {
@@ -375,80 +355,6 @@ const groupActivitiesStore = (set, get) => ({
                     },
                 },
             };
-        });
-    },
-
-    updateChat: (params) => {
-        const { activityId, groupId, newMessage } = params;
-        set((state) => {
-            const newActivitiesById = {
-                ...(state.activities[groupId]?.activitiesById || {}),
-            };
-            const updatedActivity = {
-                ...newActivitiesById[activityId],
-                relatedId: {
-                    ...newActivitiesById[activityId].relatedId,
-                    message: newMessage,
-                },
-            };
-            newActivitiesById[activityId] = updatedActivity;
-            return {
-                activities: {
-                    ...state.activities,
-                    [groupId]: {
-                        ...state.activities[groupId],
-                        activitiesById: newActivitiesById,
-                    },
-                },
-            };
-        });
-    },
-
-    editTransaction: (params) => {
-        const { activityId, groupId, updatedActivity, allNewActivity } = params;
-
-        set((state) => {
-            const newActivitiesById = {
-                ...(state.activities[groupId]?.activitiesById || {}),
-            };
-
-            // Ensure the activity exists before updating
-            if (newActivitiesById[activityId]) {
-                let updatedSplitAmong = allNewActivity.relatedId.splitAmong;
-                let updatedPaidby = allNewActivity.relatedId.paidBy;
-
-                newActivitiesById[activityId] = {
-                    ...newActivitiesById[activityId],
-                    relatedId: {
-                        ...newActivitiesById[activityId].relatedId,
-                        amount: updatedActivity.amount,
-                        creator: updatedActivity.creator,
-                        description: updatedActivity.description,
-                        paidBy: updatedActivity.paidBy,
-                        splitAmong: updatedActivity.splitAmong,
-                        type: updatedActivity.type,
-                        updatedAt: updatedActivity.updatedAt,
-                    },
-                    updatedAt: updatedActivity.updatedAt,
-                    isSynced: updatedActivity.isSynced,
-                };
-                newActivitiesById[activityId].relatedId.splitAmong = updatedSplitAmong;
-                newActivitiesById[activityId].relatedId.paidBy = updatedPaidby;
-
-                return {
-                    activities: {
-                        ...state.activities,
-                        [groupId]: {
-                            ...state.activities[groupId],
-                            activitiesById: newActivitiesById,
-                        },
-                    },
-                };
-            } else {
-                // Handle case where activity does not exist
-                console.error(`Activity with ID ${activityId} not found in group ${groupId}`);
-                return state;
-            }
         });
     },
 });

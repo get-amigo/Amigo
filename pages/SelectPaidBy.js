@@ -12,7 +12,6 @@ function GroupListScreen({ navigation }) {
             {transactionData.group.members.map((member, index) => (
                 <GroupSelectCard
                     name={member.name ? member.name : member.phoneNumber}
-
                     onPress={() => {
                         setTransactionData((prev) => ({
                             ...prev,

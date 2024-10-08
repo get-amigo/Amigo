@@ -1,3 +1,4 @@
+import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
 import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
 
@@ -12,7 +13,6 @@ import PAGES from '../constants/pages';
 import { calcHeight, calcWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import { useBalance } from '../stores/balance';
-import useFocusThrottledFetch from '../hooks/useFocusThrottledFetch';
 
 const headerIconSize = calcHeight(1);
 
@@ -21,7 +21,11 @@ function BalanceScreen({ navigation }) {
     const { fetchData, loading, totalBalances, balances } = useBalance();
     const [refreshing, setRefreshing] = useState(false);
 
-    useFocusThrottledFetch(() => fetchData(user), 800);
+    useFocusEffect(
+        useCallback(() => {
+            fetchData(user);
+        }, []),
+    );
 
     const onRefresh = useCallback(async () => {
         setRefreshing(true);

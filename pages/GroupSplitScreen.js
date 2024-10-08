@@ -1,6 +1,6 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Alert, FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Pressable, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import UserAvatar from '../components/UserAvatar';
 import COLOR from '../constants/Colors';
@@ -238,7 +238,6 @@ const GroupSplitScreen = ({ navigation }) => {
                         }}
                     >
                         <UserAvatar user={item.user} />
-
                         <Text style={styles.memberName}>{editNames([item.user], user._id, contactsNamesMap)[0].name}</Text>
                     </View>
                 </View>
@@ -249,7 +248,6 @@ const GroupSplitScreen = ({ navigation }) => {
                         style={styles.amount}
                         value={String(item.amount)}
                         onChangeText={(newAmount) => handleAmountChange(newAmount, item.user._id)}
-                        keyboardType="numeric"
                     />
                 </View>
             </View>
@@ -257,7 +255,7 @@ const GroupSplitScreen = ({ navigation }) => {
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerText}>₹{transactionData.amount || 0} Paid by</Text>
                 <Pressable
@@ -265,7 +263,6 @@ const GroupSplitScreen = ({ navigation }) => {
                     style={{
                         flexDirection: 'row',
                         alignItems: 'center',
-                        gap: calcWidth(1),
                         borderWidth: 1,
                         padding: calcHeight(0.5),
                         borderColor: '#D9D9D9',
@@ -281,7 +278,7 @@ const GroupSplitScreen = ({ navigation }) => {
                             fontSize: getFontSizeByWindowWidth(12),
                         }}
                     >
-                        {sliceText(transactionData.paidBy.name ? transactionData.paidBy.name : transactionData.paidBy.phoneNumber, 10)}
+                        {sliceText(transactionData.paidBy.name, 7)}
                     </Text>
                 </Pressable>
             </View>
@@ -351,7 +348,7 @@ const GroupSplitScreen = ({ navigation }) => {
                 </TouchableOpacity>
             </View>
             <FlatList data={members} renderItem={renderItem} keyExtractor={(item) => item.id} />
-        </ScrollView>
+        </View>
     );
 };
 

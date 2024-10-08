@@ -10,13 +10,14 @@ import SignUpImage from '../assets/SignUp.png';
 import CameraScanner from '../components/CameraScanner';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
-import { useGroup } from '../context/GroupContext';
 import { useTransaction } from '../context/TransactionContext';
+import { useGroup } from '../context/GroupContext';
 import openSettings from '../helper/openSettings';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 
 const QRCodeScanner = ({ navigation }) => {
     const [hasPermission, setHasPermission] = useState(null);
+    const [isLit, setIsLit] = useState(false);
     const { setUpiParams } = useTransaction();
     const [barcodeScanEnabled, setBarcodeScanEnabled] = useState(true);
     const { setGroup } = useGroup();
@@ -91,6 +92,7 @@ const QRCodeScanner = ({ navigation }) => {
 
     const handleBarCodeScanned = ({ data }) => {
         if (!barcodeScanEnabled) return;
+
         if (data.includes(`${WEBSITE_URL}/invite/#/join?groupId=`)) {
             joinGroup(data.substring(`${WEBSITE_URL}/invite/#/join?groupId=`.length));
         } else {
@@ -107,9 +109,7 @@ const QRCodeScanner = ({ navigation }) => {
                     extractedParams.receiverId = params['pa'] || ''; // Use 'pa' parameter as receiverId
                     Object.assign(extractedParams, params);
                     setUpiParams(extractedParams); // Ensure setUpiParams is defined and available
-                    navigation.navigate(PAGES.ADD_TRANSACTION, {
-                        shouldOpenUpi: true,
-                    }); // Ensure navigation and PAGES are defined and available
+                    navigation.navigate(PAGES.ADD_TRANSACTION); // Ensure navigation and PAGES are defined and available
                 } else {
                     setBarcodeScanEnabled(false);
                     Alert.alert('Not a valid UPI URL', null, [
@@ -160,7 +160,7 @@ const QRCodeScanner = ({ navigation }) => {
                     </View>
                 </View>
             ) : (
-                <CameraScanner handleBarCodeScanned={handleBarCodeScanned} />
+                <CameraScanner handleBarCodeScanned={handleBarCodeScanned} isLit={isLit} setIsLit={setIsLit} />
             )}
         </View>
     );

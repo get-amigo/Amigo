@@ -55,6 +55,7 @@ const CreateGroup = ({ navigation }) => {
                     countryCode,
                 })),
             };
+            requestBody.phoneNumbers.push({ phoneNumber: user.phoneNumber, countryCode: user.countryCode });
 
             const response = await apiHelper.post('/group', requestBody);
 
@@ -65,6 +66,7 @@ const CreateGroup = ({ navigation }) => {
             });
 
             if (getPreviousPageName(navigation) == PAGES.SELECT_GROUP) {
+                console.log('Inside wtf is happening');
                 const contacts = await getNamesFromContacts();
                 const memberPhoneNumbers = [
                     user.phoneNumber, // Add current user's phone number to the list of members

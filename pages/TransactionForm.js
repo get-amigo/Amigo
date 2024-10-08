@@ -31,7 +31,10 @@ function TransactionFormScreen({ navigation, route }) {
     const editTransaction = useGroupActivitiesStore((state) => state.editTransaction);
     const { transaction, isEditing, activity } = route.params || {};
 
+    console.log(transactionData.group.members);
+
     useEffect(() => {
+        console.log('inside first  transaction');
         if (transaction) {
             setTransactionData({
                 ...transaction,

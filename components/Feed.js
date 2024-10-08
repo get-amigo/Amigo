@@ -645,6 +645,7 @@ const ActivityStrategyFactory = (activityType, isUserTheCreator) => {
                             replyTo: relatedId?.replyTo,
                             replyingMessage: relatedId?.replyingMessage,
                             createdAt,
+                            _id: relatedId?._id,
                         }}
                         synced={synced}
                     />

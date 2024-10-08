@@ -141,11 +141,7 @@ const MessageComposer = () => {
     };
 
     return (
-        <View
-            style={{
-                marginTop: calcWidth(2),
-            }}
-        >
+        <View style={{ marginTop: calcWidth(2) }}>
             {/* <View style={styles.payContainer}>
                 **** will be required when we add "Pay to XYZ rs. 500 feature" ****
                 <Pressable style={styles.payBtn}>

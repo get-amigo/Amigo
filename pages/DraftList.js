@@ -4,16 +4,18 @@ import { SectionList, StyleSheet, Text, View } from 'react-native';
 import DraftCard from '../components/DraftCard';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
+import { useTransaction } from '../context/TransactionContext';
 import formatTo12HourTime from '../helper/formatTo12HourTime';
 import groupDraftsByDate from '../helper/getDraftsByDate';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { useAuth } from '../stores/auth';
 import useDraftTransactionStore from '../stores/draftTransactionStore';
+
 const DraftList = ({ navigation }) => {
     const { user } = useAuth();
     const { getDraftsForUser } = useDraftTransactionStore();
     const [drafts, setDrafts] = useState([]);
-
+    const { setTransactionData } = useTransaction();
     const fetchDrafts = useCallback(async () => {
         const userDrafts = getDraftsForUser(user._id);
         setDrafts(userDrafts);
@@ -39,6 +41,7 @@ const DraftList = ({ navigation }) => {
                             amount={item.relatedId.amount}
                             dateTime={dateTime}
                             onPress={() => {
+                                setTransactionData(item);
                                 navigation.navigate(PAGES.ADD_TRANSACTION, { draft: item });
                             }}
                         />

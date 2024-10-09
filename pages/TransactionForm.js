@@ -20,7 +20,7 @@ import useDraftTransactionStore from '../stores/draftTransactionStore';
 import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 function TransactionFormScreen({ navigation, route }) {
-    console.log('Route params:', route.params);
+    //console.log('Route params:', route.params);
     const { shouldOpenUpi } = route.params || {};
 
     const { transactionData, setTransactionData, resetTransaction, upiParams, setUpiParams } = useTransaction();
@@ -29,7 +29,7 @@ function TransactionFormScreen({ navigation, route }) {
     const { setGroup } = useGroup();
     const isConnected = useNetwork();
 
-    const { draft } = route.params || {};
+    //const { draft } = route.params || {};
 
     const { updateBalances } = useBalance();
 
@@ -40,18 +40,18 @@ function TransactionFormScreen({ navigation, route }) {
 
     // const clearDraftsForUser = () => {clearDrafts();}
     const handleSaveAsDraft = () => {
-        const relatedId = draft ? draft.relatedId._id : null;
-        console.log('Related ID:', relatedId);
+        //   const relatedId = draft ? draft.relatedId._id : null;
+        // console.log('Related ID:', relatedId);
         const draftData = {
             ...transactionData,
-            group: transactionData.group || {},
-            paidBy: transactionData.paidBy || {},
-            splitAmong: transactionData.splitAmong || [],
+            group: transactionData?.group || {},
+            paidBy: transactionData?.paidBy || {},
+            splitAmong: transactionData?.splitAmong || [],
         };
 
-        if (relatedId) {
-            console.log('Updating draft', relatedId);
-            updateDraft(relatedId, draftData);
+        if (transactionData?.relatedId._id) {
+            //console.log('Updating draft', relatedId);
+            updateDraft(transactionData?.relatedId._id, draftData);
         } else {
             console.log('Adding draft');
             addDraft(draftData, user, draftData.group._id);
@@ -63,27 +63,27 @@ function TransactionFormScreen({ navigation, route }) {
     };
 
     useEffect(() => {
-        if (draft) {
+        if (transactionData) {
             setTransactionData((prev) => ({
                 ...prev,
-                amount: draft.relatedId.amount || prev.amount,
-                description: draft.relatedId.description || prev.description,
-                type: draft.relatedId.type || prev.type,
-                group: draft.relatedId.group || prev.group || {},
-                paidBy: draft.relatedId.paidBy || prev.paidBy || {},
-                splitAmong: draft.relatedId.splitAmong || prev.splitAmong || [],
+                amount: transactionData?.relatedId?.amount || prev.amount,
+                description: transactionData?.relatedId?.description || prev.description,
+                type: transactionData?.relatedId?.type || prev.type,
+                group: transactionData?.relatedId?.group || prev.group || {},
+                paidBy: transactionData?.relatedId?.paidBy || prev.paidBy || {},
+                splitAmong: transactionData?.relatedId?.splitAmong || prev.splitAmong || [],
             }));
             // setRelatedId(draft.relatedId._id);
         }
-    }, [draft]);
+    }, [transactionData]);
 
     const isFormComplete = () => {
         return (
-            transactionData.amount &&
-            transactionData.description &&
-            transactionData.group._id &&
-            transactionData.paidBy._id &&
-            transactionData.splitAmong.length > 0
+            transactionData?.amount &&
+            transactionData?.description &&
+            transactionData?.group._id &&
+            transactionData?.paidBy._id &&
+            transactionData?.splitAmong.length > 0
         );
     };
 
@@ -91,8 +91,8 @@ function TransactionFormScreen({ navigation, route }) {
         const { group } = transactionData;
         if (group && group.members) {
             const totalMembers = group.members.length;
-            const perUserPayment = Math.floor(transactionData.amount / totalMembers);
-            const remainder = transactionData.amount % totalMembers;
+            const perUserPayment = Math.floor(transactionData?.amount / totalMembers);
+            const remainder = transactionData?.amount % totalMembers;
 
             setTransactionData((prev) => ({
                 ...prev,
@@ -103,14 +103,14 @@ function TransactionFormScreen({ navigation, route }) {
                 })),
             }));
         }
-    }, [transactionData.amount, transactionData.group]);
+    }, [transactionData?.amount, transactionData?.group]);
 
     useEffect(() => {
         setTransactionData((prev) => ({
             ...prev,
             paidBy: { _id: user?._id, name: 'You' },
         }));
-    }, [transactionData.group]);
+    }, [transactionData?.group]);
 
     useEffect(() => {
         if (upiParams.am) {
@@ -134,19 +134,19 @@ function TransactionFormScreen({ navigation, route }) {
         }
     };
 
-    const remainingCharacters = transactionData && transactionData.description ? 100 - transactionData.description.length : 100;
+    const remainingCharacters = transactionData && transactionData?.description ? 100 - transactionData?.description.length : 100;
 
     const handleSubmit = async () => {
-        if (!transactionData.amount || transactionData.amount == 0) {
+        if (!transactionData?.amount || transactionData?.amount == 0) {
             Alert.alert('Amount Missing');
             return;
         }
-        if (!transactionData.description || transactionData.description == '' || transactionData.description === undefined) {
+        if (!transactionData?.description || transactionData?.description == '' || transactionData?.description === undefined) {
             Alert.alert('Description Missing');
             return;
         }
 
-        if (Object.keys(transactionData.group).length === 0) {
+        if (Object.keys(transactionData?.group).length === 0) {
             Alert.alert('Group not added');
             return;
         }
@@ -155,23 +155,23 @@ function TransactionFormScreen({ navigation, route }) {
             const newTransaction = {
                 ...transactionData,
                 type: 'General', // set to default for now
-                amount: parseInt(transactionData.amount, 10),
-                group: transactionData.group._id,
-                paidBy: transactionData.paidBy._id,
-                splitAmong: transactionData.splitAmong.map((user) => ({
+                amount: parseInt(transactionData?.amount, 10),
+                group: transactionData?.group._id,
+                paidBy: transactionData?.paidBy._id,
+                splitAmong: transactionData?.splitAmong.map((user) => ({
                     amount: user.amount,
                     user: user.user._id || user.user.id,
                 })),
-                description: transactionData.description || ' ',
+                description: transactionData?.description || ' ',
             };
             const newActivity = {
                 relatedId: {
                     ...newTransaction,
-                    group: transactionData.group,
-                    paidBy: transactionData.paidBy,
-                    splitAmong: transactionData.splitAmong.map((user) => ({
+                    group: transactionData?.group,
+                    paidBy: transactionData?.paidBy,
+                    splitAmong: transactionData?.splitAmong.map((user) => ({
                         amount: user.amount,
-                        user: transactionData.group.members.find((member) => member._id === (user.user._id || user.user.id)),
+                        user: transactionData?.group.members.find((member) => member._id === (user.user._id || user.user.id)),
                     })),
                 },
                 creator: { _id: user._id, name: 'You' },
@@ -212,8 +212,8 @@ function TransactionFormScreen({ navigation, route }) {
                         Alert.alert('Error', JSON.stringify(err));
                     });
 
-                if (draft) {
-                    removeDraft(draft._id);
+                if (transactionData) {
+                    removeDraft(transactionData?.relatedId._id);
                 }
             } else {
                 addActivityToLocalDB({
@@ -228,7 +228,7 @@ function TransactionFormScreen({ navigation, route }) {
             if (upiParams.receiverId) {
                 const upiData = {
                     ...upiParams,
-                    am: transactionData.amount.toString(),
+                    am: transactionData?.amount.toString(),
                 };
                 setUpiParams({});
                 navigation.navigate(PAGES.UPI_APP_SELECTION, upiData);
@@ -237,7 +237,7 @@ function TransactionFormScreen({ navigation, route }) {
             Toast.show('Transaction Added', {
                 duration: Toast.durations.LONG,
             });
-            setGroup(transactionData.group);
+            setGroup(transactionData?.group);
 
             const pushAction = StackActions.push(PAGES.TAB_NAVIGATOR, {});
             navigation.dispatch(pushAction);
@@ -251,7 +251,7 @@ function TransactionFormScreen({ navigation, route }) {
 
     return (
         <ScrollView style={styles.container} alwaysBounceVertical={false} keyboardShouldPersistTaps="always">
-            <AmountInput amount={transactionData.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
+            <AmountInput amount={transactionData?.amount} handleInputChange={(text) => handleInputChange('amount', text)} isTextInput />
 
             <View style={styles.rowCentered}>
                 <Pressable style={styles.descriptionContainer} onPress={() => descriptionRef.current.focus()}>
@@ -259,7 +259,7 @@ function TransactionFormScreen({ navigation, route }) {
                         ref={descriptionRef}
                         style={styles.description}
                         onChangeText={(text) => handleInputChange('description', text)}
-                        value={transactionData.description}
+                        value={transactionData?.description}
                         placeholder="Description"
                         placeholderTextColor="gray"
                         textAlign={transactionData?.description?.length === 0 ? 'left' : 'center'}
@@ -283,13 +283,13 @@ function TransactionFormScreen({ navigation, route }) {
                     >
                         <View style={styles.buttonWrapper}>
                             <MaterialIcons name="group-add" size={calcWidth(8)} color="white" />
-                            <Text style={styles.buttonText}>{transactionData.group?.name || 'Add Group'}</Text>
+                            <Text style={styles.buttonText}>{transactionData?.group?.name || 'Add Group'}</Text>
                         </View>
                         <AntDesign name="right" size={calcWidth(5)} color="white" />
                     </Pressable>
                 </View>
             )}
-            {transactionData.group?.members?.length > 0 && (
+            {transactionData?.group?.members?.length > 0 && (
                 <View style={styles.paidByAndSplitContainer}>
                     <Pressable
                         style={styles.button}
@@ -297,7 +297,7 @@ function TransactionFormScreen({ navigation, route }) {
                             navigation.navigate(PAGES.SELECT_PAID_BY);
                         }}
                     >
-                        <Text style={styles.buttonText}>Paid By {transactionData.paidBy?.name}</Text>
+                        <Text style={styles.buttonText}>Paid By {transactionData?.paidBy?.name}</Text>
                     </Pressable>
                     <Pressable
                         style={styles.button}
@@ -314,10 +314,10 @@ function TransactionFormScreen({ navigation, route }) {
                     <Button styleOverwrite={styles.submitBtn} onPress={handleSubmit} title="Submit" />
                 ) : (
                     <Button
-                        styleOverwrite={[styles.submitBtn, !transactionData.amount && styles.disabledButton]}
-                        onPress={transactionData.amount ? handleSaveAsDraft : () => {}}
+                        styleOverwrite={[styles.submitBtn, !transactionData?.amount && styles.disabledButton]}
+                        onPress={transactionData?.amount ? handleSaveAsDraft : () => {}}
                         title="SAVE DRAFT"
-                        disabled={!transactionData.amount}
+                        disabled={!transactionData?.amount}
                     />
                 )}
             </View>

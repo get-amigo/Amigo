@@ -28,6 +28,7 @@ import SignUpScreen from '../pages/SignUpScreen';
 import TransactionDetail from '../pages/TransactionDetails';
 import TransactionFormScreen from '../pages/TransactionForm';
 import UPIAppSelection from '../pages/UPIAppSelection';
+import FinaliseNewGroup from '../pages/FinaliseNewGroup';
 import { useAuth } from '../stores/auth';
 import TabNavigator from './TabNavigator';
 import { useNavigation } from '@react-navigation/native';
@@ -248,16 +249,16 @@ const AppNavigator = () => {
                             name={PAGES.CREATE_GROUP}
                             component={CreateGroup}
                             options={{
-                                headerStyle: {
-                                    backgroundColor: COLOR.APP_BACKGROUND,
-                                },
-                                title: 'New group',
-                                headerTintColor: '#fff',
+                                headerShown: false,
                                 animation: 'ios',
-                                headerLeft: () => <BackButton />,
-                                headerTitleStyle: {
-                                    color: 'white',
-                                },
+                            }}
+                        />
+                        <Stack.Screen
+                            name={PAGES.FINALISE_NEW_GROUP}
+                            component={FinaliseNewGroup}
+                            options={{
+                                headerShown: false,
+                                animation: 'ios',
                             }}
                         />
                         <Stack.Screen

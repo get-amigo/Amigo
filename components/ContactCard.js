@@ -6,7 +6,7 @@ import COLOR from '../constants/Colors';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import HighlightedText from './HighlightText';
 
-function ContactCard({ selected, color, name, imageURI, search }) {
+function ContactCard({ selected, color, name, imageURI, search, phoneNumber }) {
     return (
         <View style={styles.container}>
             <View style={styles.contactContainer}>
@@ -19,13 +19,14 @@ function ContactCard({ selected, color, name, imageURI, search }) {
                 )}
                 <View style={styles.textContainer}>
                     <HighlightedText text={name} target={search} style={styles.nameText} />
+                    <HighlightedText text={phoneNumber} target={search} style={styles.nameText} />
                 </View>
             </View>
             <View style={styles.selectorContainer}>
                 {selected ? (
-                    <AntDesign name="checkcircle" size={calcWidth(5)} color={COLOR.BUTTON} />
+                    <AntDesign name="checksquare" size={calcWidth(5)} color={COLOR.BUTTON} />
                 ) : (
-                    <MaterialCommunityIcons name="checkbox-blank-circle-outline" size={calcWidth(5)} color="white" />
+                    <MaterialCommunityIcons name="checkbox-blank-outline" size={calcWidth(5)} color={COLOR.LIGHT_GRAY} />
                 )}
             </View>
         </View>
@@ -41,6 +42,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         paddingVertical: calcWidth(3),
+        paddingHorizontal: calcWidth(1),
         backgroundColor: COLOR.APP_BACKGROUND,
         justifyContent: 'space-between',
     },
@@ -56,10 +58,13 @@ const styles = StyleSheet.create({
     },
     textContainer: {
         width: calcWidth(60),
+        flexDirection: 'column',
+        rowGap: calcHeight(1),
+        marginLeft: calcWidth(3),
     },
     nameText: {
-        color: COLOR.TEXT,
-        fontSize: getFontSizeByWindowWidth(13),
+        color: COLOR.LIGHT_GRAY,
+        fontSize: getFontSizeByWindowWidth(12.5),
     },
     phoneText: {
         fontSize: getFontSizeByWindowWidth(10),

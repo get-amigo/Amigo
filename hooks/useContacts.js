@@ -28,6 +28,7 @@ export const ContactsProvider = ({ children }) => {
                         const flattenedContacts = flatPhoneNumbersArr(fetchContactsData);
                         const uniqueContacts = filterUniqueContacts(flattenedContacts, user.phoneNumber);
                         const simplifiedContacts = simplifyContactsObj(uniqueContacts);
+                        // console.log(simplifiedContacts, 'is uniqueContacts');
 
                         if (checkObjectArraysEqualityAndOmitKey({ objArray1: allContacts, objArray2: simplifiedContacts, omit: 'color' }))
                             return;

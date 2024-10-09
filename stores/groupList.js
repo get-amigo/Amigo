@@ -22,7 +22,7 @@ const useGroupStore = create(
                 const { data } = await apiHelper('/group');
 
                 for (const group of data) {
-                    group.members = (await editNamesAsync(group.members, user._id)).filter((currentUser) => currentUser._id !== user._id);
+                    group.members = await editNamesAsync(group.members, user._id);
                 }
 
                 if (shallowEquals({ obj1: groups, obj2: data })) return;

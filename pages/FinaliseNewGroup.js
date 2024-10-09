@@ -59,6 +59,8 @@ function FinaliseNewGroup({ navigation }) {
                 })),
             };
 
+            requestBody.phoneNumbers.push({ phoneNumber: user.phoneNumber, countryCode: user.countryCode });
+
             const response = await apiHelper.post('/group', requestBody);
 
             const newGroup = response.data;
@@ -89,7 +91,7 @@ function FinaliseNewGroup({ navigation }) {
 
                 navigation.navigate(PAGES.ADD_TRANSACTION);
             } else {
-                setSelectedContacts(null);
+                setSelectedContacts([]);
                 navigation.goBack();
             }
         } catch {

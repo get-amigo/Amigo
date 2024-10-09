@@ -61,7 +61,7 @@ const ContactList = ({ eliminatedContacts, addMemberWithoutContact }) => {
 
     const keyExtractor = useCallback((item) => {
         if (item && item.id) return item.id.toString();
-        if (item && item.phoneNumber) return item.phoneNumber;
+        if (item && item.id) return item.phoneNumber;
         console.warn('Invalid item in contact list:', item);
         return Math.random().toString();
     }, []);

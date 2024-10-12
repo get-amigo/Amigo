@@ -1,12 +1,26 @@
 appId: app.amigo.app
 ---
 - launchApp
+- assertVisible: Group payments made easy
+- assertVisible: Keep track of your shared expenses and balances
+- assertVisible: Continue with Phone number
 - tapOn:
-      id: nameInput
-- assertVisible: 'Your Name'
-- assertVisible: What should we call you?
-- assertVisible: 25 characters left
-- inputText: 'AmigoTestUser '
-- inputRandomNumber:
-      length: 4
-- tapOn: Save
+      text: Continue with Phone number
+      waitToSettleTimeoutMs: 500
+- assertVisible: Hi there!
+- tapOn:
+      id: countryFlagSelection
+- tapOn: 'Search country...'
+- inputText: India
+- tapOn:
+      text: India
+      index: 1
+- tapOn:
+      id: phoneNumberInput
+- inputText: 9876501234
+- tapOn: Send OTP
+- assertVisible: OTP Verification
+- assertVisible: "Didn't get the OTP? "
+- inputText: 123456
+- tapOn: Verify OTP
+- assertVisible: 'Total Balance'

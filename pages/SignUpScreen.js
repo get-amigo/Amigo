@@ -48,7 +48,7 @@ const SignUpScreen = ({ navigation }) => {
                                 <Text style={styles.promptText}>What should we call you?</Text>
                             </View>
                         </View>
-                        <View style={styles.inputContainer}>
+                        <View style={styles.inputContainer} testID="nameInputText">
                             <TextInput
                                 style={getTextInputStyle(isNameFocused)}
                                 placeholder="Your name"
@@ -58,11 +58,10 @@ const SignUpScreen = ({ navigation }) => {
                                 onBlur={() => setIsNameFocused(false)}
                                 placeholderTextColor="#D3D3D3"
                                 maxLength={25} // Maximum character limit
-                                testID="nameInput"
                             />
                             <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
                         </View>
-                        <View style={styles.buttonContainer}>
+                        <View style={styles.buttonContainer} testId="saveNameButton">
                             <Button
                                 disabled={name.length < 1}
                                 title="Save"

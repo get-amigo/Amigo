@@ -23,11 +23,13 @@ appId: app.amigo.app
 - assertVisible: "Didn't get the OTP? "
 - inputText: 123456
 - tapOn: Verify OTP
-- assertVisible: Your Name
-- assertVisible: What should we call you?
+- assertVisible:
+      id: nameInputText
+- tapOn:
+      id: nameInputText
 - assertVisible: 25 characters left
-- tapOn: Your name
 - inputText: 'AmigoTestUser '
 - inputRandomNumber:
       length: 4
-- tapOn: Save
+- tapOn:
+      id: saveNameButton

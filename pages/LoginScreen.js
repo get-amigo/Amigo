@@ -81,7 +81,7 @@ const LoginScreen = ({ navigation }) => {
                                 flexDirection: 'row',
                             }}
                         >
-                            <Image source={{ uri: selectedCountry.flag }} style={styles.flagImage} />
+                            <Image source={{ uri: selectedCountry.flag }} style={styles.flagImage} testID="countryFlagSelection" />
                             <Image
                                 source={ArrowDown2}
                                 style={{ width: calcWidth(3), height: calcHeight(2.4), marginLeft: calcWidth(2) }}
@@ -111,6 +111,7 @@ const LoginScreen = ({ navigation }) => {
                             onFocus={() => setIsPhoneFocused(true)}
                             onBlur={() => setIsPhoneFocused(false)}
                             placeholderTextColor="#D3D3D3"
+                            testID="phoneNumberInput"
                         />
                     </View>
                     <Button title="Send OTP" onPress={handleSendOTP} />
@@ -131,7 +132,7 @@ const LoginScreen = ({ navigation }) => {
                                 style={{ position: 'absolute', left: calcWidth(2), top: calcHeight(1) }}
                                 onPress={toggleModal}
                             >
-                                <Image source={ArrowDown} style={styles.backImage} resizeMode="contain" />
+                                <Image source={ArrowDown} style={styles.backImage} resizeMode="contain" testID="arrowDown" />
                             </TouchableOpacity>
                             <TextInput
                                 style={styles.countrySearchInput}

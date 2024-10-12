@@ -58,6 +58,7 @@ const SignUpScreen = ({ navigation }) => {
                                 onBlur={() => setIsNameFocused(false)}
                                 placeholderTextColor="#D3D3D3"
                                 maxLength={25} // Maximum character limit
+                                testID="nameInput"
                             />
                             <Text style={styles.characterCount}>{remainingCharacters} characters left</Text>
                         </View>

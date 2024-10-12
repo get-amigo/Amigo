@@ -1,0 +1,12 @@
+appId: app.amigo.app
+---
+- launchApp
+- tapOn:
+      id: nameInput
+- assertVisible: 'Your Name'
+- assertVisible: What should we call you?
+- assertVisible: 25 characters left
+- inputText: 'AmigoTestUser '
+- inputRandomNumber:
+      length: 4
+- tapOn: Save

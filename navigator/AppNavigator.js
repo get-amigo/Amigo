@@ -1,7 +1,8 @@
+import Entypo from '@expo/vector-icons/Entypo';
+import { useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import Entypo from '@expo/vector-icons/Entypo';
 import TabBarIcon from '../components/TabBarIcon';
 import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
@@ -30,7 +31,6 @@ import TransactionFormScreen from '../pages/TransactionForm';
 import UPIAppSelection from '../pages/UPIAppSelection';
 import { useAuth } from '../stores/auth';
 import TabNavigator from './TabNavigator';
-import { useNavigation } from '@react-navigation/native';
 const Stack = createNativeStackNavigator();
 const BackButton = () => {
     const navigation = useNavigation();
@@ -39,7 +39,7 @@ const BackButton = () => {
     };
     return (
         <TouchableOpacity onPress={Pressed}>
-            <Entypo name="chevron-left" size={24} color="white" style={{ marginEnd: calcWidth(3) }} />
+            <Entypo name="chevron-left" size={24} color="white" style={{ marginEnd: calcWidth(3) }} testID="backButton" />
         </TouchableOpacity>
     );
 };

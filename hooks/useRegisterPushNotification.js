@@ -72,7 +72,7 @@ export default function useRegisterForPushNotification() {
             if (!user || !token) {
                 return;
             }
-
+            // TODO: fix me
             const fcmToken = await requestUserPermission();
             const { token: expoToken, deviceId } = await registerForPushNotificationsAsync();
 
@@ -87,7 +87,7 @@ export default function useRegisterForPushNotification() {
             if (deviceId) {
                 setDeviceId(deviceId);
             }
-
+            console.log(`${Platform.OS}`, fcmToken);
             if (!fcmToken && !expoToken) return;
 
             const newData = {

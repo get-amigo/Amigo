@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import PAGES from '../constants/pages';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 export interface MessageProp {
     message: string;
@@ -22,10 +23,11 @@ export interface MessageProp {
 const handleMessageAddedForNotification = async (message: MessageProp) => {
     const groupName = message.group.name;
     const creatorName = message.creator.name;
+    const { addActivityToLocalDB } = useGroupActivitiesStore();
 
     const title = `${groupName}`;
     const body = `New message send by ${creatorName}`;
-
+    addActivityToLocalDB(message);
     await Notifications.scheduleNotificationAsync({
         content: {
             title: title,

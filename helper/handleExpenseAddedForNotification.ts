@@ -1,5 +1,6 @@
 import * as Notifications from 'expo-notifications';
 import PAGES from '../constants/pages';
+import useGroupActivitiesStore from '../stores/groupActivitiesStore';
 
 export interface TransactionProp {
     _id: string;
@@ -29,10 +30,10 @@ const handleExpenseAddedForNotification = async (transaction: TransactionProp, u
     const groupName = transaction.group.name;
     const creatorName = transaction.creator.name;
     const totalAmount = transaction.amount;
-
+    const { addActivityToLocalDB } = useGroupActivitiesStore();
     const userShareObject = transaction.splitAmong.find((item) => item.user === userId);
     const userShare = userShareObject ? userShareObject.amount : 0;
-
+    addActivityToLocalDB(transaction);
     // notification content
     const title = `${groupName}`;
     const body = `New Expense Added.\n${creatorName} split ₹${totalAmount} with you. Your share: ₹${userShare}`;

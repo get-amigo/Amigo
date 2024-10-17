@@ -1,11 +1,8 @@
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import { useNavigation } from '@react-navigation/native';
-import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '../stores/auth';
-import handleExpenseAddedForNotification, { TransactionProp } from '../helper/handleExpenseAddedForNotification';
-import handleMessageAddedForNotification, { MessageProp } from '../helper/handleMessageAddedForNotification';
-import handleNotification from '../helper/handleNotification';
+import messaging from '@react-native-firebase/messaging';
 import * as Notifications from 'expo-notifications';
+import { useEffect, useRef } from 'react';
+import { useAuth } from '../stores/auth';
+import handleNotification from '../helper/handleNotification';
 
 export default function useReceivePushNotification() {
     const { user, token } = useAuth();
@@ -20,8 +17,8 @@ export default function useReceivePushNotification() {
         });
         const unsubscribeOnMessage = messaging().onMessage(async (message) => {
             const data = message.data!!.data as string;
+            console.log('Please I have done a dumb', message);
             const parsedData = JSON.parse(data);
-            if (messageId.current == parsedData._id) return;
 
             handleNotification(message, user._id);
             messageId.current = parsedData._id;

@@ -13,6 +13,7 @@ const draftTransactionStore = (set, get) => ({
         console.log('Draft Transaction:');
         console.log(transaction);
         console.log(newRelatedId);
+        // console.log(transaction.relatedId.group);
 
         const draftActivity = {
             _id: newRelatedId,
@@ -50,6 +51,18 @@ const draftTransactionStore = (set, get) => ({
             isSynced: false,
         };
         console.log('New Draft Activity:', draftActivity);
+        console.log(draftActivity.relatedId.group);
+
+        if (
+            (!transaction.relatedId?.group || Object.keys(transaction.relatedId.group).length === 0) &&
+            draftActivity.relatedId.group &&
+            Object.keys(draftActivity.relatedId.group).length > 0
+        ) {
+            console.log('Group is null or empty in transaction, but present in draftActivity');
+            console.log(transaction.relatedId._id, 'Transaction group:', transaction.relatedId?.group);
+            console.log(draftActivity.relatedId._id, 'Draft activity group:', draftActivity.relatedId.group);
+            get().removeDraft(transaction.relatedId._id);
+        }
 
         set((state) => ({
             drafts: {

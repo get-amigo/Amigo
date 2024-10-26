@@ -1,6 +1,6 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,7 +14,7 @@ import useNetwork from '../../hooks/useNetwork';
 import { useAuth } from '../../stores/auth';
 import useGroupActivitiesStore from '../../stores/groupActivitiesStore';
 
-const MessageComposer = () => {
+const MessageComposer = ({ chatData, activityId }) => {
     const insets = useSafeAreaInsets();
     const { group } = useGroup();
     const { user } = useAuth();
@@ -25,9 +25,20 @@ const MessageComposer = () => {
     const [isExpenseBtnVisible, setIsExpenseBtnVisible] = useState(true);
     const [isSendBtnVisible, setIsSendBtnVisible] = useState(false);
     const [text, setText] = useState('');
+    const [editing, setEditing] = useState(false);
 
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const updateIsSynced = useGroupActivitiesStore((state) => state.updateIsSynced);
+    const updateChat = useGroupActivitiesStore((state) => state.updateChat);
+
+    useEffect(() => {
+        if (chatData) {
+            setText(chatData.message);
+            setEditing(true);
+        } else {
+            setEditing(false);
+        }
+    }, [chatData]);
 
     const handleTextInputAndToggleExpenseButton = useCallback((text) => {
         if (text.length === 0) {
@@ -44,50 +55,61 @@ const MessageComposer = () => {
     }, []);
 
     const sendChatMessage = async (message) => {
-        setText('');
-        if (message.replace(/^\s+|\s+$/g, '') == '') {
+        if (message.replace(/^\s+|\s+$/g, '') === '') {
             return;
         }
-        if (isConnected) {
-            const { activityId, relatedId } = addActivityToLocalDB({
-                activity: { activityType: 'chat', relatedId: { message } },
-                groupId: group._id,
-                user: user,
-                isSynced: false,
-                addToPending: false,
-            });
-            await apiHelper
-                .post(`/group/${group._id}/chat`, {
-                    message,
-                    activityId,
-                    chatId: relatedId,
-                })
-                .then(() => {
+        const currentTime = new Date().toISOString();
+        try {
+            if (isConnected) {
+                if (editing) {
+                    await apiHelper.patch(`/chat/${chatData._id}`, {
+                        message,
+                        updatedAt: currentTime,
+                    });
+                    updateIsSynced({
+                        _id: chatData._id,
+                        group: group._id,
+                    });
+                    updateChat({ activityId: activityId, groupId: group._id, newMessage: message });
+                } else {
+                    const { activityId, relatedId } = addActivityToLocalDB({
+                        activity: { activityType: 'chat', relatedId: { message } },
+                        groupId: group._id,
+                        user,
+                        isSynced: false,
+                        addToPending: false,
+                    });
+                    await apiHelper.post(`/group/${group._id}/chat`, {
+                        message,
+                        activityId,
+                        chatId: relatedId,
+                    });
                     updateIsSynced({
                         _id: activityId,
                         group: group._id,
                     });
-                })
-                .catch((err) => {
-                    console.error(err);
+                }
+            } else {
+                // No network connection
+                addActivityToLocalDB({
+                    activity: { activityType: 'chat', relatedId: { message } },
+                    groupId: group._id,
+                    user,
+                    isSynced: false,
+                    addToPending: false,
                 });
-        } else {
-            addActivityToLocalDB({
-                activity: { activityType: 'chat', relatedId: { message } },
-                groupId: group._id,
-                user: user,
-                isSynced: false,
-                addToPending: true,
-            });
+                console.warn('No network connection. Activity saved locally.');
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setText('');
+            setEditing(false);
         }
     };
 
     return (
-        <View
-            style={{
-                marginTop: calcWidth(2),
-            }}
-        >
+        <View style={{ marginTop: calcWidth(2) }}>
             {/* <View style={styles.payContainer}>
                 **** will be required when we add "Pay to XYZ rs. 500 feature" ****
                 <Pressable style={styles.payBtn}>

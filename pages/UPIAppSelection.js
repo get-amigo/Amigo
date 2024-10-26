@@ -12,7 +12,6 @@ const UPIAppSelection = ({ navigation, route }) => {
         const deepLink = generateDeeplink(upiParams);
         try {
             const canOpenURL = await Linking.canOpenURL(deepLink);
-            console.log(canOpenURL);
             if (Platform.OS === 'android' && canOpenURL) {
                 Linking.openURL(deepLink);
                 navigation.navigate(PAGES.BALANCE);

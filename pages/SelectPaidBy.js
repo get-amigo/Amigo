@@ -7,6 +7,7 @@ import { useTransaction } from '../context/TransactionContext';
 
 function GroupListScreen({ navigation }) {
     const { setTransactionData, transactionData } = useTransaction();
+
     return (
         <ScrollView alwaysBounceVertical={false}>
             {transactionData.group.members.map((member, index) => (

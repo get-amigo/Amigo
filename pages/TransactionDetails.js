@@ -10,38 +10,58 @@ import SharedList from '../components/SharedList';
 import TransactionDetailsButton from '../components/TransactionDetailsButton';
 import COLOR from '../constants/Colors';
 import TransactionNumberOfVisibleNames from '../constants/TransactionNumberOfVisibleNames';
+import PAGES from '../constants/pages';
+import apiHelper from '../helper/apiHelper';
 import formatDateToDDMMYYYY from '../helper/formatDateToDDMMYYYY';
 import { calcHeight, calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import sliceText from '../helper/sliceText';
 import useCustomColor from '../hooks/useCustomColor';
+import { useAuth } from '../stores/auth';
 
 const TransactionDetail = ({
     navigation,
     route: {
-        params: { transaction, handleDelete },
+        params: { transaction, handleDelete, activity },
     },
 }) => {
     const [date, setDate] = useState();
     const [expandNames, setExpandNames] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
-
+    const [isEditing, setIsEditing] = useState(false);
+    const transactionId = transaction._id;
+    const { user } = useAuth();
     const generateColor = useCustomColor();
 
     useLayoutEffect(() => {
-        navigation.setOptions({
-            headerRight: () => (
-                <View>
-                    <TouchableOpacity onPress={() => setModalVisible(true)}>
-                        <Image source={dots} />
-                    </TouchableOpacity>
-                </View>
-            ),
-        });
+        if (user._id === transaction.creator._id) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <View>
+                        <TouchableOpacity onPress={() => setModalVisible(true)}>
+                            <Image source={dots} />
+                        </TouchableOpacity>
+                    </View>
+                ),
+            });
+        }
     }, [navigation, handleDelete, transaction._id]);
 
     useEffect(() => {
         setDate(new Date(transaction.date));
+        console.log(isEditing);
     }, [transaction]);
+
+    const handleEdit = async () => {
+        try {
+            const response = await apiHelper.get(`/transaction/${transactionId}`);
+            const transactionData = response.data;
+
+            navigation.navigate(PAGES.ADD_TRANSACTION, { transaction: transactionData, isEditing: true, setIsEditing, activity });
+            setModalVisible(!modalVisible);
+        } catch (error) {
+            console.error('Error fetching transaction:', error);
+        }
+    };
 
     return (
         <ScrollView alwaysBounceVertical={false}>
@@ -169,7 +189,17 @@ const TransactionDetail = ({
                 <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
                     <View style={styles.modalBackground}>
                         <View style={styles.modalView}>
-                            <TouchableOpacity style={[styles.button, styles.editButton]}>
+                            <TouchableOpacity
+                                style={[styles.button, styles.editButton]}
+                                onPress={async () => {
+                                    try {
+                                        await handleEdit();
+                                        // navigation.goBack();
+                                    } catch (error) {
+                                        console.error('Error deleting transaction:', error);
+                                    }
+                                }}
+                            >
                                 <Image source={editIcon} />
                                 <Text style={styles.textStyle}>Edit</Text>
                             </TouchableOpacity>
@@ -185,7 +215,7 @@ const TransactionDetail = ({
                                 }}
                             >
                                 <Image source={deleteIcon} />
-                                <Text style={styles.textStyle}>Delete</Text>
+                                <Text style={[styles.textStyle, { color: COLOR.ERROR_BORDER }]}>Delete</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -257,7 +287,6 @@ const styles = StyleSheet.create({
         color: COLOR.TEXT,
         fontSize: getFontSizeByWindowWidth(12),
         padding: calcWidth(3),
-        fontWeight: 'bold',
     },
     modalBackground: {
         flex: 1,

@@ -39,7 +39,7 @@ const simplifyContactsObj = (uniqueContacts) => {
             const phoneNumber = parsePhoneNumber(contact.phoneNumbers[0].number, defaultCountryCode);
 
             return {
-                id: contact.id,
+                id: contact.phoneNumbers[0].id,
                 name: contact.name || '',
                 phoneNumber: phoneNumber.nationalNumber,
                 countryCode: `+${phoneNumber.countryCallingCode}`,
@@ -64,7 +64,7 @@ const flatPhoneNumbersArr = (contacts) => {
                 };
                 flattenedContacts.push(contactCopy);
             });
-        } else {
+        } else if (phoneNumbers) {
             flattenedContacts.push(contact);
         }
     });

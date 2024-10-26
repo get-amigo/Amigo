@@ -35,7 +35,6 @@ const MessageComposer = ({ chatData, activityId }) => {
         if (chatData) {
             setText(chatData.message);
             setEditing(true);
-            console.log('chat', chatData);
         } else {
             setEditing(false);
         }

@@ -31,7 +31,6 @@ const ActivitiesFeedScreen = ({ route }) => {
     const activities = useGroupActivitiesStore((state) => state.activities[group._id]?.activitiesById || {});
     const addActivityToLocalDB = useGroupActivitiesStore((state) => state.addActivityToLocalDB);
     const syncAllPendingActivities = useGroupActivitiesStore((state) => state.syncAllPendingActivities);
-    // console.log("ss",activities[group._id].activitiesById[0])
 
     useEffect(() => {
         async function fetchBalance() {

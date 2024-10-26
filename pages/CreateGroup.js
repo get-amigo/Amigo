@@ -55,6 +55,7 @@ const CreateGroup = ({ navigation }) => {
                     countryCode,
                 })),
             };
+            requestBody.phoneNumbers.push({ phoneNumber: user.phoneNumber, countryCode: user.countryCode });
 
             const response = await apiHelper.post('/group', requestBody);
 

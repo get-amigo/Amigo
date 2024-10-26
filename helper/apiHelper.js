@@ -10,7 +10,6 @@ const config = {
         'Content-Type': 'application/json',
     },
 };
-console.log('API_URL', API_URL);
 const request = axios.create(config);
 request.interceptors.request.use(
     async (reqConfig) => {

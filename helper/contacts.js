@@ -67,12 +67,7 @@ const flatPhoneNumbersArr = (contacts) => {
         } else if (phoneNumbers) {
             flattenedContacts.push(contact);
         }
-        // else if(!phoneNumbers) {
-        //     console.log(contact, 'is contact');
-
-        // }
     });
-    // console.log(flattenedContacts[281], 'is flattenedContacts');
 
     return flattenedContacts;
 };

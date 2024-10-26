@@ -83,7 +83,6 @@ const groupActivitiesStore = (set, get) => ({
 
     addActivityToLocalDB: (params) => {
         const { activity, groupId, user, isSynced = false, addToPending = false } = params;
-        console.log(activity, 'Inside the add activity to local db');
 
         if (isSynced) {
             set((state) => {
@@ -96,8 +95,6 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[activity._id] = activity;
-
-                console.log(newActivitiesById, 'Inside th final stage if add to localdb if is synced');
 
                 return {
                     activities: {
@@ -188,7 +185,6 @@ const groupActivitiesStore = (set, get) => ({
                 }
 
                 newActivitiesById[generatedActivity._id] = generatedActivity;
-                console.log(generatedActivity, 'Inside the final stage of adding');
 
                 return {
                     activities: {

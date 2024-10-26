@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, Image, Pressable, RefreshControl, Text, View } from 'react-native';
-
 import NoBalance from '../assets/NoBalance.png';
 import ScanIcon from '../assets/icons/scan.png';
 import EmptyScreen from '../components/EmptyScreen';

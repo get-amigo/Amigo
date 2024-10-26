@@ -7,6 +7,7 @@ import COLOR from '../constants/Colors';
 import PAGES from '../constants/pages';
 import { calcWidth, getFontSizeByWindowWidth } from '../helper/res';
 import { ContactsProvider } from '../hooks/useContacts';
+import useNotificationResponse from '../hooks/useNotificationResponse';
 import About from '../pages/About';
 import AccountScreen from '../pages/AccountScreen';
 import ActivitiesFeedScreen from '../pages/ActivitiesFeedScreen';
@@ -30,6 +31,7 @@ import TransactionFormScreen from '../pages/TransactionForm';
 import UPIAppSelection from '../pages/UPIAppSelection';
 import { useAuth } from '../stores/auth';
 import TabNavigator from './TabNavigator';
+import useRegisterForPushNotification from '../hooks/useRegisterPushNotification';
 import { useNavigation } from '@react-navigation/native';
 const Stack = createNativeStackNavigator();
 const BackButton = () => {
@@ -45,7 +47,8 @@ const BackButton = () => {
 };
 const AppNavigator = () => {
     const { user } = useAuth();
-
+    useRegisterForPushNotification();
+    useNotificationResponse();
     return (
         <ContactsProvider>
             <Stack.Navigator
